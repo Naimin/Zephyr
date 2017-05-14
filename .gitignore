@@ -3,11 +3,6 @@
 *.lo
 *.o
 *.obj
-*.pdb
-*.tlog
-*.iobj
-*.exp
-*.ipdb
 
 # Precompiled Headers
 *.gch
@@ -34,3 +29,13 @@
 *.app
 
 !model/*
+
+*.pdb
+*.tlog
+*.iobj
+*.exp
+*.ipdb
+*.sdf
+*.cso
+*.log
+Zephyr.VC.opendb

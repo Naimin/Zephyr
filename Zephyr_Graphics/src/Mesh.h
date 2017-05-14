@@ -8,7 +8,7 @@ namespace Zephyr
 {
 	namespace Graphics
 	{
-		class Mesh
+		class ZEPHYR_GRAPHICS_API Mesh
 		{
 			public:
 				std::vector<Zephyr::Vertex>& getVertices();
@@ -18,7 +18,6 @@ namespace Zephyr
 				int mMaterialId;
 				std::vector<Vertex> mVertices;
 				std::vector<unsigned int> mIndices;
-				
 		};
 	}
 }
