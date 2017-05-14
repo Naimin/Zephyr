@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5F8E7F7B-E93B-4017-8C61-7194D9ACA0C1}</ProjectGuid>
+    <RootNamespace>Zephyr_Graphics</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <MapExports>true</MapExports>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>NotSet</SubSystem>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "..\thirdparty\tbb\bin\intel64\vc14\tbb_debug.dll" "$(SolutionDir)$(Platform)\$(Configuration)\tbb_debug.dll"
+copy /Y "..\thirdparty\assimp\bin\$(Configuration)\assimp-vc140-mt.dll" "$(SolutionDir)$(Platform)\$(Configuration)\assimp-vc140-mt.dll"
+copy /Y "..\thirdparty\freeImage\bin\FreeImagePlus.dll" "$(SolutionDir)$(Platform)\$(Configuration)\FreeImagePlus.dll"
+copy /Y "..\thirdparty\freeImage\bin\FreeImage.dll" "$(SolutionDir)$(Platform)\$(Configuration)\FreeImage.dll"
+copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd-1_63.dll" "$(SolutionDir)$(Platform)\$(Configuration)\boost_filesystem-vc140-mt-gd-1_63.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>NotSet</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "..\thirdparty\tbb\bin\intel64\vc14\tbb.dll" "$(SolutionDir)$(Platform)\$(Configuration)\tbb.dll"
+copy /Y "..\thirdparty\assimp\bin\$(Configuration)\assimp-vc140-mt.dll" "$(SolutionDir)$(Platform)\$(Configuration)\assimp-vc140-mt.dll"
+copy /Y "..\thirdparty\freeImage\bin\FreeImagePlus.dll" "$(SolutionDir)$(Platform)\$(Configuration)\FreeImagePlus.dll"
+copy /Y "..\thirdparty\freeImage\bin\FreeImage.dll" "$(SolutionDir)$(Platform)\$(Configuration)\FreeImage.dll"
+copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_63.dll" "$(SolutionDir)$(Platform)\$(Configuration)\boost_filesystem-vc140-mt-1_63.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\BasicRenderPass.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CommandList.h" />
+    <ClInclude Include="src\CommandQueue.h" />
+    <ClInclude Include="src\Fence.h" />
+    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\ModelLoader.h" />
+    <ClInclude Include="src\Pipeline.h" />
+    <ClInclude Include="src\RenderableModel.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\IRenderPass.h" />
+    <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\ShaderManager.h" />
+    <ClInclude Include="src\SharedPtr.h" />
+    <ClInclude Include="src\stdfx.h" />
+    <ClInclude Include="src\StringUtils.h" />
+    <ClInclude Include="src\TestRenderPass.h" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\Vertex.h" />
+    <ClInclude Include="src\Zephyr_Graphics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\BasicRenderPass.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CommandList.cpp" />
+    <ClCompile Include="src\CommandQueue.cpp" />
+    <ClCompile Include="src\Fence.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\ModelLoader.cpp" />
+    <ClCompile Include="src\Pipeline.cpp" />
+    <ClCompile Include="src\RenderableModel.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\IRenderPass.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\ShaderManager.cpp" />
+    <ClCompile Include="src\TestRenderPass.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Vertex.cpp" />
+    <ClCompile Include="src\Zephyr_Graphics.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\shader\pixel_shader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\shader\vertex_shader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

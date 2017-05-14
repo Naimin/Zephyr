@@ -1,0 +1,14 @@
+﻿  BasicRenderPass.cpp
+     Creating library D:\Master\Zephyr\x64\Release\Zephyr_Graphics.lib and object D:\Master\Zephyr\x64\Release\Zephyr_Graphics.exp
+  Generating code
+  18 of 3879 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Zephyr_Graphics.vcxproj -> D:\Master\Zephyr\x64\Release\Zephyr_Graphics.dll
+  Zephyr_Graphics.vcxproj -> D:\Master\Zephyr\x64\Release\Zephyr_Graphics.pdb (Full PDB)
+          1 file(s) copied.
+          1 file(s) copied.
+          1 file(s) copied.
+          1 file(s) copied.
+          1 file(s) copied.

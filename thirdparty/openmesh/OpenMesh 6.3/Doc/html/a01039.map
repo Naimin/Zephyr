@@ -1,0 +1,8 @@
+<map id="OpenMesh::VDPMSynthesizerViewerWidget" name="OpenMesh::VDPMSynthesizerViewerWidget">
+<area shape="rect" id="node2" href="$a00215.html" title="MeshViewerWidget" alt="" coords="785,97,920,124"/>
+<area shape="rect" id="node3" href="$a00259.html" title="QGLViewerWidget" alt="" coords="481,5,611,32"/>
+<area shape="rect" id="node5" href="$a00157.html" title="OpenMesh::FPropHandleT\l\&lt; typename Mesh::Point \&gt;" alt="" coords="457,57,635,98"/>
+<area shape="rect" id="node6" href="$a00098.html" title="OpenMesh::BasePropHandle\lT\&lt; typename Mesh::Point \&gt;" alt="" coords="217,57,408,98"/>
+<area shape="rect" id="node7" href="$a00093.html" title="Base class for all handle types. " alt="" coords="5,64,168,91"/>
+<area shape="rect" id="node8" href="$a00244.html" title="Set options for reader/writer modules. " alt="" coords="467,123,625,149"/>
+</map>
