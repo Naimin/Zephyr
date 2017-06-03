@@ -28,7 +28,9 @@
 *.out
 *.app
 
+# exclude
 !model/*
+!thirdparty/*
 
 *.pdb
 *.tlog
