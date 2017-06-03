@@ -29,8 +29,8 @@
 *.app
 
 # exclude
-!model/*
-!thirdparty/*
+!model/**
+!thirdparty/**
 
 *.pdb
 *.tlog
