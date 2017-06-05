@@ -28,10 +28,6 @@
 *.out
 *.app
 
-# exclude
-!model/**
-!thirdparty/**
-
 *.pdb
 *.tlog
 *.iobj
@@ -41,3 +37,9 @@
 *.cso
 *.log
 Zephyr.VC.opendb
+
+# exclude
+!model/**
+!thirdparty/**
+
+
