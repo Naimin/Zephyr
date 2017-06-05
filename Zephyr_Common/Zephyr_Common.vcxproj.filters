@@ -15,34 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\OM_Mesh.cpp">
+    <ClInclude Include="src\Triangle.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshSegmentation.cpp">
+    </ClInclude>
+    <ClInclude Include="src\Point.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TriDualGraph.cpp">
+    </ClInclude>
+    <ClInclude Include="src\Line.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\OM_Mesh.h">
+    </ClInclude>
+    <ClInclude Include="src\GeometryMath.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\stdfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Zephyr_Algorithm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshSegmentation.h">
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Triangle.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\iDualGraph.h">
+    </ClCompile>
+    <ClCompile Include="src\test.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TriDualGraph.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

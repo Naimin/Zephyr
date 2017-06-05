@@ -36,6 +36,7 @@
 *.sdf
 *.cso
 *.log
+*.idb
 Zephyr.VC.opendb
 
 # exclude

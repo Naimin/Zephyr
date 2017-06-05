@@ -6,8 +6,13 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_Graphics", "Zephyr_Graphics\Zephyr_Graphics.vcxproj", "{5F8E7F7B-E93B-4017-8C61-7194D9ACA0C1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_App", "Zephyr_App\Zephyr_App.vcxproj", "{AF97CEB8-E7D6-4C77-A1AC-5B17CC0CA33A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582} = {8FAE23C9-0DC2-4F56-82AB-820CC5296582}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_Algorithm", "Zephyr_Algorithm\Zephyr_Algorithm.vcxproj", "{7177341D-B995-4404-8B0C-C0AA959092DE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_Common", "Zephyr_Common\Zephyr_Common.vcxproj", "{8FAE23C9-0DC2-4F56-82AB-820CC5296582}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +46,14 @@ Global
 		{7177341D-B995-4404-8B0C-C0AA959092DE}.Release|x64.Build.0 = Release|x64
 		{7177341D-B995-4404-8B0C-C0AA959092DE}.Release|x86.ActiveCfg = Release|Win32
 		{7177341D-B995-4404-8B0C-C0AA959092DE}.Release|x86.Build.0 = Release|Win32
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Debug|x64.ActiveCfg = Debug|x64
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Debug|x64.Build.0 = Debug|x64
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Debug|x86.ActiveCfg = Debug|Win32
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Debug|x86.Build.0 = Debug|Win32
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Release|x64.ActiveCfg = Release|x64
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Release|x64.Build.0 = Release|x64
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Release|x86.ActiveCfg = Release|Win32
+		{8FAE23C9-0DC2-4F56-82AB-820CC5296582}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

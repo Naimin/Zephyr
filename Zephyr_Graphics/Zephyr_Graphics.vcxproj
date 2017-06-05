@@ -125,6 +125,7 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd
       <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -140,6 +141,9 @@ copy /Y "..\thirdparty\freeImage\bin\FreeImagePlus.dll" "$(SolutionDir)$(Platfor
 copy /Y "..\thirdparty\freeImage\bin\FreeImage.dll" "$(SolutionDir)$(Platform)\$(Configuration)\FreeImage.dll"
 copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_63.dll" "$(SolutionDir)$(Platform)\$(Configuration)\boost_filesystem-vc140-mt-1_63.dll"</Command>
     </PostBuildEvent>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\BasicRenderPass.h" />
@@ -197,6 +201,11 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zephyr_Common\Zephyr_Common.vcxproj">
+      <Project>{8fae23c9-0dc2-4f56-82ab-820cc5296582}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

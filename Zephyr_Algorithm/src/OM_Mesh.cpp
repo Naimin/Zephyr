@@ -2,6 +2,7 @@
 #include <tbb/parallel_for.h>
 
 using namespace Zephyr;
+using namespace Zephyr::Algorithm;
 
 Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh()
 {

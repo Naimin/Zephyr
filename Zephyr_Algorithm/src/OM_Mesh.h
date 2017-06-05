@@ -9,6 +9,8 @@
 
 #include <Mesh.h>
 
+#include "TriDualGraph.h"
+
 using namespace OpenMesh;
 
 // define traits
