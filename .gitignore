@@ -40,6 +40,8 @@
 *.ilk
 Zephyr.VC.opendb
 *.zip
+*.suo
+*.cache
 
 thirdparty/**
 
