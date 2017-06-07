@@ -37,10 +37,13 @@
 *.cso
 *.log
 *.idb
+*.ilk
 Zephyr.VC.opendb
+*.zip
+
+thirdparty/**
 
 # exclude
 !model/**
-!thirdparty/**
 
 
