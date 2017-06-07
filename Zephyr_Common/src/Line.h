@@ -9,7 +9,7 @@ namespace Zephyr
 	{
 		struct Line
 		{
-			Line(const Point& p1, const Point& p2)
+			Line(const Point p1 = Point(), const Point p2 = Point())
 			{
 				mPoint[0] = p1;
 				mPoint[1] = p2;

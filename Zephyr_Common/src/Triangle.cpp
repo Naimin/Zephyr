@@ -2,7 +2,7 @@
 
 using namespace Zephyr::Common;
 
-Zephyr::Common::Triangle::Triangle(const Point & p0, const Point p1, const Point & p2)
+Zephyr::Common::Triangle::Triangle(const Point p0, const Point p1, const Point p2)
 {
 	mVertex[0] = p0;
 	mVertex[1] = p1;

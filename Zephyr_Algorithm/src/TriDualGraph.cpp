@@ -10,8 +10,16 @@ Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 
 	std::cout << area;
 
-	
+	TriNode triNode1, triNode2;
 
+	auto nodeId1 = addNode(triNode1);
+	auto nodeId2 = addNode(triNode2);
+
+	auto node = getNode(nodeId1);
+
+	getNeighbourNodeId(nodeId1);
+
+	linkNodes(nodeId1, nodeId2);
 }
 
 Zephyr::Algorithm::TriDualGraph::~TriDualGraph()

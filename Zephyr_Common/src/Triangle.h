@@ -9,7 +9,7 @@ namespace Zephyr
 	{
 		struct Triangle
 		{
-			Triangle(const Point& p0, const Point p1, const Point& p2);
+			Triangle(const Point p0 = Point(), const Point p1 = Point(), const Point p2 = Point());
 
 			Vector3f getNormal() const;
 			Point getVertex(const int i) const;

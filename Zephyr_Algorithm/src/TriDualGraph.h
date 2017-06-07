@@ -13,12 +13,12 @@ namespace Zephyr
 		struct TriEdge;
 		struct TriNode : public Common::Triangle
 		{
-			std::vector<TriEdge> edges;
+			TriNode() : Triangle() {}
 		};
 
 		struct TriEdge : public Common::Line
 		{
-			std::vector<TriNode> nodes;
+			TriEdge() : Line() {}
 		};
 
 		// specialization of iDualGraph
@@ -27,9 +27,6 @@ namespace Zephyr
 		public:
 			TriDualGraph();
 			virtual ~TriDualGraph();
-
-			std::vector<Node> mNodes;
-			std::vector<Edge> mEdges;
 		};
 	}
 }
