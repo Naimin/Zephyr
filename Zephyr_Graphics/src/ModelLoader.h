@@ -13,7 +13,7 @@ namespace Zephyr
 	namespace Graphics
 	{
 
-		class ModelLoader
+		class ZEPHYR_GRAPHICS_API ModelLoader
 		{
 			public:
 				ModelLoader();

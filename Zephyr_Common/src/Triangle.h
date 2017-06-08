@@ -7,12 +7,13 @@ namespace Zephyr
 {
 	namespace Common
 	{
-		struct Triangle
+		struct ZEPHYR_COMMON_API Triangle
 		{
-			Triangle(const Point p0 = Point(), const Point p1 = Point(), const Point p2 = Point());
+			Triangle(Point p0 = Point(), Point p1 = Point(), Point p2 = Point());
 
-			Vector3f getNormal() const;
 			Point getVertex(const int i) const;
+			Vector3f computeNormal() const;
+			Vector3f computeNormalNorm() const;
 			float computeArea() const;
 
 			Point mVertex[3];

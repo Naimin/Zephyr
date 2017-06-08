@@ -1,11 +1,23 @@
 #include "Mesh.h"
+#include "Mesh.h"
+#include "Mesh.h"
 
 std::vector<Zephyr::Vertex>& Zephyr::Graphics::Mesh::getVertices()
 {
 	return mVertices;
 }
 
+const std::vector<Zephyr::Vertex>& Zephyr::Graphics::Mesh::getVertices() const
+{
+	return mVertices;
+}
+
 std::vector<unsigned int>& Zephyr::Graphics::Mesh::getIndices()
+{
+	return mIndices;
+}
+
+const std::vector<unsigned int>& Zephyr::Graphics::Mesh::getIndices() const
 {
 	return mIndices;
 }

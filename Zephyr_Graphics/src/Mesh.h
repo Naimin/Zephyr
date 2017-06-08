@@ -12,7 +12,9 @@ namespace Zephyr
 		{
 			public:
 				std::vector<Zephyr::Vertex>& getVertices();
+				const std::vector<Zephyr::Vertex>& getVertices() const;
 				std::vector<unsigned int>& getIndices();
+				const std::vector<unsigned int>& getIndices() const;
 				int getFaceCount() const;
 
 				int mMaterialId;

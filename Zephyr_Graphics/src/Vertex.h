@@ -1,11 +1,11 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include <DirectXMath.h>
+#include "stdfx.h"
 
 namespace Zephyr
 {
-	struct Vertex
+	struct ZEPHYR_GRAPHICS_API Vertex
 	{
 		Vertex();
 		Vertex(float x, float y, float z, float nx, float ny, float nz, float u, float v);

@@ -2,16 +2,11 @@
 
 using namespace Zephyr::Common;
 
-Zephyr::Common::Triangle::Triangle(const Point p0, const Point p1, const Point p2)
+Zephyr::Common::Triangle::Triangle(Point p0, Point p1, Point p2)
 {
 	mVertex[0] = p0;
 	mVertex[1] = p1;
 	mVertex[2] = p2;
-}
-
-Vector3f Zephyr::Common::Triangle::getNormal() const
-{
-	return Vector3f();
 }
 
 Point Zephyr::Common::Triangle::getVertex(const int i) const
@@ -22,11 +17,23 @@ Point Zephyr::Common::Triangle::getVertex(const int i) const
 	return mVertex[i];
 }
 
-float Zephyr::Common::Triangle::computeArea() const
+Vector3f Zephyr::Common::Triangle::computeNormal() const
 {
-	auto e1 = mVertex[0].position - mVertex[1].position;
-	auto e2 = mVertex[0].position - mVertex[2].position;
+	auto e1 = mVertex[1].position - mVertex[0].position;
+	auto e2 = mVertex[2].position - mVertex[0].position;
 	auto cross = e1.cross(e2);
 
+	return cross;
+}
+
+Vector3f Zephyr::Common::Triangle::computeNormalNorm() const
+{
+	auto normal = computeNormal();
+	return normal.normalized();
+}
+
+float Zephyr::Common::Triangle::computeArea() const
+{
+	auto cross = computeNormal();
 	return 0.5f * cross.norm();
 }

@@ -4,7 +4,6 @@
 #include "stdfx.h"
 #include "OM_Mesh.h"
 
-
 namespace Zephyr
 {
 	namespace Algorithm
@@ -15,7 +14,6 @@ namespace Zephyr
 		public:
 			Algorithm();
 			virtual ~Algorithm();
-
 
 
 		};

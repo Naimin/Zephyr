@@ -13,9 +13,12 @@ namespace Zephyr
 		class CommandList;
 		class ResourceManager;
 		// class of renderable model
-		class RenderableModel
+		class ZEPHYR_GRAPHICS_API RenderableModel
 		{
 			public:
+				// HACK
+					RenderableModel(const std::wstring& name) : mpResourceManager(nullptr) {}
+				// HACK end
 				RenderableModel(const std::wstring& name, ResourceManager* pResourceManager);
 				virtual ~RenderableModel();
 

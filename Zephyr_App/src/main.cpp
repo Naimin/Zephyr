@@ -6,6 +6,7 @@
 #include <Zephyr_Graphics.h>
 #include <iostream>
 #include <tchar.h>
+#include <TriDualGraph.h>
 
 using namespace Zephyr;
 
@@ -65,6 +66,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	// is window full screen?
 	bool fullScreen = false;
+
+	Algorithm::TriDualGraph graph;
+	graph.getNeighbourNodeId(1);
 
 	// create window
 	if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))

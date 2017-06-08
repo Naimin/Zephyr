@@ -87,6 +87,9 @@ bool Zephyr::Graphics::RenderableModel::uploadToGPU()
 
 void Zephyr::Graphics::RenderableModel::unloadFromGPU()
 {
+	if (nullptr == mpResourceManager)
+		return;
+
 	std::wstringstream vertexBufferName;
 	vertexBufferName << mName << L"_VB";
 	mpResourceManager->releaseResource(vertexBufferName.str());

@@ -9,7 +9,7 @@ namespace Zephyr
 	namespace Common
 	{
 
-		typedef Eigen::Vector3f Vector3f;
+		 typedef Eigen::Vector3f Vector3f;
 
 	}
 }
