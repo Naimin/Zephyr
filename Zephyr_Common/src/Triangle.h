@@ -9,6 +9,7 @@ namespace Zephyr
 	{
 		struct ZEPHYR_COMMON_API Triangle
 		{
+		public:
 			Triangle(Point p0 = Point(), Point p1 = Point(), Point p2 = Point());
 
 			Point getVertex(const int i) const;

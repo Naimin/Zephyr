@@ -1,6 +1,4 @@
 #include "Mesh.h"
-#include "Mesh.h"
-#include "Mesh.h"
 
 std::vector<Zephyr::Vertex>& Zephyr::Graphics::Mesh::getVertices()
 {

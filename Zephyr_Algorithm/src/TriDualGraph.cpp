@@ -1,8 +1,10 @@
 #include "TriDualGraph.h"
 #include <iostream>
 #include <tbb/parallel_for.h>
+#include <tbb/parallel_for_each.h>
 #include <algorithm>
 #include <ModelLoader.h>
+#include <LNormUtil.h>
 
 using namespace Zephyr::Common;
 using namespace Zephyr::Graphics;
@@ -48,9 +50,13 @@ Zephyr::Algorithm::TriDualGraph::~TriDualGraph()
 void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 {
 	const auto& indices = mesh.getIndices();
-	mVertices = mesh.getVertices();
+	const auto& vertices = mesh.getVertices();
 
 	std::multimap<EdgeIdPair, int> edgesToNodeMap;
+
+	// need to track Max   ||Ni - Nj||
+	//                Edge            Inf
+	float MaxE = 0;
 
 	// create all the Node/Face
 	for (int faceId = 0; faceId < mesh.getFaceCount(); ++faceId)
@@ -61,8 +67,15 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 		index[1] = indices[currentId+1];
 		index[2] = indices[currentId+2];
 
+		auto vertex = vertices[index[0]].pos;
+		auto point0 = Point(vertex.x, vertex.y, vertex.z);
+		vertex = vertices[index[1]].pos;
+		auto point1 = Point(vertex.x, vertex.y, vertex.z);
+		vertex = vertices[index[2]].pos;
+		auto point2 = Point(vertex.x, vertex.y, vertex.z);
+
 		// add the node to the dual graph
-		TriNode triNode(indices[0], indices[1], indices[2]);
+		TriNode triNode(point0, point1, point2);
 		int currentNodeId = addNode(triNode);
 
 		// sort the indices in order, so edge id pair will match
@@ -80,9 +93,57 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 			{
 				int relatedNodeId = relatedNodeItr->second;
 				// link the two node
-				int edgeId = linkNodes(currentNodeId, relatedNodeId);
+				int edgeId = linkNodes(relatedNodeId, currentNodeId);
+
+				if (-1 == edgeId)
+					continue;
+
+				auto& edge = getEdge(edgeId);
+
+				auto& node1 = getNode(currentNodeId);
+				auto normal1 = node1.data.computeNormalNorm();
+				auto& node2 = getNode(relatedNodeId);
+				auto normal2 = node2.data.computeNormalNorm();
+
+				//                 2
+				// -B || Ni - Nj ||
+				//                 Inf
+				const float B = 1.0f;
+				// Ni - Nj
+				auto normalDiff = normal1 - normal2;
+				// 
+				float infNorm = Common::LNormUtil::LInfinityNorm(normalDiff);
+				float infNormSq = infNorm * infNorm;
+				float upperTerm = (-1.0f * B * infNormSq); 
+
+				// need to track Max Edge LInfinityNorm
+				if (MaxE < infNorm)
+					MaxE = infNorm;
+
+				// store the upper term first, later after all the edges is done, we get the lower term (depend on MaxE)
+				edge.data.weight = upperTerm;
 			}
 			edgesToNodeMap.insert(std::make_pair(edgePair, currentNodeId));
 		}
 	}
+
+	// for each edge, compute the actual weight
+	// Actual weight = Exp ( UpperTerm / LowerTerm )
+	// we already have UpperTerm computed above for each edge.data.weight
+	float lowerTerm = MaxE;
+	tbb::parallel_for_each(mEdges.begin(), mEdges.end(), [&](Edge& edge)
+	{
+		edge.data.weight = std::exp(edge.data.weight / lowerTerm);
+	});
+}
+
+std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
+{
+	// Build X
+
+	// Formulate to solver
+
+
+
+	return std::vector<std::vector<int>>();
 }

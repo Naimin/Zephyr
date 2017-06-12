@@ -12,26 +12,17 @@ namespace Zephyr
 	{
 
 		struct TriEdge;
-		struct TriNode
+		struct TriNode : public Common::Triangle
 		{
 			TriNode() {}
-			TriNode(const int v0, const int v1, const int v2)
-			{
-				verticesId[0] = v0;
-				verticesId[1] = v1;
-				verticesId[2] = v2;
-			}
-
-			Common::Vector3f normal;
-			
-			int verticesId[3];
+			TriNode(const Common::Point v0, const Common::Point v1, const Common::Point v2) : Triangle(v0,v1,v2) {}
 		};
 
 		struct TriEdge
 		{
-			TriEdge() { }
+			TriEdge() : weight(-1.0f) { }
 
-			int verticesId[2];
+			float weight; 
 		};
 
 		// specialization of iDualGraph
@@ -43,8 +34,9 @@ namespace Zephyr
 
 			void build(const Graphics::Mesh& mesh);
 
-		private:
-			std::vector<Vertex> mVertices;
+			// return the face id of the in each inStroke segment after passing the user inStrokes (multiple)
+			std::vector<std::vector<int>> segment(const std::vector<std::vector<int>>& inStrokes);
+
 		};
 	}
 }
