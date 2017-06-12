@@ -30,9 +30,15 @@
     <ClInclude Include="src\stdfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\LNormUtil.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Triangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LNormUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

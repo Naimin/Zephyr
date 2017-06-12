@@ -121,11 +121,13 @@
   <ItemGroup>
     <ClInclude Include="src\GeometryMath.h" />
     <ClInclude Include="src\Line.h" />
+    <ClInclude Include="src\LNormUtil.h" />
     <ClInclude Include="src\Point.h" />
     <ClInclude Include="src\stdfx.h" />
     <ClInclude Include="src\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\LNormUtil.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
