@@ -117,8 +117,7 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 				float upperTerm = (-1.0f * B * infNormSq); 
 
 				// need to track Max Edge LInfinityNorm
-				if (MaxE < infNorm)
-					MaxE = infNorm;
+				MaxE = MaxE < infNorm ? infNorm : MaxE;
 
 				// store the upper term first, later after all the edges is done, we get the lower term (depend on MaxE)
 				edge.data.weight = upperTerm;
