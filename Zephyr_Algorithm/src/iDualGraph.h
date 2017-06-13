@@ -35,7 +35,10 @@ namespace Zephyr
 
 			// access both node and edge by id
 			Node& getNode(const int id) { return mNodes[id]; }
+			Node getNode(const int id) const { return mNodes[id]; }
+
 			Edge& getEdge(const int id) { return mEdges[id]; }
+			Edge getEdge(const int id) const { return mEdges[id]; }
 
 			// construction function
 			int addNode(const NodeType& data)
@@ -99,6 +102,18 @@ namespace Zephyr
 						if (nodeId != id)
 							neighbour.push_back(nodeId);
 					}
+				}
+				return neighbour;
+			}
+
+			std::vector<Edge> getNeighbourEdges(const int id) const
+			{
+				const Node& currentNode = mNodes[id];
+
+				std::vector<Edge> neighbour;
+				for (auto edgeId : currentNode.edgeIds)
+				{
+					neighbour.push_back(getEdge(edgeId));
 				}
 				return neighbour;
 			}

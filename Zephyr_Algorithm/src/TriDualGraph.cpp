@@ -2,6 +2,7 @@
 #include <iostream>
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_for_each.h>
+#include <tbb/blocked_range2d.h>
 #include <algorithm>
 #include <ModelLoader.h>
 #include <LNormUtil.h>
@@ -138,7 +139,93 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 
 std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
 {
+	// Data Term
 	// Build X
+	int numOfNode = (int)mNodes.size(); // n
+	int numOfStrokes = (int)inStrokes.size(); // K
+
+	// X = n X K // label matrix
+	std::vector<std::vector<float>> X(numOfNode);
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	{
+		X[i].resize(numOfStrokes);
+	});
+
+	// for each stroke, find the corresponding Xi and mark it
+	tbb::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
+	{
+		auto& stroke = inStrokes[strokeId];
+		tbb::parallel_for(0, (int)stroke.size(), [&](const int nodeId)
+		{
+			X[nodeId][strokeId] = 1.0f; // mark the label vector
+		});
+	});
+
+	// Propogation Term
+	// build L
+	// L = D - W
+
+	// D
+	std::vector<std::vector<float>> D(numOfNode);
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	{
+		D[i].resize(numOfNode);
+		
+		// summation of adjacency weight
+		auto pEdges = getNeighbourEdges(i);
+
+		float weight = 0;
+		for (auto edge : pEdges)
+		{
+			weight += edge.data.weight;
+		}
+
+		// diagonal matrix
+		D[i][i] = weight;
+	});
+	
+	// W
+	std::vector<std::vector<float>> W(numOfNode);
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	{
+		W[i].resize(numOfNode);
+	});
+
+	tbb::parallel_for(0, (int)mEdges.size(), [&](const int edgeId)
+	{
+		auto edge = getEdge(edgeId);
+
+		auto f1 = edge.nodeIds[0];
+		auto f2 = edge.nodeIds[1];
+
+		// W   = w    if (fi, fj) in E
+		//  ij    ij
+		W[f1][f2] = edge.data.weight;
+		// symmetry of the edge
+		W[f2][f1] = edge.data.weight;
+	});
+
+	// L
+	// L = D - W
+	std::vector<std::vector<float>> L(numOfNode);
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	{
+		L[i].resize(numOfNode);
+
+		tbb::parallel_for(tbb::blocked_range2d<int, int>(0, numOfNode, 0, numOfNode), [&](const tbb::blocked_range2d<int, int>& r)
+		{
+			for (int x = r.rows().begin(); x != r.rows().end(); ++x)
+			{
+				for (int y = r.cols().begin(); y != r.cols().end(); ++y)
+				{
+					L[x][y] = D[x][y] - W[x][y];
+				}
+			}
+		});
+	});
+
+	// Gradient Term
+	// Build S
 
 	// Formulate to solver
 
