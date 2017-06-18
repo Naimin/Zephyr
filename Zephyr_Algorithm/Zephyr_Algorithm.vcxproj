@@ -42,6 +42,8 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseILP64Interfaces>true</UseILP64Interfaces>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -49,6 +51,8 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseILP64Interfaces>false</UseILP64Interfaces>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -86,17 +90,21 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCored.lib;..\thirdparty\openmesh\lib\OpenMeshToolsd.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCored.lib;..\thirdparty\openmesh\lib\OpenMeshToolsd.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib;..\thirdparty\LAPACK\lib\libblas.lib;..\thirdparty\LAPACK\lib\liblapack.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCored.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCored.dll"
-copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshToolsd.dll"</Command>
+copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshToolsd.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libgfortran-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgfortran-3.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libgcc_s_sjlj-1.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgcc_s_sjlj-1.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libquadmath-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libquadmath-0.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -115,24 +123,29 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platfor
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCore.lib;..\thirdparty\openmesh\lib\OpenMeshTools.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCore.lib;..\thirdparty\openmesh\lib\OpenMeshTools.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCore.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCore.dll"
-copy /Y "..\thirdparty\openmesh\bin\OpenMeshTools.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshTools.dll"</Command>
+copy /Y "..\thirdparty\openmesh\bin\OpenMeshTools.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshTools.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libgfortran-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgfortran-3.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libgcc_s_sjlj-1.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgcc_s_sjlj-1.dll"
+copy /Y "..\thirdparty\LAPACK\bin\libquadmath-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libquadmath-0.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
