@@ -16,6 +16,8 @@ namespace Zephyr
 		{
 			TriNode() {}
 			TriNode(const Common::Point v0, const Common::Point v1, const Common::Point v2) : Triangle(v0,v1,v2) {}
+
+			int label;
 		};
 
 		struct TriEdge
@@ -35,7 +37,7 @@ namespace Zephyr
 			void build(const Graphics::Mesh& mesh);
 
 			// return the face id of the in each inStroke segment after passing the user inStrokes (multiple)
-			std::vector<std::vector<int>> segment(const std::vector<std::vector<int>>& inStrokes);
+			void segment(const std::vector<std::vector<int>>& inStrokes);
 
 		};
 	}

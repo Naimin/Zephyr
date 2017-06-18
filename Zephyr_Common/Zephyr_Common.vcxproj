@@ -93,6 +93,9 @@
     <Link>
       <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "..\thirdparty\openmp\bin\libiomp5md.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libiomp5md.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -125,6 +128,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "..\thirdparty\openmp\bin\libiomp5md.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libiomp5md.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\GeometryMath.h" />

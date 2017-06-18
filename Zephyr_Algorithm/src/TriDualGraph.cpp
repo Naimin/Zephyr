@@ -1,9 +1,15 @@
 #include "TriDualGraph.h"
 #include <iostream>
+
+#define TBB_PREVIEW_SERIAL_SUBSET 1
 #include <tbb/parallel_for.h>
+
 #include <tbb/parallel_for_each.h>
 #include <tbb/blocked_range2d.h>
+#include <tbb/concurrent_vector.h>
 #include <Eigen/SparseCholesky>
+#include <Eigen/CholmodSupport>
+#include <Eigen/SparseLU>
 #include <algorithm>
 #include <ModelLoader.h>
 #include <LNormUtil.h>
@@ -12,9 +18,19 @@
 using namespace Zephyr::Common;
 using namespace Zephyr::Graphics;
 
+#define DENSE 1
+
+#ifdef DENSE
+	typedef Eigen::MatrixXd matrix;
+#else
+	typedef Eigen::SparseMatrix<double> matrix;
+#endif
+	typedef Eigen::Triplet<double> triplet;
+
 Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 {
 	ModelLoader loader;
+	//auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
 	auto filePath = "..\\model\\bunny.obj";
 	std::shared_ptr<RenderableModel> mpModel(new RenderableModel(L"bunny"));
 	mpModel->loadFromFile(filePath);
@@ -27,18 +43,30 @@ Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 
 	std::vector<std::vector<int>> input;
 	input.push_back(std::vector<int>());
-	input.back().push_back(100);
-	input.back().push_back(101);
-	input.back().push_back(102);
-	input.back().push_back(103);
+	input.back().push_back(5);
+	/*input.back().push_back(2);
+	input.back().push_back(3);
+	input.back().push_back(4);*/
 
 	input.push_back(std::vector<int>());
-	input.back().push_back(1000);
-	input.back().push_back(1001);
-	input.back().push_back(1002);
-	input.back().push_back(1003);
+	input.back().push_back(7);
+	/*input.back().push_back(101);
+	input.back().push_back(102);
+	input.back().push_back(103);*/
 
-	auto res = segment(input);
+	input.push_back(std::vector<int>());
+	input.back().push_back(10);
+	/*input.back().push_back(2001);
+	input.back().push_back(2002);
+	input.back().push_back(2003);*/
+
+	input.push_back(std::vector<int>());
+	input.back().push_back(15);
+	/*input.back().push_back(3001);
+	input.back().push_back(3002);
+	input.back().push_back(3003);*/
+
+	segment(input);
 
 	/*
 	Triangle tri(Point(1.0f,1.0f,1.0f), Point(2.0f,2.0f,2.0f), Point(0.0f,0.0f,0.0f));
@@ -154,7 +182,7 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 	});
 }
 
-std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
+void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
 {
 	// Data Term
 	// Build X
@@ -162,31 +190,60 @@ std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std
 	int numOfStrokes = (int)inStrokes.size(); // K
 
 	// X = n X K // label matrix
-	Eigen::MatrixXf X(numOfNode, numOfStrokes);
+	matrix X(numOfNode, numOfStrokes);
+	X.setZero();
+	tbb::concurrent_vector<triplet> XCoef;
 	// Ip =  Ip(fi,fi)  =  1 if fi is marked by any label.
-	Eigen::MatrixXf Ip(numOfNode, numOfNode);
+	matrix Ip(numOfNode, numOfNode);
+	Ip.setZero();
+	tbb::concurrent_vector<triplet> IpCoef;
 	// Xc = label vector
-	Eigen::MatrixXf Xc(numOfStrokes, numOfStrokes);
+	matrix Xc(numOfStrokes, numOfStrokes);
+	Xc.setIdentity();
+	tbb::concurrent_vector<triplet> XcCoef;
 
 	// for each stroke, find the corresponding Xi and mark it
-	tbb::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
+	//tbb::serial::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
+	for (int strokeId = 0; strokeId < (int)inStrokes.size(); ++strokeId)
 	{
 		auto& stroke = inStrokes[strokeId];
-		tbb::parallel_for(0, (int)stroke.size(), [&](const int nodeId)
+		//tbb::serial::parallel_for(0, (int)stroke.size(), [&](const int nodeId)
+		for (int nodeId = 0; nodeId < (int)stroke.size(); ++nodeId)
 		{
-			X(nodeId,strokeId) = 1.0f; // mark the label vector
-			Ip(nodeId, nodeId) = 1.0f; // set the Ip matrix
-		});
-		Xc(strokeId, strokeId);
-	});
+#ifdef DENSE
+			X(nodeId, strokeId) = 1.0;
+			Ip(nodeId, nodeId) = 1.0;
+#else
+			XCoef.push_back(triplet(nodeId, strokeId, 1.0)); // mark the label vector
+			IpCoef.push_back(triplet(nodeId, nodeId, 1.0)); // set the Ip matrix
+#endif	
+		}//);
+#ifdef DENSE
+		//Xc(strokeId, strokeId) = 1.0;
+#else
+		XcCoef.push_back(triplet(strokeId, strokeId, 1.0));
+#endif
+	}//);
+#ifndef DENSE
+	X.setFromTriplets(XCoef.begin(), XCoef.end());
+	XCoef.clear();
+	Ip.setFromTriplets(IpCoef.begin(), IpCoef.end());
+	IpCoef.clear();
+	Xc.setFromTriplets(XcCoef.begin(), XcCoef.end());
+	XcCoef.clear();
+#endif
+	//std::cout << Xc << std::endl;
 
 	// Propogation Term
 	// build L
 	// L = D - W
 
 	// D
-	Eigen::MatrixXf D(numOfNode, numOfNode);
-	tbb::parallel_for(0, numOfNode, [&](const int i)
+	matrix D(numOfNode, numOfNode);
+	D.setZero();
+	tbb::concurrent_vector<triplet> DCoef;
+	//tbb::serial::parallel_for(0, numOfNode, [&](const int i)
+	for (int i = 0; i < numOfNode; ++i)
 	{
 		// summation of adjacency weight
 		auto pEdges = getNeighbourEdges(i);
@@ -198,13 +255,24 @@ std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std
 		}
 
 		// diagonal matrix
-		D(i,i) = weight;
-	});
-	
-	// W, weighted adjacency matrix
-	Eigen::MatrixXf W(numOfNode, numOfNode);
+#ifdef DENSE	
+		D(i, i) = weight;
+#else		
+		DCoef.push_back(triplet(i, i, weight));
+#endif
+	}//);
+#ifndef DENSE
+	D.setFromTriplets(DCoef.begin(), DCoef.end());
+	DCoef.clear();
+#endif
+	//std::cout << D;
 
-	tbb::parallel_for(0, (int)mEdges.size(), [&](const int edgeId)
+	// W, weighted adjacency matrix
+	matrix W(numOfNode, numOfNode);
+	W.setZero();
+	tbb::concurrent_vector<triplet> WCoef;
+	//tbb::serial::parallel_for(0, (int)mEdges.size(), [&](const int edgeId)
+	for (int edgeId = 0; edgeId < (int)mEdges.size(); ++edgeId)
 	{
 		auto edge = getEdge(edgeId);
 
@@ -213,53 +281,100 @@ std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std
 
 		// W   = w    if (fi, fj) in E
 		//  ij    ij
-		W(f1,f2) = edge.data.weight;
+#ifdef DENSE
+		W(f2, f1) = edge.data.weight;
+		W(f1, f2) = edge.data.weight;
+#else
+		WCoef.push_back(triplet(f1, f2, edge.data.weight));
 		// symmetry of the edge
-		W(f2,f1) = edge.data.weight;
-	});
+		WCoef.push_back(triplet(f2, f1, edge.data.weight));
+#endif
+	}//);
+#ifndef DENSE
+	W.setFromTriplets(WCoef.begin(), WCoef.end());
+	WCoef.clear();
+#endif
 
 	// L
 	// L = D - W
-	Eigen::MatrixXf L(numOfNode, numOfNode);
-	tbb::parallel_for(tbb::blocked_range2d<int, int>(0, numOfNode, 0, numOfNode), [&](const tbb::blocked_range2d<int, int>& r)
+	int c = 0;
+	matrix L(numOfNode, numOfNode);
+	L.setZero();
+	tbb::concurrent_vector<triplet> LCoef;
+	tbb::blocked_range2d<int, int> r(0, numOfNode, 0, numOfNode);
+	//tbb::serial::parallel_for(tbb::blocked_range2d<int, int>(0, numOfNode, 0, numOfNode), [&](const tbb::blocked_range2d<int, int>& r)
 	{
 		for (int x = r.rows().begin(); x != r.rows().end(); ++x)
 		{
 			for (int y = r.cols().begin(); y != r.cols().end(); ++y)
 			{
-				L(x,y) = D(x,y) - W(x,y);
+#ifdef DENSE
+				L(x, y) = D(x, y) - W(x, y);
+#else
+				LCoef.push_back(triplet(x, y, D.coeff(x, y) - W.coeff(x, y)));
+#endif
 			}
 		}
-	});
+	}//);
+#ifndef DENSE
+	L.setFromTriplets(LCoef.begin(), LCoef.end());
+	LCoef.clear();
+#endif
 
 	// Gradient Term
 	// Build S
-	Eigen::MatrixXf S(numOfNode, numOfNode);
-	S = S.Identity(numOfNode, numOfNode); // make identity
+	matrix S(numOfNode, numOfNode);
+	tbb::concurrent_vector<triplet> SCoef;
+	S.setIdentity(); // make identity
 
 	// mark each edge as -1.0f
-	tbb::parallel_for(0, (int)mEdges.size(), [&](const int i)
+	//tbb::serial::parallel_for(0, (int)mEdges.size(), [&](const int i)
+	for (int i = 0; i < (int)mEdges.size(); ++i)
 	{
 		auto& edge = getEdge(i);
 
-		auto node0 = edge.nodeIds[0];
-		auto node1 = edge.nodeIds[1];
+		auto f1 = edge.nodeIds[0];
+		auto f2 = edge.nodeIds[1];
 
-		S(node0, node1) = -1.0f;
-		S(node1, node0) = -1.0f;
-	});
-	
+#ifdef DENSE
+		S(f1, f2) = -1.0;
+		S(f2, f1) = -1.0;
+#else
+		SCoef.push_back(triplet(f1, f2, -1.0));
+		SCoef.push_back(triplet(f2, f1, -1.0));
+#endif
+	}//);
+#ifndef DENSE
+	S.setFromTriplets(SCoef.begin(), SCoef.end());
+	SCoef.clear();
+#endif
+
 	// Build B
 	// For each face that is labeled assign Xc(strokeId)
-	Eigen::MatrixXf B(numOfNode, numOfStrokes);
-	tbb::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
+	matrix B(numOfNode, numOfStrokes);
+	B.setZero();
+	tbb::concurrent_vector<triplet> BCoef;
+	//tbb::serial::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
+	for (int strokeId = 0; strokeId < (int)inStrokes.size(); ++strokeId)
 	{
 		auto& stroke = inStrokes[strokeId];
-		tbb::parallel_for(0, (int)stroke.size(), [&](const int nodeId)
+		//tbb::serial::parallel_for(0, (int)stroke.size(), [&](const int nodeId)
+		for (auto nodeId : stroke)
 		{
-			B(nodeId) += Xc(strokeId); // += for case where the stroke share a same face
-		});
-	});
+			for (int k = 0; k < numOfStrokes; ++k)
+			{
+#ifdef DENSE
+				B(nodeId, k) = Xc(strokeId, k);
+#else
+				BCoef.push_back(triplet(nodeId, k, Xc.coeff(strokeId, k)));
+#endif			
+			}
+		}//);
+	}//);
+#ifndef DENSE
+	B.setFromTriplets(BCoef.begin(), BCoef.end());
+	BCoef.clear();
+#endif
 
 	// Formulate to solver
 	// solve (Ip + L^2 + 2S^2)X = B
@@ -267,19 +382,70 @@ std::vector<std::vector<int>> Zephyr::Algorithm::TriDualGraph::segment(const std
 	auto SSq = S * S;
 	auto twoSSq = 2 * SSq;
 
-	auto A = Ip + LSq + twoSSq;
+	auto A = (Ip + LSq + twoSSq).eval();
 
-	//Eigen::SimplicialCholesky<Eigen::MatrixXf> chol(A);
+	std::cout << "Size of A : " << A.rows() << " X " << A.cols() << std::endl;
+	std::cout << "Size of X : " << X.rows() << " X " << X.cols() << std::endl;
+	std::cout << "Size of B : " << B.rows() << " X " << B.cols() << std::endl;
 
-	//std::cout << A << std::endl;
 	//std::cout << B << std::endl;
-	std::cout << "Solving..." << std::endl;
+
+	std::cout << "Building Cholesky... ";
 	auto time = std::clock();
-	//auto resultX = chol.solve(B);
-	std::cout << (std::clock() - time) / CLOCKS_PER_SEC << " Secs" << std::endl;
 
-	//std::cout << resultX.size() << std::endl;
-	//std::cout << resultX;
+#ifdef DENSE
+	Eigen::SparseMatrix<double> sparse = A.sparseView();
+#else
+	Eigen::SparseMatrix<double> sparse = A;
+#endif
 
-	return std::vector<std::vector<int>>();
+	Eigen::CholmodDecomposition<Eigen::SparseMatrix<double>> chol;
+	chol.analyzePattern(sparse);
+	chol.factorize(sparse);
+
+	std::cout << "Done in " << (std::clock() - time) / CLOCKS_PER_SEC << " Secs" << std::endl;
+
+	std::cout << "Solving... ";
+	time = std::clock();
+
+	auto solveX = chol.solve(B);
+	std::cout << "Done in " << (std::clock() - time) / CLOCKS_PER_SEC << " Secs" << std::endl;
+
+	// evaluate the final result
+	auto eval = solveX.eval();
+
+	std::cout << eval.rows() << " X " << eval.cols() << std::endl;
+	//std::cout << eval;
+
+	std::cout << "Segmenting... ";
+	time = std::clock();
+
+	// Label the result
+	std::vector<std::vector<int>> segment(numOfStrokes);
+
+	std::vector<tbb::atomic<int>> segmentCounters(numOfStrokes);
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	//for (int i = 0; i < numOfNode; ++i)
+	{
+		double max = 0;
+		int maxId = -1;
+
+		for (int k = 0; k < numOfStrokes; ++k)
+		{
+			double value = std::abs(eval(i, k));
+			maxId = value > max ? k : maxId;
+			max = std::max(value, max);
+		}
+
+		mNodes[i].data.label = maxId;
+		segmentCounters[maxId].fetch_and_increment();
+	});
+	std::cout << "Done in " << (std::clock() - time) / CLOCKS_PER_SEC << " Secs" << std::endl;
+
+	for (int k = 0; k < numOfStrokes; ++k)
+	{
+		std::cout << segmentCounters[k] << std::endl;
+	}
+
+	
 }
