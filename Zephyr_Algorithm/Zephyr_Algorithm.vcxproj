@@ -102,9 +102,7 @@
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCored.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCored.dll"
 copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshToolsd.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libgfortran-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgfortran-3.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libgcc_s_sjlj-1.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgcc_s_sjlj-1.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libquadmath-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libquadmath-0.dll"</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,9 +141,7 @@ copy /Y "..\thirdparty\LAPACK\bin\libquadmath-0.dll" "$(SolutionDir)$(Platform)\
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCore.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCore.dll"
 copy /Y "..\thirdparty\openmesh\bin\OpenMeshTools.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshTools.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libgfortran-3.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgfortran-3.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libgcc_s_sjlj-1.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libgcc_s_sjlj-1.dll"
-copy /Y "..\thirdparty\LAPACK\bin\libquadmath-0.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libquadmath-0.dll"</Command>
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

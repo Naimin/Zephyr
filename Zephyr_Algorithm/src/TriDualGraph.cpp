@@ -1,7 +1,6 @@
 #include "TriDualGraph.h"
 #include <iostream>
 
-#define TBB_PREVIEW_SERIAL_SUBSET 1
 #include <tbb/parallel_for.h>
 
 #include <tbb/parallel_for_each.h>
@@ -432,7 +431,11 @@ void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>
 
 		for (int k = 0; k < numOfStrokes; ++k)
 		{
+#ifdef DENSE
 			double value = std::abs(eval(i, k));
+#else
+			double value = std::abs(eval.coeff(i, k));
+#endif
 			maxId = value > max ? k : maxId;
 			max = std::max(value, max);
 		}
@@ -446,6 +449,4 @@ void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>
 	{
 		std::cout << segmentCounters[k] << std::endl;
 	}
-
-	
 }
