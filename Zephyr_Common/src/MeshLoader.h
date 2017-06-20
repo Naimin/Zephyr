@@ -14,11 +14,11 @@ namespace Zephyr
 	{
 		class ZEPHYR_COMMON_API MeshLoader
 		{
-			MeshLoader();
-			virtual ~MeshLoader();
+			public:
+				MeshLoader();
+				virtual ~MeshLoader();
 
-			static bool loadFile(const std::string& path, Model* pModel);
-
+				static bool loadFile(const std::string& path, Model* pModel);
 		};
 	}
 }

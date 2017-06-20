@@ -10,12 +10,13 @@
 #include <Eigen/CholmodSupport>
 #include <Eigen/SparseLU>
 #include <algorithm>
-#include <ModelLoader.h>
 #include <LNormUtil.h>
 #include <ctime>
 
+#include <MeshLoader.h>
+
 using namespace Zephyr::Common;
-using namespace Zephyr::Graphics;
+//using namespace Zephyr::Graphics;
 
 #define DENSE 1
 
@@ -28,13 +29,16 @@ using namespace Zephyr::Graphics;
 
 Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 {
-	ModelLoader loader;
+	//ModelLoader loader;
 	//auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
 	auto filePath = "..\\model\\bunny.obj";
-	std::shared_ptr<RenderableModel> mpModel(new RenderableModel(L"bunny"));
-	mpModel->loadFromFile(filePath);
+	//std::shared_ptr<RenderableModel> mpModel(new RenderableModel(L"bunny"));
+	//mpModel->loadFromFile(filePath);
 
-	auto mesh = mpModel->getMesh(0);
+	Common::Model model;
+	Common::MeshLoader::loadFile(filePath, &model);
+
+	auto mesh = model.getMesh(0);
 
 	build(mesh);
 
@@ -92,7 +96,7 @@ Zephyr::Algorithm::TriDualGraph::~TriDualGraph()
 }
 
 
-void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
+void Zephyr::Algorithm::TriDualGraph::build(const Common::Mesh & mesh)
 {
 	const auto& indices = mesh.getIndices();
 	const auto& vertices = mesh.getVertices();
@@ -113,11 +117,11 @@ void Zephyr::Algorithm::TriDualGraph::build(const Graphics::Mesh & mesh)
 		index[2] = indices[currentId+2];
 
 		auto vertex = vertices[index[0]].pos;
-		auto point0 = Point(vertex.x, vertex.y, vertex.z);
+		auto point0 = Point(vertex.x(), vertex.y(), vertex.z());
 		vertex = vertices[index[1]].pos;
-		auto point1 = Point(vertex.x, vertex.y, vertex.z);
+		auto point1 = Point(vertex.x(), vertex.y(), vertex.z());
 		vertex = vertices[index[2]].pos;
-		auto point2 = Point(vertex.x, vertex.y, vertex.z);
+		auto point2 = Point(vertex.x(), vertex.y(), vertex.z());
 
 		// add the node to the dual graph
 		TriNode triNode(point0, point1, point2);

@@ -22,6 +22,11 @@ const std::vector<Vertex>& Mesh::getVertices() const
 	return mVertices;
 }
 
+int Mesh::getVerticesCount() const
+{
+	return int(mVertices.size());
+}
+
 void Mesh::resizeVertices(const int size)
 {
 	mVertices.resize(size);
@@ -35,6 +40,11 @@ std::vector<int>& Mesh::getIndices()
 const std::vector<int>& Mesh::getIndices() const
 {
 	return mIndices;
+}
+
+int Mesh::getIndicesCount() const
+{
+	return int(mIndices.size());
 }
 
 void Mesh::resizeIndices(const int size)

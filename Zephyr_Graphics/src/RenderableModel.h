@@ -3,7 +3,7 @@
 
 #include "stdfx.h"
 
-#include "Mesh.h"
+#include <Model.h>
 #include "Material.h"
 
 namespace Zephyr
@@ -13,7 +13,7 @@ namespace Zephyr
 		class CommandList;
 		class ResourceManager;
 		// class of renderable model
-		class ZEPHYR_GRAPHICS_API RenderableModel
+		class ZEPHYR_GRAPHICS_API RenderableModel : public Common::Model
 		{
 			public:
 				// HACK
@@ -21,14 +21,6 @@ namespace Zephyr
 				// HACK end
 				RenderableModel(const std::wstring& name, ResourceManager* pResourceManager);
 				virtual ~RenderableModel();
-
-				void addMesh(Mesh& mesh);
-				Mesh& getMesh(const int meshId);
-				int getMeshCount() const;
-
-				void addMaterial(Material& material);
-				Material& getMaterial(const int materialId);
-				int getMaterialCount() const;
 
 				D3D12_VERTEX_BUFFER_VIEW getVertexResourceView(const int meshId);
 				D3D12_INDEX_BUFFER_VIEW getIndexResourceView(const int meshId);
@@ -54,9 +46,6 @@ namespace Zephyr
 				std::wstring mName;
 
 				// each material will have a mesh
-				std::vector<Material> mMaterials;
-				std::vector<Mesh> mMeshes;
-				std::vector<Texture> mTextures;
 				std::vector<ID3D12DescriptorHeap*> mTextureHeap;
 		};
 

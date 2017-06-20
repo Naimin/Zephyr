@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Triangle.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Point.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -56,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="src\Model.h">
       <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Triangle.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

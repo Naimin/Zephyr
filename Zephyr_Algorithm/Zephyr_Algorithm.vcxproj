@@ -90,14 +90,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCored.lib;..\thirdparty\openmesh\lib\OpenMeshToolsd.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib;..\thirdparty\LAPACK\lib\libblas.lib;..\thirdparty\LAPACK\lib\liblapack.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCored.lib;..\thirdparty\openmesh\lib\OpenMeshToolsd.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCored.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCored.dll"
@@ -125,7 +125,7 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platfor
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config\;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -136,7 +136,7 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platfor
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCore.lib;..\thirdparty\openmesh\lib\OpenMeshTools.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\openmesh\lib\OpenMeshCore.lib;..\thirdparty\openmesh\lib\OpenMeshTools.lib;..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies);..\thirdparty\suitespare_4_5_1\lib\libcholmod.lib;..\thirdparty\suitespare_4_5_1\lib\suitesparseconfig.lib;..\thirdparty\suitespare_4_5_1\lib\libccolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcamd.lib;..\thirdparty\suitespare_4_5_1\lib\libcolamd.lib;..\thirdparty\suitespare_4_5_1\lib\libamd.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-1_63.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmesh\bin\OpenMeshCore.dll" "$(SolutionDir)$(Platform)\$(Configuration)\OpenMeshCore.dll"

@@ -161,7 +161,7 @@ void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex)
 	commandList->RSSetScissorRects(1, &mScissorRect); // set the scissor rects
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // set the primitive topology
 
-	for (int i = 0; i < mpModel->getMeshCount(); ++i)
+	for (int i = 0; i < mpModel->getMeshesCount(); ++i)
 	{
 		mpModel->drawMesh(i, mpCommandList);
 	}

@@ -14,11 +14,10 @@ namespace Zephyr
 				Material(const boost::filesystem::path& path);
 				virtual ~Material();
 
-				Texture& getDiffuseTexture();
+				boost::filesystem::path& getPath();
 
 			protected:
 				boost::filesystem::path mPath;
-				Texture mDiffuseTex;
 		};
 	}
 }

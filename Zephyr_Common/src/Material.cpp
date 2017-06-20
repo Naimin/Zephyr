@@ -1,16 +1,18 @@
 #include "Material.h"
 
-Zephyr::Common::Material::Material(const boost::filesystem::path& path) : mPath(path), mDiffuseTex(path)
+using namespace Zephyr::Common;
+
+Material::Material(const boost::filesystem::path& path) : mPath(path)
 {
 
 }
 
-Zephyr::Common::Material::~Material()
+Material::~Material()
 {
 
 }
 
-Zephyr::Common::Texture& Zephyr::Common::Material::getDiffuseTexture()
+boost::filesystem::path& Material::getPath()
 {
-	return mDiffuseTex;
+	return mPath;
 }

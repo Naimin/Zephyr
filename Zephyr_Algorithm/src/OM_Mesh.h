@@ -25,7 +25,7 @@ namespace Zephyr
 			public:
 				OpenMeshMesh();
 				// take in a Zephyr::Graphics::Mesh and build half edge
-				OpenMeshMesh(Graphics::Mesh &mesh);
+				OpenMeshMesh(Common::Mesh &mesh);
 				virtual ~OpenMeshMesh();
 
 			protected:

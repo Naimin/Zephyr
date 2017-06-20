@@ -97,6 +97,7 @@ bool MeshLoader::loadFile(const std::string & path, Model* pModel)
 				Material modelMaterial(textureName);
 
 				pModel->addMaterial(modelMaterial);
+				pModel->addTexture(textureFullPath);
 			}
 			else // already exist
 			{

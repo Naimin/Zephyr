@@ -2,9 +2,12 @@
 #include "ResourceManager.h"
 #include <sstream>
 #include "CommandList.h"
-#include "ModelLoader.h"
 #include "Zephyr_Graphics.h"
 #include "StringUtils.h"
+#include <MeshLoader.h>
+#include <boost/filesystem/path.hpp>
+
+using namespace Zephyr::Common;
 
 Zephyr::Graphics::RenderableModel::RenderableModel(const std::wstring & name, ResourceManager* pResourceManager) : mName(name), mpResourceManager(pResourceManager)
 {
@@ -15,39 +18,9 @@ Zephyr::Graphics::RenderableModel::~RenderableModel()
 	unloadFromGPU();
 }
 
-void Zephyr::Graphics::RenderableModel::addMesh(Mesh & mesh)
-{
-	mMeshes.push_back(mesh);
-}
-
-Zephyr::Graphics::Mesh & Zephyr::Graphics::RenderableModel::getMesh(const int meshId)
-{
-	return mMeshes[meshId];
-}
-
-int Zephyr::Graphics::RenderableModel::getMeshCount() const
-{
-	return (int)mMeshes.size();
-}
-
-void Zephyr::Graphics::RenderableModel::addMaterial(Material & material)
-{
-	mMaterials.push_back(material);
-}
-
-Zephyr::Graphics::Material & Zephyr::Graphics::RenderableModel::getMaterial(const int materialId)
-{
-	return mMaterials[materialId];
-}
-
-int Zephyr::Graphics::RenderableModel::getMaterialCount() const
-{
-	return (int)mMaterials.size();
-}
-
 D3D12_VERTEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getVertexResourceView(const int meshId)
 {
-	return mpResourceManager->getVertexResourceView(getVertexResourceName(meshId), sizeof(Vertex));
+	return mpResourceManager->getVertexResourceView(getVertexResourceName(meshId), sizeof(Common::Vertex));
 }
 
 D3D12_INDEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getIndexResourceView(const int meshId)
@@ -57,7 +30,7 @@ D3D12_INDEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getIndexResourceView(
 
 bool Zephyr::Graphics::RenderableModel::loadFromFile(const std::string & path)
 {
-	return ModelLoader::loadFile(path, this);
+	return Common::MeshLoader::loadFile(path, this);
 }
 
 bool Zephyr::Graphics::RenderableModel::uploadToGPU()
@@ -78,8 +51,6 @@ bool Zephyr::Graphics::RenderableModel::uploadToGPU()
 		auto success = uploadTextureToGPU(i);
 		if (!success)
 			return false;
-
-
 	}
 
 	return true;
@@ -105,7 +76,7 @@ bool Zephyr::Graphics::RenderableModel::drawMesh(const int meshId, SharedPtr<ID3
 		return false;
 
 	auto& mesh = mMeshes[meshId];
-	auto& textureDescriptorHeap = mTextureHeap[mesh.mMaterialId];
+	auto& textureDescriptorHeap = mTextureHeap[mesh.getMaterialId()];
 
 	if (nullptr != textureDescriptorHeap)
 	{
@@ -146,9 +117,9 @@ bool Zephyr::Graphics::RenderableModel::uploadVerticesToGPU(const int meshId)
 
 	auto mesh = mMeshes[meshId];
 	auto vertexResName = getVertexResourceName(meshId);
-	int vertexBufferSize = (int)(mesh.mVertices.size() * sizeof(Vertex));
+	int vertexBufferSize = (int)(mesh.getVerticesCount() * sizeof(Vertex));
 
-	auto success = mpResourceManager->createAndCopyToGPU(vertexResName, vertexBufferSize, &mesh.mVertices[0]);
+	auto success = mpResourceManager->createAndCopyToGPU(vertexResName, vertexBufferSize, &mesh.getVertices()[0]);
 	if (!success)
 		return false;
 	
@@ -162,9 +133,9 @@ bool Zephyr::Graphics::RenderableModel::uploadIndicesToGPU(const int meshId)
 
 	auto mesh = mMeshes[meshId];
 	auto indexResName = getIndexResourceName(meshId);
-	int indexBufferSize = (int)(mesh.mIndices.size() * sizeof(int));
+	int indexBufferSize = (int)(mesh.getIndicesCount() * sizeof(int));
 
-	auto success = mpResourceManager->createAndCopyToGPU(indexResName, indexBufferSize, &mesh.mIndices[0]);
+	auto success = mpResourceManager->createAndCopyToGPU(indexResName, indexBufferSize, &mesh.getIndices()[0]);
 	if (!success)
 		return false;
 
@@ -179,10 +150,10 @@ bool Zephyr::Graphics::RenderableModel::uploadTextureToGPU(const int materialId)
 	mTextureHeap.push_back(nullptr);
 
 	// if null
-	if (mMaterials[materialId].mDiffusePath.empty())
+	if (mMaterials[materialId].getPath().empty())
 		return true;
 
-	Texture texture = Texture(mMaterials[materialId].mDiffusePath);
+	Texture texture = Texture(mMaterials[materialId].getPath());
 	if (!texture.isValid()) // check if the texture load is successful
 		return false;
 
@@ -211,7 +182,7 @@ bool Zephyr::Graphics::RenderableModel::uploadTextureToGPU(const int materialId)
 	//textureUploadBufferSize = (((imageBytesPerRow + 255) & ~255) * (textureDesc.Height - 1)) + imageBytesPerRow;
 	pDevice->GetCopyableFootprints(&mResourceDesc, 0, 1, 0, nullptr, nullptr, nullptr, &textureUploadBufferSize);
 
-	std::wstring wpath = Utils::converter.from_bytes(mMaterials[materialId].mDiffusePath);
+	auto wpath = mMaterials[materialId].getPath().wstring();
 	auto success = mpResourceManager->createTextureAndCopyToGPU(wpath, &mResourceDesc, (int)textureUploadBufferSize, rawData.accessPixels(), rawData.getLine(), rawData.getHeight());
 	if (!success)
 		return false;

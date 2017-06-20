@@ -34,7 +34,7 @@ namespace Zephyr
 			TriDualGraph();
 			virtual ~TriDualGraph();
 
-			void build(const Graphics::Mesh& mesh);
+			void build(const Common::Mesh& mesh);
 
 			// return the face id of the in each inStroke segment after passing the user inStrokes (multiple)
 			void segment(const std::vector<std::vector<int>>& inStrokes);

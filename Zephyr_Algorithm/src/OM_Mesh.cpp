@@ -8,7 +8,7 @@ Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh()
 {
 }
 
-Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Graphics::Mesh & mesh)
+Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Common::Mesh & mesh)
 {
 	auto vertices = mesh.getVertices();
 	
@@ -16,7 +16,7 @@ Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Graphics::Mesh & mesh)
 	for (size_t i = 0; i < vertices.size(); ++i)
 	{
 		auto vertex = vertices[i];
-		mMesh.add_vertex(OpenMesh::Vec3f(vertex.pos.x, vertex.pos.y, vertex.pos.z));
+		mMesh.add_vertex(OpenMesh::Vec3f(vertex.pos.x(), vertex.pos.y(), vertex.pos.z()));
 	}
 
 	auto indices = mesh.getIndices();

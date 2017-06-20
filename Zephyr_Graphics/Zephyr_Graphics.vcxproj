@@ -43,7 +43,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseIntelMKL>Parallel</UseIntelMKL>
-    <UseILP64Interfaces>true</UseILP64Interfaces>
+    <UseILP64Interfaces>false</UseILP64Interfaces>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -74,10 +74,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>..\Zephyr_Common\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\Zephyr_Common\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MKLIncludeDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\Zephyr_Common\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>..\Zephyr_Common\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MKLIncludeDir)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,7 +96,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;EIGEN_USE_MKL_ALL;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\Eigen</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
     </ClCompile>
@@ -134,7 +134,7 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;EIGEN_USE_MKL_ALL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\Eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -162,9 +162,6 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_
     <ClInclude Include="src\CommandList.h" />
     <ClInclude Include="src\CommandQueue.h" />
     <ClInclude Include="src\Fence.h" />
-    <ClInclude Include="src\Material.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\ModelLoader.h" />
     <ClInclude Include="src\Pipeline.h" />
     <ClInclude Include="src\RenderableModel.h" />
     <ClInclude Include="src\Renderer.h" />
@@ -175,8 +172,6 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_
     <ClInclude Include="src\stdfx.h" />
     <ClInclude Include="src\StringUtils.h" />
     <ClInclude Include="src\TestRenderPass.h" />
-    <ClInclude Include="src\Texture.h" />
-    <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\Zephyr_Graphics.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +180,6 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_
     <ClCompile Include="src\CommandList.cpp" />
     <ClCompile Include="src\CommandQueue.cpp" />
     <ClCompile Include="src\Fence.cpp" />
-    <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\ModelLoader.cpp" />
     <ClCompile Include="src\Pipeline.cpp" />
     <ClCompile Include="src\RenderableModel.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -195,8 +187,6 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-1_
     <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\ShaderManager.cpp" />
     <ClCompile Include="src\TestRenderPass.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\Vertex.cpp" />
     <ClCompile Include="src\Zephyr_Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>

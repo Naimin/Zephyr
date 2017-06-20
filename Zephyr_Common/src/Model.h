@@ -41,7 +41,7 @@ namespace Zephyr
 			const std::vector<Texture>& getTextures() const;
 			int getTexturesCount() const;
 
-		private:
+		protected:
 			std::vector<Mesh> mMeshes;
 			std::vector<Material> mMaterials;
 			std::vector<Texture> mTextures;
