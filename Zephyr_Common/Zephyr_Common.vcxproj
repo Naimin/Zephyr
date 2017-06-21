@@ -138,6 +138,7 @@
     <ClInclude Include="src\LNormUtil.h" />
     <ClInclude Include="src\Material.h" />
     <ClInclude Include="src\Mesh.h" />
+    <ClInclude Include="src\MeshExporter.h" />
     <ClInclude Include="src\MeshLoader.h" />
     <ClInclude Include="src\Model.h" />
     <ClInclude Include="src\Point.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="src\LNormUtil.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshExporter.cpp" />
     <ClCompile Include="src\MeshLoader.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Texture.cpp" />

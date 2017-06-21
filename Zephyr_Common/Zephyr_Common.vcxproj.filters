@@ -57,6 +57,9 @@
     <ClInclude Include="src\Triangle.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\MeshExporter.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Triangle.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="src\Model.cpp">
       <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshExporter.cpp">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

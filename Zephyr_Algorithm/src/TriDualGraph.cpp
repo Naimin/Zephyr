@@ -14,6 +14,7 @@
 #include <ctime>
 
 #include <MeshLoader.h>
+#include <MeshExporter.h>
 
 using namespace Zephyr::Common;
 //using namespace Zephyr::Graphics;
@@ -30,8 +31,8 @@ using namespace Zephyr::Common;
 Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 {
 	//ModelLoader loader;
-	//auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
-	auto filePath = "..\\model\\bunny.obj";
+	auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
+	//auto filePath = "..\\model\\bunny.obj";
 	//std::shared_ptr<RenderableModel> mpModel(new RenderableModel(L"bunny"));
 	//mpModel->loadFromFile(filePath);
 
@@ -69,7 +70,9 @@ Zephyr::Algorithm::TriDualGraph::TriDualGraph()
 	input.back().push_back(3002);
 	input.back().push_back(3003);*/
 
-	segment(input);
+	//segment(input);
+
+	MeshExporter::exportMesh("..\\model\\bunny_result.obj", &model);
 
 	/*
 	Triangle tri(Point(1.0f,1.0f,1.0f), Point(2.0f,2.0f,2.0f), Point(0.0f,0.0f,0.0f));
