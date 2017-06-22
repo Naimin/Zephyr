@@ -2,7 +2,12 @@
 
 using namespace Zephyr::Common;
 
-Material::Material(const boost::filesystem::path& path) : mPath(path)
+Material::Material(const boost::filesystem::path& path, std::string name) 
+	: mPath(path), mName(name), 
+	mAmbientColor(Vector3f(0,0,0)),
+	mEmissiveColor(Vector3f(0,0,0)),
+	mDiffuseColor(Vector3f(0,0,0)),
+	mSpecularColor(Vector3f(0,0,0))
 {
 
 }

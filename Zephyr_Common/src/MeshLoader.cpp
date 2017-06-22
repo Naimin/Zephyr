@@ -98,7 +98,9 @@ bool MeshLoader::loadFile(const std::string & path, Model* pModel)
 				materialId = pModel->getMaterialsCount();
 				materialNameToId.insert(std::make_pair(textureName, materialId));
 
-				Material modelMaterial(textureName);
+				aiString materialName;
+				material->Get(AI_MATKEY_NAME, materialName);
+				Material modelMaterial(textureName, materialName.C_Str());
 
 				pModel->addMaterial(modelMaterial);
 				pModel->addTexture(textureFullPath);
@@ -117,9 +119,10 @@ bool MeshLoader::loadFile(const std::string & path, Model* pModel)
 		}
 	}
 
+	auto& meshes = pModel->getMeshes();
 	tbb::parallel_for(0, pModel->getMeshesCount(), [&](const int i)
 	{
-		auto mesh = pModel->getMesh(i);
+		auto& mesh = meshes[i];
 		mesh.setMaterialId(materialIndexRemap[mesh.getMaterialId()]);
 	});
 

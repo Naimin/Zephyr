@@ -68,7 +68,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	bool fullScreen = false;
 
 	Algorithm::TriDualGraph graph;
-	graph.getNeighbourNodeId(1);
 
 	// create window
 	if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))

@@ -11,13 +11,17 @@ namespace Zephyr
 		class ZEPHYR_COMMON_API Material
 		{
 			public:
-				Material(const boost::filesystem::path& path);
+				Material(const boost::filesystem::path& path, std::string name = std::string());
 				virtual ~Material();
 
 				boost::filesystem::path& getPath();
 
-			protected:
+				std::string mName;
 				boost::filesystem::path mPath;
+				Vector3f mAmbientColor;
+				Vector3f mEmissiveColor;
+				Vector3f mDiffuseColor;
+				Vector3f mSpecularColor;
 		};
 	}
 }

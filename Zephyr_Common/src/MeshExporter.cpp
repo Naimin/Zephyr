@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -22,23 +23,59 @@ bool Zephyr::Common::MeshExporter::exportMesh(const std::string & path, Model * 
 {
 	aiScene scene;
 
-	// create the material
+	// create the materials
 	int materialCount = pModel->getMaterialsCount();
+	auto materials = pModel->getMaterials();
 	scene.mMaterials = new aiMaterial*[materialCount];
 	scene.mNumMaterials = materialCount;
-	for (unsigned int materialId = 0; materialId < materialCount; ++materialId)
+
+	boost::filesystem::path outputPath(path);
+	auto outputDirectory = outputPath.parent_path();
+	tbb::parallel_for(0, materialCount, [&](const int materialId)
+	//for (int materialId = 0; materialId < materialCount; ++materialId)
 	{
 		aiMaterial* pMaterial = new aiMaterial();
+		const auto& material = materials[materialId];
+		auto texturePath = material.mPath;
+		
+		pMaterial->AddProperty(&aiString(material.mName), AI_MATKEY_NAME);
+
+		pMaterial->AddProperty(&(material.mAmbientColor), 1, AI_MATKEY_COLOR_AMBIENT);
+		pMaterial->AddProperty(&(material.mEmissiveColor), 1, AI_MATKEY_COLOR_EMISSIVE);
+		pMaterial->AddProperty(&(material.mDiffuseColor), 1, AI_MATKEY_COLOR_DIFFUSE);
+		pMaterial->AddProperty(&(material.mSpecularColor), 1, AI_MATKEY_COLOR_SPECULAR);
+
+		// copy the texture file to the output directory
+		auto textureName = texturePath.filename();
+		auto newTexturePath = outputDirectory;
+		newTexturePath /= textureName;
+
+		// check source texture exist
+		if (boost::filesystem::exists(texturePath))
+		{
+			// copy from source to destination
+			try
+			{
+				boost::filesystem::copy_file(texturePath, newTexturePath, boost::filesystem::copy_option::overwrite_if_exists);
+			}
+			catch(std::exception const& e)
+			{
+				std::cout << e.what() << '\n';
+			}
+			pMaterial->AddProperty(&aiString(newTexturePath.filename().string()), AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0));
+		}
 
 		scene.mMaterials[materialId] = pMaterial;
-	}
+	});
 
+	// create the meshes
 	int meshesCount = pModel->getMeshesCount();
 	scene.mMeshes = new aiMesh*[meshesCount];
 	scene.mNumMeshes = meshesCount;
 
 	// create a root node
 	scene.mRootNode = new aiNode();
+	// need to assign the mesh id into the root node in order for them to be found
 	scene.mRootNode->mMeshes = new unsigned int[meshesCount];
 	for (int i = 0; i < meshesCount; ++i)
 	{
