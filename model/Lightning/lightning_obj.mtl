@@ -9,8 +9,8 @@ newmtl Material__4
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_07.tga
-	map_Kd c001_07.tga
+	map_Ka c001_07.png
+	map_Kd c001_07.png
 
 newmtl Material__5
 	Ns 10.0000
@@ -23,8 +23,8 @@ newmtl Material__5
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_11.tga
-	map_Kd c001_11.tga
+	map_Ka c001_11.png
+	map_Kd c001_11.png
 
 newmtl Material__3
 	Ns 10.0000
@@ -37,8 +37,8 @@ newmtl Material__3
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_05.tga
-	map_Kd c001_05.tga
+	map_Ka c001_05.png
+	map_Kd c001_05.png
 
 newmtl Material__7
 	Ns 10.0000
@@ -51,8 +51,8 @@ newmtl Material__7
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_13.tga
-	map_Kd c001_13.tga
+	map_Ka c001_13.png
+	map_Kd c001_13.png
 
 newmtl Material__6
 	Ns 10.0000
@@ -65,8 +65,8 @@ newmtl Material__6
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_16.tga
-	map_Kd c001_16.tga
+	map_Ka c001_16.png
+	map_Kd c001_16.png
 
 newmtl Material__2
 	Ns 10.0000
@@ -79,8 +79,8 @@ newmtl Material__2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka c001_02.tga
-	map_Kd c001_02.tga
+	map_Ka c001_02.png
+	map_Kd c001_02.png
 
 newmtl Material__25
 	Ns 10.0000
@@ -93,5 +93,5 @@ newmtl Material__25
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka w001_00.tga
-	map_Kd w001_00.tga
+	map_Ka w001_00.png
+	map_Kd w001_00.png
