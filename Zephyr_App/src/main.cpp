@@ -7,6 +7,7 @@
 #include <iostream>
 #include <tchar.h>
 #include <TriDualGraph.h>
+#include <MeshLoader.h>
 
 using namespace Zephyr;
 
@@ -67,7 +68,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	// is window full screen?
 	bool fullScreen = false;
 
-	Algorithm::TriDualGraph graph;
+	auto filePath = "..\\model\\bunny.obj";
+	Common::Model model;
+	Common::MeshLoader::loadFile(filePath, &model);
+
+	auto mesh = model.getMesh(0);
+
+	Algorithm::TriDualGraph graph(&mesh);
+
+	std::vector<std::vector<int>> input;
+	input.push_back(std::vector<int>());
+	input.back().push_back(5);
+	/*input.back().push_back(2);
+	input.back().push_back(3);
+	input.back().push_back(4);*/
+
+	input.push_back(std::vector<int>());
+	input.back().push_back(7);
+	/*input.back().push_back(101);
+	input.back().push_back(102);
+	input.back().push_back(103);*/
+
+	input.push_back(std::vector<int>());
+	input.back().push_back(10);
+	/*input.back().push_back(2001);
+	input.back().push_back(2002);
+	input.back().push_back(2003);*/
+
+	input.push_back(std::vector<int>());
+	input.back().push_back(15);
+	/*input.back().push_back(3001);
+	input.back().push_back(3002);
+	input.back().push_back(3003);*/
+
+	graph.segment(input);
 
 	// create window
 	if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))

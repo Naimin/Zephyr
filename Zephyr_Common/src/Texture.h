@@ -12,6 +12,7 @@ namespace Zephyr
 		class ZEPHYR_COMMON_API Texture
 		{
 			public:
+				Texture();
 				Texture(const boost::filesystem::path& path);
 				virtual ~Texture();
 

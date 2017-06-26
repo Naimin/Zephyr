@@ -37,6 +37,11 @@ const std::vector<Mesh>& Model::getMeshes() const
 	return mMeshes;
 }
 
+void Model::resizeMeshes(const int size)
+{
+	mMeshes.resize(size);
+}
+
 int Model::getMeshesCount() const
 {
 	return int(mMeshes.size());
@@ -67,6 +72,11 @@ const std::vector<Material>& Model::getMaterials() const
 	return mMaterials;
 }
 
+void Model::resizeMaterial(const int size)
+{
+	mMaterials.resize(size);
+}
+
 int Model::getMaterialsCount() const
 {
 	return int(mMaterials.size());
@@ -95,6 +105,11 @@ std::vector<Texture>& Model::getTextures()
 const std::vector<Texture>& Model::getTextures() const
 {
 	return mTextures;
+}
+
+void Model::resizeTexture(const int size)
+{
+	mTextures.resize(size);
 }
 
 int Model::getTexturesCount() const

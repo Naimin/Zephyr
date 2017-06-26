@@ -2,6 +2,7 @@
 #define TRIANGLE_H
 
 #include "Point.h"
+#include "Vertex.h"
 
 namespace Zephyr
 {
@@ -10,14 +11,14 @@ namespace Zephyr
 		struct ZEPHYR_COMMON_API Triangle
 		{
 		public:
-			Triangle(Point p0 = Point(), Point p1 = Point(), Point p2 = Point());
+			Triangle(Vertex p0 = Vertex(), Vertex p1 = Vertex(), Vertex p2 = Vertex());
 
-			Point getVertex(const int i) const;
+			Vertex getVertex(const int i) const;
 			Vector3f computeNormal() const;
 			Vector3f computeNormalNorm() const;
 			float computeArea() const;
 
-			Point mVertex[3];
+			Vertex mVertex[3];
 		};
 	}
 }

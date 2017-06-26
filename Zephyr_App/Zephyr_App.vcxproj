@@ -109,11 +109,12 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4251; 4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\thirdparty\assimp\include; ..\thirdparty\Eigen</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\assimp\include;..\thirdparty\Eigen;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -145,7 +146,7 @@
       <DisableSpecificWarnings>4251; 4996</DisableSpecificWarnings>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>..\thirdparty\assimp\include; ..\thirdparty\Eigen</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\assimp\include;..\thirdparty\Eigen;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
@@ -153,12 +154,15 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zephyr_Algorithm\Zephyr_Algorithm.vcxproj">
       <Project>{7177341d-b995-4404-8b0c-c0aa959092de}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Zephyr_Common\Zephyr_Common.vcxproj">
+      <Project>{8fae23c9-0dc2-4f56-82ab-820cc5296582}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Zephyr_Graphics\Zephyr_Graphics.vcxproj">
       <Project>{5f8e7f7b-e93b-4017-8c61-7194d9aca0c1}</Project>

@@ -45,7 +45,8 @@ bool Zephyr::Graphics::BasicRenderPass::initialize()
 	mpPipelineState->initialize(option);
 	
 	mpModel.reset(new RenderableModel(L"Lightning", mpEngine->getResourceManager().get()));
-	auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
+	//auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
+	auto filePath = "D:\\sandbox\\bunny_result.obj";
 	//auto filePath = "..\\model\\bunny_result.obj";
 	//auto filePath = "..\\model\\cube.obj";
 	auto success = mpModel->loadFromFile(filePath);

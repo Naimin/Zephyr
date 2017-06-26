@@ -11,7 +11,7 @@ namespace Zephyr
 		class ZEPHYR_COMMON_API Material
 		{
 			public:
-				Material(const boost::filesystem::path& path, std::string name = std::string());
+				Material(boost::filesystem::path path = boost::filesystem::path(""), std::string name = std::string());
 				virtual ~Material();
 
 				boost::filesystem::path& getPath();

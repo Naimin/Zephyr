@@ -2,25 +2,29 @@
 
 using namespace Zephyr::Common;
 
-Zephyr::Common::Triangle::Triangle(Point p0, Point p1, Point p2)
+Zephyr::Common::Triangle::Triangle(Vertex p0, Vertex p1, Vertex p2)
 {
 	mVertex[0] = p0;
 	mVertex[1] = p1;
 	mVertex[2] = p2;
 }
 
-Point Zephyr::Common::Triangle::getVertex(const int i) const
+Vertex Zephyr::Common::Triangle::getVertex(const int i) const
 {
 	if (i > 2)
-		return Point(-1.0f,-1.0f,-1.0f);
+		return Vertex(-1.0f,-1.0f,-1.0f);
 
 	return mVertex[i];
 }
 
 Vector3f Zephyr::Common::Triangle::computeNormal() const
 {
-	auto e1 = mVertex[1].position - mVertex[0].position;
-	auto e2 = mVertex[2].position - mVertex[0].position;
+	auto v0 = Vector3f(mVertex[0].pos.x(), mVertex[0].pos.y(), mVertex[0].pos.z());
+	auto v1 = Vector3f(mVertex[1].pos.x(), mVertex[1].pos.y(), mVertex[1].pos.z());
+	auto v2 = Vector3f(mVertex[2].pos.x(), mVertex[2].pos.y(), mVertex[2].pos.z());
+
+	auto e1 = v1 - v0;
+	auto e2 = v2 - v0;
 	auto cross = e1.cross(e2);
 
 	return cross;

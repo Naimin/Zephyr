@@ -98,12 +98,15 @@ bool Zephyr::Common::MeshExporter::exportMesh(const std::string & path, Model * 
 		pMesh->mTextureCoords[0] = new aiVector3D[verticesCount];
 		pMesh->mNumUVComponents[0] = verticesCount;
 
+		pMesh->mColors[0] = new aiColor4D[verticesCount];
+
 		auto vertices = mesh.getVertices();
 		tbb::parallel_for(0, verticesCount, [&](const int i)
 		{
 			auto vertex = vertices[i];
 			pMesh->mVertices[i] = aiVector3D(vertex.pos.x(), vertex.pos.y(), vertex.pos.z());
 			pMesh->mTextureCoords[0][i] = aiVector3D(vertex.uv.x(), vertex.uv.y(), 0);
+			pMesh->mColors[0][i] = aiColor4D(vertex.color.x(), vertex.color.y(), vertex.color.z(), vertex.color.w());
 		});
 
 		// face / index buffer

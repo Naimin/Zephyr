@@ -4,7 +4,7 @@
 #include "iDualGraph.h"
 #include "Triangle.h"
 #include <Line.h>
-#include <Mesh.h>
+#include <Model.h>
 
 namespace Zephyr
 {
@@ -15,7 +15,7 @@ namespace Zephyr
 		struct TriNode : public Common::Triangle
 		{
 			TriNode() {}
-			TriNode(const Common::Point v0, const Common::Point v1, const Common::Point v2) : Triangle(v0,v1,v2) {}
+			TriNode(const Common::Vertex v0, const Common::Vertex v1, const Common::Vertex v2) : Triangle(v0,v1,v2) {}
 
 			int label;
 		};
@@ -31,14 +31,16 @@ namespace Zephyr
 		class ZEPHYR_ALGORITHM_API TriDualGraph : public DualGraph<TriNode, TriEdge>
 		{
 		public:
-			TriDualGraph();
+			TriDualGraph(Common::Mesh* mesh);
 			virtual ~TriDualGraph();
 
 			void build(const Common::Mesh& mesh);
 
 			// return the face id of the in each inStroke segment after passing the user inStrokes (multiple)
-			void segment(const std::vector<std::vector<int>>& inStrokes);
+			Common::Model segment(const std::vector<std::vector<int>>& inStrokes);
 
+		private:
+			Common::Mesh* mpMesh;
 		};
 	}
 }

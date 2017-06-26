@@ -2,7 +2,7 @@
 
 using namespace Zephyr::Common;
 
-Mesh::Mesh()
+Mesh::Mesh() : mMaterialId(-1)
 {
 
 }

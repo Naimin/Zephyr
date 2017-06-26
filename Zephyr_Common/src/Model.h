@@ -22,7 +22,9 @@ namespace Zephyr
 
 			std::vector<Mesh>& getMeshes();
 			const std::vector<Mesh>& getMeshes() const;
+			void resizeMeshes(const int size);
 			int getMeshesCount() const;
+
 			// Material Accessor
 			void addMaterial(Material& material);
 			Material& getMaterial(const int i);
@@ -30,6 +32,7 @@ namespace Zephyr
 			
 			std::vector<Material>& getMaterials();
 			const std::vector<Material>& getMaterials() const;
+			void resizeMaterial(const int size);
 			int getMaterialsCount() const;
 
 			// Texture Accessor
@@ -39,6 +42,7 @@ namespace Zephyr
 
 			std::vector<Texture>& getTextures();
 			const std::vector<Texture>& getTextures() const;
+			void resizeTexture(const int size);
 			int getTexturesCount() const;
 
 		protected:

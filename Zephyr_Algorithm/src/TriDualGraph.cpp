@@ -1,5 +1,6 @@
 #include "TriDualGraph.h"
 #include <iostream>
+#include <sstream>
 
 #include <tbb/parallel_for.h>
 
@@ -28,69 +29,30 @@ using namespace Zephyr::Common;
 #endif
 	typedef Eigen::Triplet<double> triplet;
 
-Zephyr::Algorithm::TriDualGraph::TriDualGraph()
+Zephyr::Algorithm::TriDualGraph::TriDualGraph(Common::Mesh* pMesh) : mpMesh(pMesh)
 {
 	//ModelLoader loader;
-	auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
+	//auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
 	//auto filePath = "..\\model\\bunny.obj";
 	//std::shared_ptr<RenderableModel> mpModel(new RenderableModel(L"bunny"));
 	//mpModel->loadFromFile(filePath);
 
-	Common::Model model;
-	Common::MeshLoader::loadFile(filePath, &model);
+	//Common::Model model;
+	//Common::MeshLoader::loadFile(filePath, &model);
 
-	auto mesh = model.getMesh(0);
+	//auto mesh = model.getMesh(0);
 
-	build(mesh);
+	if (nullptr == mpMesh)
+	{
+		std::cout << "Failed to construct TriDualGraph : no mesh supplied" << std::endl;
+		return;
+	}
 
-	auto result = getNeighbourNodeId(1);
+	build(*pMesh);
 
-	std::vector<std::vector<int>> input;
-	input.push_back(std::vector<int>());
-	input.back().push_back(5);
-	/*input.back().push_back(2);
-	input.back().push_back(3);
-	input.back().push_back(4);*/
+	//Common::Model resultModel;
 
-	input.push_back(std::vector<int>());
-	input.back().push_back(7);
-	/*input.back().push_back(101);
-	input.back().push_back(102);
-	input.back().push_back(103);*/
-
-	input.push_back(std::vector<int>());
-	input.back().push_back(10);
-	/*input.back().push_back(2001);
-	input.back().push_back(2002);
-	input.back().push_back(2003);*/
-
-	input.push_back(std::vector<int>());
-	input.back().push_back(15);
-	/*input.back().push_back(3001);
-	input.back().push_back(3002);
-	input.back().push_back(3003);*/
-
-	//segment(input);
-
-	MeshExporter::exportMesh("..\\model\\bunny_result.obj", &model);
-
-	/*
-	Triangle tri(Point(1.0f,1.0f,1.0f), Point(2.0f,2.0f,2.0f), Point(0.0f,0.0f,0.0f));
-	auto area = tri.computeArea();
-
-	std::cout << area;
-
-	TriNode triNode1, triNode2;
-
-	auto nodeId1 = addNode(triNode1);
-	auto nodeId2 = addNode(triNode2);
-
-	auto node = getNode(nodeId1);
-
-	getNeighbourNodeId(nodeId1);
-
-	linkNodes(nodeId1, nodeId2);
-	*/
+	//MeshExporter::exportMesh("D:\\sandbox\\bunny_result.obj", &model);
 }
 
 Zephyr::Algorithm::TriDualGraph::~TriDualGraph()
@@ -119,12 +81,9 @@ void Zephyr::Algorithm::TriDualGraph::build(const Common::Mesh & mesh)
 		index[1] = indices[currentId+1];
 		index[2] = indices[currentId+2];
 
-		auto vertex = vertices[index[0]].pos;
-		auto point0 = Point(vertex.x(), vertex.y(), vertex.z());
-		vertex = vertices[index[1]].pos;
-		auto point1 = Point(vertex.x(), vertex.y(), vertex.z());
-		vertex = vertices[index[2]].pos;
-		auto point2 = Point(vertex.x(), vertex.y(), vertex.z());
+		auto point0 = vertices[index[0]];
+		auto point1 = vertices[index[1]];
+		auto point2 = vertices[index[2]];
 
 		// add the node to the dual graph
 		TriNode triNode(point0, point1, point2);
@@ -188,7 +147,7 @@ void Zephyr::Algorithm::TriDualGraph::build(const Common::Mesh & mesh)
 	});
 }
 
-void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
+Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
 {
 	// Data Term
 	// Build X
@@ -427,8 +386,6 @@ void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>
 	time = std::clock();
 
 	// Label the result
-	std::vector<std::vector<int>> segment(numOfStrokes);
-
 	std::vector<tbb::atomic<int>> segmentCounters(numOfStrokes);
 	tbb::parallel_for(0, numOfNode, [&](const int i)
 	//for (int i = 0; i < numOfNode; ++i)
@@ -452,8 +409,90 @@ void Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>
 	});
 	std::cout << "Done in " << (std::clock() - time) / CLOCKS_PER_SEC << " Secs" << std::endl;
 
+	// put the segmentation result into segments vector
+	std::vector<tbb::concurrent_vector<int>> segments(numOfStrokes);
 	for (int k = 0; k < numOfStrokes; ++k)
 	{
-		std::cout << segmentCounters[k] << std::endl;
+		//std::cout << segmentCounters[k] << std::endl;
+		segments[k].reserve(segmentCounters[k]);
 	}
+
+	tbb::parallel_for(0, numOfNode, [&](const int i)
+	{
+		auto label = mNodes[i].data.label;
+
+		segments[label].push_back(i);
+	});
+
+	// Debug : print out the segment size
+	for (int k = 0; k < numOfStrokes; ++k)
+	{
+		std::cout << segments[k].size() << std::endl;
+	}
+
+	// Construct the final result model
+	// each label is a mesh
+
+	Model resultModel;
+	resultModel.resizeMeshes(numOfStrokes);
+
+	for (int label = 0; label < numOfStrokes; ++label)
+	{
+		const Vector3f labelColor = Vector3f((float)std::rand() / RAND_MAX, (float)std::rand() / RAND_MAX, (float)std::rand() / RAND_MAX);
+		Material material;
+		material.mDiffuseColor = labelColor;
+
+		std::stringstream ss;
+		ss << label << "_mat";
+		material.mName = ss.str();
+		int currentMaterialId = resultModel.getMaterialsCount();
+		resultModel.addMaterial(material);
+
+		auto& mesh = resultModel.getMesh(label);
+		mesh.setMaterialId(currentMaterialId);
+
+		auto& segment = segments[label];
+
+		std::map<Vertex, int> vertexIdMap;
+
+		// resize the index buffer
+		mesh.resizeIndices((int)segment.size() * 3);
+
+		auto& indices = mesh.getIndices();
+		for (int i = 0; i < (int)segment.size(); ++i)
+		{
+			auto id = segment[i];
+			auto& node = mNodes[id];
+
+			for (int k = 0; k < 3; ++k)
+			{
+				Vertex v = node.data.mVertex[k];
+				// set the label vertex color
+				//v.color = labelColor;
+
+				// check if this vertex already exist
+				auto itr = vertexIdMap.find(v);
+				if (itr == vertexIdMap.end())
+					vertexIdMap[v] = (int)vertexIdMap.size();
+
+				indices[i * 3 + k] = vertexIdMap[v];
+			}
+		}
+
+		// insert the vertex buffer
+		mesh.resizeVertices((int)vertexIdMap.size());
+		auto& vertices = mesh.getVertices();
+		tbb::parallel_for_each(vertexIdMap.begin(), vertexIdMap.end(), [&](const std::pair<Vertex, int>& itr)
+		{
+			vertices[itr.second] = itr.first;
+		});
+	}
+
+	boost::filesystem::path outputPath("D:\\sandbox\\");
+	std::stringstream ss;
+	ss << "result" << ".obj";
+	outputPath /= ss.str();
+	Common::MeshExporter::exportMesh(outputPath.string(), &resultModel);
+
+	return resultModel;
 }

@@ -1,5 +1,10 @@
 #include "Texture.h"
 
+Zephyr::Common::Texture::Texture() : mPath(""), bValid(false)
+{
+
+}
+
 Zephyr::Common::Texture::Texture(const boost::filesystem::path& path) : mPath(path), bValid(false)
 {
 	bValid = loadFromFile(path);
