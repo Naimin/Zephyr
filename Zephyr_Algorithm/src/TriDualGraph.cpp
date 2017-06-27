@@ -1,6 +1,7 @@
 #include "TriDualGraph.h"
 #include <iostream>
 #include <sstream>
+#include <set>
 
 #include <tbb/parallel_for.h>
 
@@ -154,6 +155,8 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	int numOfNode = (int)mNodes.size(); // n
 	int numOfStrokes = (int)inStrokes.size(); // K
 
+	matrix A(numOfNode, numOfNode);
+
 	// X = n X K // label matrix
 	matrix X(numOfNode, numOfStrokes);
 	X.setZero();
@@ -197,6 +200,13 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	Xc.setFromTriplets(XcCoef.begin(), XcCoef.end());
 	XcCoef.clear();
 #endif
+	// accumulate the result
+	A = Ip;
+
+	// clear Ip
+	Ip.resize(0, 0);
+
+
 	//std::cout << Xc << std::endl;
 
 	// Propogation Term
@@ -286,6 +296,14 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	LCoef.clear();
 #endif
 
+	// acummulate into A
+	A += L * L; // get L squared
+
+	// Clear D, W, L
+	D.resize(0, 0);
+	W.resize(0, 0);
+	L.resize(0, 0);
+
 	// Gradient Term
 	// Build S
 	matrix S(numOfNode, numOfNode);
@@ -314,6 +332,10 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	SCoef.clear();
 #endif
 
+	A += 2 * (S * S);
+	
+	S.resize(0, 0);
+
 	// Build B
 	// For each face that is labeled assign Xc(strokeId)
 	matrix B(numOfNode, numOfStrokes);
@@ -341,14 +363,11 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	BCoef.clear();
 #endif
 
+	// clear Xc
+	Xc.resize(0, 0);
+
 	// Formulate to solver
 	// solve (Ip + L^2 + 2S^2)X = B
-	auto LSq = L * L; // get L squared
-	auto SSq = S * S;
-	auto twoSSq = 2 * SSq;
-
-	auto A = (Ip + LSq + twoSSq).eval();
-
 	std::cout << "Size of A : " << A.rows() << " X " << A.cols() << std::endl;
 	std::cout << "Size of X : " << X.rows() << " X " << X.cols() << std::endl;
 	std::cout << "Size of B : " << B.rows() << " X " << B.cols() << std::endl;
@@ -434,13 +453,13 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	// each label is a mesh
 
 	Model resultModel;
-	resultModel.resizeMeshes(numOfStrokes);
+	resultModel.resizeMeshes(numOfStrokes * 2); // give the user selected face a different color
 
 	for (int label = 0; label < numOfStrokes; ++label)
 	{
 		const Vector3f labelColor = Vector3f((float)std::rand() / RAND_MAX, (float)std::rand() / RAND_MAX, (float)std::rand() / RAND_MAX);
 		Material material;
-		material.mDiffuseColor = labelColor;
+		material.mDiffuseColor = labelColor * 0.5;
 
 		std::stringstream ss;
 		ss << label << "_mat";
@@ -451,32 +470,64 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 		auto& mesh = resultModel.getMesh(label);
 		mesh.setMaterialId(currentMaterialId);
 
+		// setup the selected mesh
+		Material selectedMaterial;
+		std::stringstream ss2;
+		ss2 << "selected_" << label << "_mat";
+		selectedMaterial.mName = ss2.str();
+		selectedMaterial.mDiffuseColor = labelColor;
+		currentMaterialId = resultModel.getMaterialsCount();
+		resultModel.addMaterial(selectedMaterial);
+		auto& selectedMesh = resultModel.getMesh(numOfStrokes + label);
+		selectedMesh.setMaterialId(currentMaterialId);
+
+		auto userStrokes = inStrokes[label];
+		std::set<int> strokeSet; // put in a set to speed up search
+		strokeSet.insert(userStrokes.begin(), userStrokes.end());
+
+		int userSelectedFaceCount = (int)userStrokes.size();
+		selectedMesh.resizeIndices(userSelectedFaceCount * 3);
+		auto& selectedIndices = selectedMesh.getIndices();
+
 		auto& segment = segments[label];
 
 		std::map<Vertex, int> vertexIdMap;
+		std::map<Vertex, int> selectedVertexIdMap;
 
 		// resize the index buffer
-		mesh.resizeIndices((int)segment.size() * 3);
+		mesh.resizeIndices(((int)segment.size() - userSelectedFaceCount) * 3);
 
 		auto& indices = mesh.getIndices();
+
+		int index = 0;
+		int selectedIndex = 0;
 		for (int i = 0; i < (int)segment.size(); ++i)
 		{
 			auto id = segment[i];
 			auto& node = mNodes[id];
 
+			// check if this face is user selected or not
+			bool bIsSelected = false;
+			if (strokeSet.find(id) != strokeSet.end())
+				bIsSelected = true;
+
+			int& localIndex = bIsSelected ? selectedIndex : index;
+			auto& localIndices = bIsSelected ? selectedIndices : indices;
+			auto& localVertexIdMap = bIsSelected ? selectedVertexIdMap : vertexIdMap;
 			for (int k = 0; k < 3; ++k)
 			{
-				Vertex v = node.data.mVertex[k];
+				Vertex& v = node.data.mVertex[k];
 				// set the label vertex color
 				//v.color = labelColor;
 
 				// check if this vertex already exist
-				auto itr = vertexIdMap.find(v);
-				if (itr == vertexIdMap.end())
-					vertexIdMap[v] = (int)vertexIdMap.size();
+				auto itr = localVertexIdMap.find(v);
+				if (itr == localVertexIdMap.end())
+					localVertexIdMap.insert(std::make_pair(v,(int)localVertexIdMap.size()));
 
-				indices[i * 3 + k] = vertexIdMap[v];
+				localIndices[localIndex * 3 + k] = localVertexIdMap[v];
 			}
+			++localIndex;
 		}
 
 		// insert the vertex buffer
@@ -486,11 +537,18 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 		{
 			vertices[itr.second] = itr.first;
 		});
+
+		selectedMesh.resizeVertices((int)selectedVertexIdMap.size());
+		auto& selectedVertices = selectedMesh.getVertices();
+		tbb::parallel_for_each(selectedVertexIdMap.begin(), selectedVertexIdMap.end(), [&](const std::pair<Vertex, int>& itr)
+		{
+			selectedVertices[itr.second] = itr.first;
+		});
 	}
 
 	boost::filesystem::path outputPath("D:\\sandbox\\");
 	std::stringstream ss;
-	ss << "result" << ".obj";
+	ss << "result" << "_bunny" << ".obj";
 	outputPath /= ss.str();
 	Common::MeshExporter::exportMesh(outputPath.string(), &resultModel);
 

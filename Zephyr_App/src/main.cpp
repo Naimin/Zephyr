@@ -68,6 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	// is window full screen?
 	bool fullScreen = false;
 
+	//auto filePath = "..\\model\\Armadillo.ply";
 	auto filePath = "..\\model\\bunny.obj";
 	Common::Model model;
 	Common::MeshLoader::loadFile(filePath, &model);
