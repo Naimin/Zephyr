@@ -68,8 +68,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	// is window full screen?
 	bool fullScreen = false;
 
-	//auto filePath = "..\\model\\Armadillo.ply";
-	auto filePath = "..\\model\\bunny.obj";
+	auto filePath = "..\\model\\Armadillo.ply";
+	//auto filePath = "..\\model\\bunny.obj";
 	Common::Model model;
 	Common::MeshLoader::loadFile(filePath, &model);
 
@@ -79,25 +79,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	std::vector<std::vector<int>> input;
 	input.push_back(std::vector<int>());
-	input.back().push_back(5);
+	input.back().push_back(10000);
 	/*input.back().push_back(2);
 	input.back().push_back(3);
 	input.back().push_back(4);*/
 
 	input.push_back(std::vector<int>());
-	input.back().push_back(7);
+	input.back().push_back(1);
 	/*input.back().push_back(101);
 	input.back().push_back(102);
 	input.back().push_back(103);*/
 
 	input.push_back(std::vector<int>());
-	input.back().push_back(10);
+	input.back().push_back(20750);
 	/*input.back().push_back(2001);
 	input.back().push_back(2002);
 	input.back().push_back(2003);*/
 
 	input.push_back(std::vector<int>());
-	input.back().push_back(15);
+	input.back().push_back(5000);
 	/*input.back().push_back(3001);
 	input.back().push_back(3002);
 	input.back().push_back(3003);*/

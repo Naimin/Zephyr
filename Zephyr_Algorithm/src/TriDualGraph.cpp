@@ -21,7 +21,7 @@
 using namespace Zephyr::Common;
 //using namespace Zephyr::Graphics;
 
-#define DENSE 1
+//#define DENSE 1
 
 #ifdef DENSE
 	typedef Eigen::MatrixXd matrix;
@@ -155,20 +155,41 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	int numOfNode = (int)mNodes.size(); // n
 	int numOfStrokes = (int)inStrokes.size(); // K
 
+#ifdef DENSE
 	matrix A(numOfNode, numOfNode);
+#else
+	matrix A(numOfNode, numOfNode);
+#endif
 
 	// X = n X K // label matrix
+#ifdef DENSE
 	matrix X(numOfNode, numOfStrokes);
 	X.setZero();
-	tbb::concurrent_vector<triplet> XCoef;
+#else
+	matrix X(numOfNode, numOfStrokes);
+	//tbb::concurrent_vector<triplet> XCoef;
+	std::vector<triplet> XCoef;
+#endif
+
 	// Ip =  Ip(fi,fi)  =  1 if fi is marked by any label.
+#ifdef DENSE
 	matrix Ip(numOfNode, numOfNode);
 	Ip.setZero();
-	tbb::concurrent_vector<triplet> IpCoef;
+#else
+	matrix Ip(numOfNode, numOfNode);
+	//tbb::concurrent_vector<triplet> IpCoef;
+	std::vector<triplet> IpCoef;
+#endif
+
 	// Xc = label vector
+#ifdef DENSE
 	matrix Xc(numOfStrokes, numOfStrokes);
 	Xc.setIdentity();
-	tbb::concurrent_vector<triplet> XcCoef;
+#else
+	matrix Xc(numOfStrokes, numOfStrokes);
+	//tbb::concurrent_vector<triplet> XcCoef;
+	std::vector<triplet> XcCoef;
+#endif
 
 	// for each stroke, find the corresponding Xi and mark it
 	//tbb::serial::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
@@ -186,9 +207,7 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 			IpCoef.push_back(triplet(nodeId, nodeId, 1.0)); // set the Ip matrix
 #endif	
 		}//);
-#ifdef DENSE
-		//Xc(strokeId, strokeId) = 1.0;
-#else
+#ifndef DENSE
 		XcCoef.push_back(triplet(strokeId, strokeId, 1.0));
 #endif
 	}//);
@@ -214,9 +233,15 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	// L = D - W
 
 	// D
+#ifdef DENSE
 	matrix D(numOfNode, numOfNode);
 	D.setZero();
-	tbb::concurrent_vector<triplet> DCoef;
+#else
+	matrix D(numOfNode, numOfNode);
+	//tbb::concurrent_vector<triplet> DCoeff;
+	std::vector<triplet> DCoeff;
+#endif
+	
 	//tbb::serial::parallel_for(0, numOfNode, [&](const int i)
 	for (int i = 0; i < numOfNode; ++i)
 	{
@@ -233,19 +258,24 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 #ifdef DENSE	
 		D(i, i) = weight;
 #else		
-		DCoef.push_back(triplet(i, i, weight));
+		DCoeff.push_back(triplet(i, i, weight));
 #endif
 	}//);
 #ifndef DENSE
-	D.setFromTriplets(DCoef.begin(), DCoef.end());
-	DCoef.clear();
+	D.setFromTriplets(DCoeff.begin(), DCoeff.end());
+	DCoeff.clear();
 #endif
 	//std::cout << D;
 
 	// W, weighted adjacency matrix
+#ifdef DENSE
 	matrix W(numOfNode, numOfNode);
 	W.setZero();
-	tbb::concurrent_vector<triplet> WCoef;
+#else
+	matrix W(numOfNode, numOfNode);
+	//tbb::concurrent_vector<triplet> WCoef;
+	std::vector<triplet> WCoeff;
+#endif
 	//tbb::serial::parallel_for(0, (int)mEdges.size(), [&](const int edgeId)
 	for (int edgeId = 0; edgeId < (int)mEdges.size(); ++edgeId)
 	{
@@ -260,22 +290,27 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 		W(f2, f1) = edge.data.weight;
 		W(f1, f2) = edge.data.weight;
 #else
-		WCoef.push_back(triplet(f1, f2, edge.data.weight));
+		WCoeff.push_back(triplet(f1, f2, edge.data.weight));
 		// symmetry of the edge
-		WCoef.push_back(triplet(f2, f1, edge.data.weight));
+		WCoeff.push_back(triplet(f2, f1, edge.data.weight));
 #endif
 	}//);
 #ifndef DENSE
-	W.setFromTriplets(WCoef.begin(), WCoef.end());
-	WCoef.clear();
+	W.setFromTriplets(WCoeff.begin(), WCoeff.end());
+	WCoeff.clear();
 #endif
 
 	// L
 	// L = D - W
 	int c = 0;
+#ifdef DENSE
 	matrix L(numOfNode, numOfNode);
 	L.setZero();
-	tbb::concurrent_vector<triplet> LCoef;
+#else
+	matrix L(numOfNode, numOfNode);
+	//tbb::concurrent_vector<triplet> LCoef;
+	std::vector<triplet> LCoeff;
+#endif
 	tbb::blocked_range2d<int, int> r(0, numOfNode, 0, numOfNode);
 	//tbb::serial::parallel_for(tbb::blocked_range2d<int, int>(0, numOfNode, 0, numOfNode), [&](const tbb::blocked_range2d<int, int>& r)
 	{
@@ -284,32 +319,73 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 			for (int y = r.cols().begin(); y != r.cols().end(); ++y)
 			{
 #ifdef DENSE
-				L(x, y) = D(x, y) - W(x, y);
-#else
-				LCoef.push_back(triplet(x, y, D.coeff(x, y) - W.coeff(x, y)));
+				auto d = D(x, y);
+				auto w = W(x, y);
+
+				if (0 != d || 0 != w)
+				{
+					L(x, y) = D(x, y) - W(x, y);
+				}
 #endif
 			}
 		}
 	}//);
+
 #ifndef DENSE
-	L.setFromTriplets(LCoef.begin(), LCoef.end());
-	LCoef.clear();
+	std::set<std::pair<int, int>> nonZeroIndex;
+
+	// find non-zero in D
+	for (int k = 0; k < D.outerSize(); ++k)
+	{
+		for (matrix::InnerIterator it(D, k); it; ++it)
+		{
+			nonZeroIndex.insert(std::make_pair(it.row(), it.col()));
+		}
+	}
+
+	// find non-zero in W
+	for (int k = 0; k < W.outerSize(); ++k)
+	{
+		for (matrix::InnerIterator it(W, k); it; ++it)
+		{
+			nonZeroIndex.insert(std::make_pair(it.row(), it.col()));
+		}
+	}
+
+	for (auto i : nonZeroIndex)
+	{
+		LCoeff.push_back(triplet(i.first, i.second, D.coeff(i.first, i.second) - W.coeff(i.first, i.second)));
+	}
 #endif
+
+#ifndef DENSE
+	L.setFromTriplets(LCoeff.begin(), LCoeff.end());
+	LCoeff.clear();
+#endif
+
+	// Clear D and W
+	D.resize(0, 0);
+	W.resize(0, 0);
 
 	// acummulate into A
 	A += L * L; // get L squared
 
-	// Clear D, W, L
-	D.resize(0, 0);
-	W.resize(0, 0);
+	// Clear L
 	L.resize(0, 0);
 
 	// Gradient Term
 	// Build S
+#ifdef DENSE
 	matrix S(numOfNode, numOfNode);
-	tbb::concurrent_vector<triplet> SCoef;
 	S.setIdentity(); // make identity
-
+#else
+	matrix S(numOfNode, numOfNode);
+	//tbb::concurrent_vector<triplet> SCoef;
+	std::vector<triplet> SCoeff;
+	// set identity
+	S.setIdentity();
+#endif
+	
 	// mark each edge as -1.0f
 	//tbb::serial::parallel_for(0, (int)mEdges.size(), [&](const int i)
 	for (int i = 0; i < (int)mEdges.size(); ++i)
@@ -323,24 +399,30 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 		S(f1, f2) = -1.0;
 		S(f2, f1) = -1.0;
 #else
-		SCoef.push_back(triplet(f1, f2, -1.0));
-		SCoef.push_back(triplet(f2, f1, -1.0));
+		SCoeff.push_back(triplet(f1, f2, -1.0));
+		SCoeff.push_back(triplet(f2, f1, -1.0));
 #endif
 	}//);
 #ifndef DENSE
-	S.setFromTriplets(SCoef.begin(), SCoef.end());
-	SCoef.clear();
+	S.setFromTriplets(SCoeff.begin(), SCoeff.end());
+	SCoeff.clear();
 #endif
 
 	A += 2 * (S * S);
 	
+	// Clear S
 	S.resize(0, 0);
 
 	// Build B
 	// For each face that is labeled assign Xc(strokeId)
+#ifdef DENSE
 	matrix B(numOfNode, numOfStrokes);
 	B.setZero();
-	tbb::concurrent_vector<triplet> BCoef;
+#else
+	matrix B(numOfNode, numOfStrokes);
+	//tbb::concurrent_vector<triplet> BCoef;
+	std::vector<triplet> BCoeff;
+#endif
 	//tbb::serial::parallel_for(0, (int)inStrokes.size(), [&](const int strokeId)
 	for (int strokeId = 0; strokeId < (int)inStrokes.size(); ++strokeId)
 	{
@@ -353,14 +435,14 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 #ifdef DENSE
 				B(nodeId, k) = Xc(strokeId, k);
 #else
-				BCoef.push_back(triplet(nodeId, k, Xc.coeff(strokeId, k)));
+				BCoeff.push_back(triplet(nodeId, k, Xc.coeff(strokeId, k)));
 #endif			
 			}
 		}//);
 	}//);
 #ifndef DENSE
-	B.setFromTriplets(BCoef.begin(), BCoef.end());
-	BCoef.clear();
+	B.setFromTriplets(BCoeff.begin(), BCoeff.end());
+	BCoeff.clear();
 #endif
 
 	// clear Xc
