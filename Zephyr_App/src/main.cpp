@@ -10,11 +10,13 @@
 #include <MeshLoader.h>
 #include "UI.h"
 #include "App.h"
+#include <BasicRenderPass.h>
 
 #include <nana/gui/wvl.hpp> 
 #include <nana/gui/widgets/label.hpp>
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/timer.hpp>
+#include <nana/gui/filebox.hpp>
 
 using namespace Zephyr;
 
@@ -39,15 +41,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	bool fullScreen = false;
 
 	nana::form form(nana::rectangle{ 0, 0, width, height });
+	form.caption(windowTitle);
 
-	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 20 }, nana::form::appear::bald<>());
-	nfm.show();
-
-	nana::button btn(nfm, nana::rectangle{ 0, 0, 100, 20 });
-	btn.caption(L"Exit");
-	btn.events().click([&form] {
-		form.close();
-	});
+	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 20 }, nana::form::appear::bald<>());	
 
 	//nana::label label(form, nana::rectangle(0, 0, 100, 50));
 	//label.caption("Hello Nana");
@@ -91,6 +87,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		return 1;
 	}
 
+	auto pRenderPass = new Graphics::BasicRenderPass(3, &engine);
+	pRenderPass->initialize();
+	pRenderPass->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+
+	engine.setupRenderPass(pRenderPass, "BasicRenderPass");
+
 	//Define a directX rendering function
 	form.draw_through([&]() mutable
 	{
@@ -103,6 +105,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		}
 	});
 
+	// load the user specified model
+	nana::button btn(nfm, nana::rectangle{ 0, 0, 100, 20 });
+	btn.caption(L"Load");
+	btn.events().click([&] {
+		nana::filebox fb(nfm, true);
+		fb.add_filter("Model File", "*.obj;*.ply;*.fbx");
+		fb.add_filter("All Files", "*.*");
+
+		if (fb())
+		{
+			auto modelPath = fb.file();
+			std::cout << modelPath << std::endl;
+
+			pRenderPass->loadModel(modelPath);
+		}
+	});
+	btn.show();
+
+	nfm.show();
 	form.show();
 	nana::exec();
 	

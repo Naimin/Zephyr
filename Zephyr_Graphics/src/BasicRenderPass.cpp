@@ -4,6 +4,7 @@
 #include "Vertex.h"
 #include "Pipeline.h"
 #include "RenderableModel.h"
+#include <boost/algorithm/string.hpp>
 
 using namespace DirectX;
 
@@ -22,6 +23,35 @@ void Zephyr::Graphics::BasicRenderPass::setClearColor(float r, float g, float b,
 	clearColor[1] = b;
 	clearColor[2] = g;
 	clearColor[3] = a;
+}
+
+bool Zephyr::Graphics::BasicRenderPass::loadModel(const std::string & modelPath)
+{
+	mpEngine->waitForPreviousFrame();
+	
+	auto resourceManager = mpEngine->getResourceManager();
+	// wait for the transfer to complete first 
+	resourceManager->waitForPreviousTask();
+
+	boost::filesystem::path filePath(modelPath);
+	if (!boost::iequals(mModelPath, modelPath))
+	{
+		mModelPath = filePath.string();
+		
+		// discard previous model and create a new one
+		mpModel.reset(new RenderableModel(filePath.wstring(), mpEngine->getResourceManager().get()));
+
+		// load the new model
+		auto success = mpModel->loadFromFile(mModelPath);
+		if (!success)
+			return false;
+
+		success = mpModel->uploadToGPU();
+		if (!success)
+			return false;
+	}
+
+	return true;
 }
 
 bool Zephyr::Graphics::BasicRenderPass::initialize()
@@ -43,19 +73,6 @@ bool Zephyr::Graphics::BasicRenderPass::initialize()
 	option.constantBufferSize = sizeof(ConstantBuffer);
 
 	mpPipelineState->initialize(option);
-	
-	mpModel.reset(new RenderableModel(L"Lightning", mpEngine->getResourceManager().get()));
-	auto filePath = "..\\model\\Lightning\\lightning_obj.obj";
-	//auto filePath = "D:\\sandbox\\bunny_result.obj";
-	//auto filePath = "..\\model\\bunny_result.obj";
-	//auto filePath = "..\\model\\cube.obj";
-	auto success = mpModel->loadFromFile(filePath);
-	if (!success)
-		return false;
-
-	success = mpModel->uploadToGPU();
-	if (!success)
-		return false;
 	 
 	// build projection and view matrix
 	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(45.0f*(3.14f / 180.0f), (float)mpEngine->getWidth() / (float)mpEngine->getHeight(), 0.1f, 1000.0f);
@@ -163,9 +180,12 @@ void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex)
 	commandList->RSSetScissorRects(1, &mScissorRect); // set the scissor rects
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST); // set the primitive topology
 
-	for (int i = 0; i < mpModel->getMeshesCount(); ++i)
+	if (nullptr != mpModel)
 	{
-		mpModel->drawMesh(i, mpCommandList);
+		for (int i = 0; i < mpModel->getMeshesCount(); ++i)
+		{
+			mpModel->drawMesh(i, mpCommandList);
+		}
 	}
 	
 	//commandList->IASetVertexBuffers(0, 1, &vertexBufferView); // set the vertex buffer (using the vertex buffer view)

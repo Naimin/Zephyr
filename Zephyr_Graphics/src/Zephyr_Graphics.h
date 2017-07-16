@@ -19,7 +19,7 @@ namespace Zephyr
 				virtual ~GraphicsEngine();
 
 				bool initialize(unsigned int backBufferWidth, unsigned int backBufferHeight, HWND& hwnd, bool bFullScreen);
-				bool setupRenderPass();
+				bool setupRenderPass(IRenderPass* pRenderPass, const std::string& passName);
 				void cleanup();
 
 				void update();
@@ -44,6 +44,7 @@ namespace Zephyr
 				std::shared_ptr<ShaderManager> mpShaderManager;
 				std::shared_ptr<ResourceManager> mpResourceManager;
 
+				std::vector<IRenderPass*> mRenderPasses;
 				BasicRenderPass* mpRenderPass;
 		};
 

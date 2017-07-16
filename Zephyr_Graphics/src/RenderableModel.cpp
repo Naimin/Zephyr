@@ -30,6 +30,8 @@ D3D12_INDEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getIndexResourceView(
 
 bool Zephyr::Graphics::RenderableModel::loadFromFile(const std::string & path)
 {
+	mPath = boost::filesystem::path(path).wstring();
+	mName = this->mPath;
 	return Common::MeshLoader::loadFile(path, this);
 }
 
@@ -68,6 +70,13 @@ void Zephyr::Graphics::RenderableModel::unloadFromGPU()
 	std::wstringstream indexBufferName;
 	indexBufferName << mName << L"_IB";
 	mpResourceManager->releaseResource(indexBufferName.str());
+
+	for (auto descriptorHeap : mTextureHeap)
+	{
+		if(nullptr != descriptorHeap)
+			descriptorHeap->Release();
+	}
+	mTextureHeap.clear();
 }
 
 bool Zephyr::Graphics::RenderableModel::drawMesh(const int meshId, SharedPtr<ID3D12GraphicsCommandList> pCommandList)

@@ -32,14 +32,14 @@ bool Zephyr::Graphics::GraphicsEngine::initialize(unsigned int backBufferWidth, 
 	if (!success)
 		return false;
 
-	success = setupRenderPass();
-	if (!success)
-		return false;
+	//success = setupRenderPass();
+	//if (!success)
+    //		return false;
 
 	return true;
 }
 
-bool Zephyr::Graphics::GraphicsEngine::setupRenderPass()
+bool Zephyr::Graphics::GraphicsEngine::setupRenderPass(IRenderPass* pRenderPass, const std::string& passName)
 {
 	if (nullptr == mpRenderer)
 		return false;
@@ -55,14 +55,12 @@ bool Zephyr::Graphics::GraphicsEngine::setupRenderPass()
 	success = mpRenderer->enqueuRenderPass("BasicRenderPass2", 1);
 	*/
 
-	
-	mpRenderPass = new BasicRenderPass(FRAME_BUFFER_COUNT, this);
-	mpRenderPass->initialize();
-	mpRenderPass->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	mpRenderer->addRenderPass("BasicRenderPass3", mpRenderPass);
-	auto success = mpRenderer->enqueuRenderPass("BasicRenderPass3", 0);
-	
+	mRenderPasses.push_back(pRenderPass);
+	auto renderPass = mRenderPasses.back();
 
+	mpRenderer->addRenderPass(passName, renderPass);
+	auto success = mpRenderer->enqueuRenderPass(passName, (int)mRenderPasses.size() - 1);
+	
 	/*
 	auto test = new TestRenderPass(FRAME_BUFFER_COUNT, this);
 	test->setClearColor(0.0f, 1.0f, 0.0f, 1.0f);

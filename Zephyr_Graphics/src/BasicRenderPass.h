@@ -10,7 +10,7 @@ namespace Zephyr
 	{
 		using namespace DirectX;
 
-		class BasicRenderPass : public IRenderPass
+		class ZEPHYR_GRAPHICS_API BasicRenderPass : public IRenderPass
 		{
 			public:
 				struct ConstantBuffer
@@ -23,11 +23,13 @@ namespace Zephyr
 				virtual ~BasicRenderPass();
 
 				void setClearColor(float r, float g, float b, float a);
+				virtual bool loadModel(const std::string& modelPath);
 
 				virtual bool initialize();
 				virtual void update(const int frameIndex);
 
 			protected:
+				std::string mModelPath;
 				float clearColor[4];
 				std::shared_ptr<RenderableModel> mpModel;
 				ConstantBuffer mConstantBuffer;

@@ -9,6 +9,9 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_TARGET
 {
-	// return interpolated color
+	// If no texture
+	if (input.texCoord.x == 0.0f && input.texCoord.y == 0.0f)
+		return float4(1.0f,1.0f,1.0f,1.0f);
+
 	return t1.Sample(s1, input.texCoord);
 }
