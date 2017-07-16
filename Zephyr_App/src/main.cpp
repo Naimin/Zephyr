@@ -18,46 +18,6 @@
 
 using namespace Zephyr;
 
-std::shared_ptr<UI> ui;
-
-bool createWindow(
-	HWND& hwnd,
-	HINSTANCE hInstance,
-	int ShowWnd,
-	int width, int height,
-	bool fullscreen,
-	LPCTSTR windowName);
-
-// main application loop
-void mainloop(Graphics::GraphicsEngine& engine);
-
-LRESULT CALLBACK WndProc(HWND hwnd,
-	UINT msg,
-	WPARAM wParam,
-	LPARAM lParam)
-{
-	switch (msg)
-	{
-
-	case WM_KEYDOWN:
-		if (wParam == VK_ESCAPE) {
-			if (MessageBox(0, L"Are you sure you want to exit?",
-				L"Really?", MB_YESNO | MB_ICONQUESTION) == IDYES)
-				DestroyWindow(hwnd);
-		}
-		return 0;
-
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	}
-	return DefWindowProc(hwnd,
-		msg,
-		wParam,
-		lParam);
-}
-
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
 	AllocConsole();
@@ -119,19 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	input.push_back(std::vector<int>());
 	input.back().push_back(5000);
 
-
 	//graph.segment(input);
-
-	// create window
-	/*if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))
-	{
-		MessageBox(0, L"Window Initialization - Failed",
-			L"Error", MB_OK);
-		return 1;
-	}
-	*/
-
-
 
 	Graphics::GraphicsEngine engine;
 	// initialize direct3d
@@ -154,27 +102,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 			::InvalidateRect(hwnd, &r, FALSE);
 		}
 	});
-	
-	/*
-	// update the window render
-	nana::timer tmr;
-	tmr.elapse([hwnd] {
-		RECT r;
-		::GetClientRect(hwnd, &r);
-		::InvalidateRect(hwnd, &r, FALSE);
-	});
 
-	tmr.interval(0);
-	tmr.start();
-	*/
-	// setup the UI
-	//ui.reset(new UI(engine));
-	
 	form.show();
 	nana::exec();
-
-	// start the main loop
-	
 	
 	return 0;
 }
