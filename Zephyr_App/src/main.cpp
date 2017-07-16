@@ -8,8 +8,17 @@
 #include <tchar.h>
 #include <TriDualGraph.h>
 #include <MeshLoader.h>
+#include "UI.h"
+#include "App.h"
+
+#include <nana/gui/wvl.hpp> 
+#include <nana/gui/widgets/label.hpp>
+#include <nana/gui/widgets/button.hpp>
+#include <nana/gui/timer.hpp>
 
 using namespace Zephyr;
+
+std::shared_ptr<UI> ui;
 
 bool createWindow(
 	HWND& hwnd,
@@ -48,6 +57,7 @@ LRESULT CALLBACK WndProc(HWND hwnd,
 		lParam);
 }
 
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
 	AllocConsole();
@@ -62,55 +72,66 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	auto windowTitle = L"Zephyr_App";
 	
 	// width and height of the window
-	int width = 1920;
-	int height = 1080;
+	unsigned int width = 800;
+	unsigned int height = 600;
 
 	// is window full screen?
 	bool fullScreen = false;
 
+	nana::form form(nana::rectangle{ 0, 0, width, height });
+
+	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 20 }, nana::form::appear::bald<>());
+	nfm.show();
+
+	nana::button btn(nfm, nana::rectangle{ 0, 0, 100, 20 });
+	btn.caption(L"Exit");
+	btn.events().click([&form] {
+		form.close();
+	});
+
+	//nana::label label(form, nana::rectangle(0, 0, 100, 50));
+	//label.caption("Hello Nana");
+	//form.show();
+	hwnd = reinterpret_cast<HWND>(form.native_handle());
+	
+
 	auto filePath = "..\\model\\Armadillo.ply";
 	//auto filePath = "..\\model\\bunny.obj";
-	Common::Model model;
-	Common::MeshLoader::loadFile(filePath, &model);
+	//Common::Model model;
+	//Common::MeshLoader::loadFile(filePath, &model);
 
-	auto mesh = model.getMesh(0);
+	//auto mesh = model.getMesh(0);
 
-	Algorithm::TriDualGraph graph(&mesh);
+	//Algorithm::TriDualGraph graph(&mesh);
 
 	std::vector<std::vector<int>> input;
 	input.push_back(std::vector<int>());
 	input.back().push_back(10000);
-	/*input.back().push_back(2);
-	input.back().push_back(3);
-	input.back().push_back(4);*/
 
 	input.push_back(std::vector<int>());
 	input.back().push_back(1);
-	/*input.back().push_back(101);
-	input.back().push_back(102);
-	input.back().push_back(103);*/
+
 
 	input.push_back(std::vector<int>());
 	input.back().push_back(20750);
-	/*input.back().push_back(2001);
-	input.back().push_back(2002);
-	input.back().push_back(2003);*/
+
 
 	input.push_back(std::vector<int>());
 	input.back().push_back(5000);
-	/*input.back().push_back(3001);
-	input.back().push_back(3002);
-	input.back().push_back(3003);*/
 
-	graph.segment(input);
+
+	//graph.segment(input);
 
 	// create window
-	if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))
+	/*if (!createWindow(hwnd, hInstance, nCmdShow, width, height, fullScreen, windowName))
 	{
 		MessageBox(0, L"Window Initialization - Failed",
 			L"Error", MB_OK);
 		return 1;
 	}
+	*/
+
+
 
 	Graphics::GraphicsEngine engine;
 	// initialize direct3d
@@ -122,94 +143,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		return 1;
 	}
 
+	//Define a directX rendering function
+	form.draw_through([&]() mutable
+	{
+		if (engine.isRunning())
+		{
+			engine.render();
+			RECT r;
+			::GetClientRect(hwnd, &r);
+			::InvalidateRect(hwnd, &r, FALSE);
+		}
+	});
+	
+	/*
+	// update the window render
+	nana::timer tmr;
+	tmr.elapse([hwnd] {
+		RECT r;
+		::GetClientRect(hwnd, &r);
+		::InvalidateRect(hwnd, &r, FALSE);
+	});
+
+	tmr.interval(0);
+	tmr.start();
+	*/
+	// setup the UI
+	//ui.reset(new UI(engine));
+	
+	form.show();
+	nana::exec();
+
 	// start the main loop
-	mainloop(engine);
+	
 	
 	return 0;
-}
-
-bool createWindow(HWND& hwnd, HINSTANCE hInstance, int ShowWnd, int width, int height, bool fullscreen, LPCTSTR windowName)
-{
-	if (fullscreen)
-	{
-		HMONITOR hmon = MonitorFromWindow(hwnd,
-			MONITOR_DEFAULTTONEAREST);
-		MONITORINFO mi = { sizeof(mi) };
-		GetMonitorInfo(hmon, &mi);
-
-		width = mi.rcMonitor.right - mi.rcMonitor.left;
-		height = mi.rcMonitor.bottom - mi.rcMonitor.top;
-	}
-
-	WNDCLASSEX wc;
-
-	wc.cbSize = sizeof(WNDCLASSEX);
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = NULL;
-	wc.cbWndExtra = NULL;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
-	wc.lpszMenuName = NULL;
-	wc.lpszClassName = windowName;
-	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-
-	if (!RegisterClassEx(&wc))
-	{
-		MessageBox(NULL, L"Error registering class",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-
-	hwnd = CreateWindowEx(NULL,
-		windowName,
-		windowName,
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT,
-		width, height,
-		NULL,
-		NULL,
-		hInstance,
-		NULL);
-
-	if (!hwnd)
-	{
-		MessageBox(NULL, L"Error creating window",
-			L"Error", MB_OK | MB_ICONERROR);
-		return false;
-	}
-
-	if (fullscreen)
-	{
-		SetWindowLong(hwnd, GWL_STYLE, 0);
-	}
-
-	ShowWindow(hwnd, ShowWnd);
-	UpdateWindow(hwnd);
-
-	return true;
-}
-
-void mainloop(Graphics::GraphicsEngine& engine)
-{
-	MSG msg;
-	ZeroMemory(&msg, sizeof(MSG));
-
-	while (engine.isRunning())
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_QUIT)
-				break;
-
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-		else {
-			// run game code
-			engine.render(); // execute the command queue (rendering the scene is the result of the gpu executing the command lists)
-		}
-	}
 }

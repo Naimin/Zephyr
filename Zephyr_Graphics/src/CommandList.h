@@ -12,7 +12,7 @@ namespace Zephyr
 		class CommandQueue;
 		class Pipeline;
 		// wrapper over directx commandList
-		class CommandList
+		class ZEPHYR_GRAPHICS_API CommandList
 		{
 			public:	
 				CommandList(const int frameBufferCount, GraphicsEngine* pEngine);

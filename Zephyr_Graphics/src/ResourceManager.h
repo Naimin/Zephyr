@@ -10,7 +10,7 @@ namespace Zephyr
 	{
 		class GraphicsEngine;
 
-		class ResourceManager
+		class ZEPHYR_GRAPHICS_API ResourceManager
 		{
 			public:
 				enum RESOURCE_TYPE

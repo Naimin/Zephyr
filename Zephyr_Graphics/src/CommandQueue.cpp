@@ -56,6 +56,12 @@ bool Zephyr::Graphics::CommandQueue::execute(const int frameIndex)
 		}
 	}
 
+	if (0 == ppCommandLists.size())
+	{
+		mFence.signal(mpCommandQueue);
+		return true;
+	}
+
 	// execute the array of command lists
 	mpCommandQueue->ExecuteCommandLists((UINT)ppCommandLists.size(), &ppCommandLists[0]);
 

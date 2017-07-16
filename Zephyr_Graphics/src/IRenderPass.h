@@ -20,7 +20,7 @@ namespace Zephyr
 		class GraphicsEngine;
 		class CommandList;
 
-		class IRenderPass : public CommandList
+		class ZEPHYR_GRAPHICS_API IRenderPass : public CommandList
 		{
 			public:
 				IRenderPass(const int frameBufferCount, GraphicsEngine* pEngine);

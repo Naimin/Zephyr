@@ -73,6 +73,32 @@ void Zephyr::Graphics::Renderer::clearRenderPassQueue(const int queueIndex)
 	mCommandQueues[queueIndex]->clear();
 }
 
+bool Zephyr::Graphics::Renderer::enqueuUIRenderPass(const std::string & renderPassName, const int queueIndex)
+{
+	if (mRenderPassMap.find(renderPassName) == mRenderPassMap.end())
+		return false;
+
+	// keep creating a new commandQueue till the queue index is reached
+	while (queueIndex >= mUICommandQueues.size())
+	{
+		createUICommandQueue();
+	}
+
+	// enqueue the render pass into the command queue
+	mUICommandQueues[queueIndex]->enqueueCommandList(mRenderPassMap[renderPassName]);
+
+	return true;
+}
+
+void Zephyr::Graphics::Renderer::clearUIRenderPassQueue(const int queueIndex)
+{
+	// out of range
+	if (queueIndex >= mUICommandQueues.size())
+		return;
+
+	mUICommandQueues[queueIndex]->clear();
+}
+
 void Zephyr::Graphics::Renderer::update(int commandQueueId)
 {
 	if (commandQueueId >= mCommandQueues.size())
@@ -87,23 +113,43 @@ void Zephyr::Graphics::Renderer::update(int commandQueueId)
 
 void Zephyr::Graphics::Renderer::render()
 {
-	HRESULT hr;
+	HRESULT hr = getDevice()->GetDeviceRemovedReason();
+	if (S_OK != hr)
+		std::cout << hr;
 
 	// We have to wait for the gpu to finish with the command allocator before we reset it
 	waitForPreviousFrame();
 
 	mFences[mFrameIndex]->increment();
 
-	int i = 0;
+	// composite both the normal render pass with the UI render pass
+	std::vector<std::shared_ptr<CommandQueue>> commandQueues;
+
 	for (auto commandQueue : mCommandQueues)
 	{
-		update(i++);
+		commandQueues.push_back(commandQueue);
+	}
+	for (auto commandQueue : mUICommandQueues)
+	{
+		commandQueues.push_back(commandQueue);
+	}
+
+	int i = 0;
+	for (auto commandQueue : commandQueues)
+	{
+		commandQueue->update(mFrameIndex);
+		//update(i++);
 	}
 
 	// execute the array of command lists
-	for (auto commandQueue : mCommandQueues)
+	for (auto commandQueue : commandQueues)
 	{
 		commandQueue->execute(mFrameIndex);
+		
+		hr = getDevice()->GetDeviceRemovedReason();
+		if (S_OK != hr)
+			std::cout << hr;
+
 		commandQueue->wait();
 	}
 
@@ -250,6 +296,15 @@ bool Zephyr::Graphics::Renderer::createCommandQueue()
 		return false;
 
 	mCommandQueues.push_back(std::shared_ptr<CommandQueue>(new CommandQueue((int)mCommandQueues.size(), COMMAND_QUEUE_TYPE::DIRECT, mpDevice)));
+	return true;
+}
+
+bool Zephyr::Graphics::Renderer::createUICommandQueue()
+{
+	if (mpDevice.isNull())
+		return false;
+
+	mUICommandQueues.push_back(std::shared_ptr<CommandQueue>(new CommandQueue((int)mCommandQueues.size(), COMMAND_QUEUE_TYPE::DIRECT, mpDevice)));
 	return true;
 }
 

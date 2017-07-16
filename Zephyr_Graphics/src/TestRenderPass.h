@@ -7,7 +7,7 @@ namespace Zephyr
 {
 	namespace Graphics
 	{
-		class TestRenderPass : public IRenderPass
+		class ZEPHYR_GRAPHICS_API TestRenderPass : public IRenderPass
 		{
 			public:
 

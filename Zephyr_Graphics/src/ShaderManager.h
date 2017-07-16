@@ -7,7 +7,7 @@ namespace Zephyr
 {
 	namespace Graphics
 	{
-		class ShaderManager
+		class ZEPHYR_GRAPHICS_API ShaderManager
 		{
 			public:
 				enum SHADER_TYPE

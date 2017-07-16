@@ -28,6 +28,9 @@ namespace Zephyr
 				bool enqueuRenderPass(const std::string& renderPassName, const int queueIndex);
 				void clearRenderPassQueue(const int queueIndex);
 
+				bool enqueuUIRenderPass(const std::string& renderPassName, const int queueIndex);
+				void clearUIRenderPassQueue(const int queueIndex);
+
 				void render(); // execute the command list
 
 				void waitForPreviousFrame(); // wait until gpu is finished with command list
@@ -47,6 +50,7 @@ namespace Zephyr
 			protected:
 				bool createDevice();
 				bool createCommandQueue();
+				bool createUICommandQueue();
 				bool createSwapChain(HWND& hwnd, bool bFullScreen);
 				bool createRenderTargetView();
 				bool createFence();
@@ -70,6 +74,7 @@ namespace Zephyr
 				std::vector<ID3D12Resource*> mRenderTargets; // number of render targets equal to buffer count
 
 				std::vector<std::shared_ptr<CommandQueue>> mCommandQueues; // 
+				std::vector<std::shared_ptr<CommandQueue>> mUICommandQueues; // Command queue for UI render, ie this is rendered last
 
 				int mFrameIndex; // current rtv we are on
 

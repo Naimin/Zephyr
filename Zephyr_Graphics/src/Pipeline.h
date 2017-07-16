@@ -9,7 +9,7 @@ namespace Zephyr
 	{
 		class GraphicsEngine;
 
-		struct PipelineOption
+		struct ZEPHYR_GRAPHICS_API PipelineOption
 		{
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlag;
 			std::wstring vertexShader;
@@ -21,7 +21,7 @@ namespace Zephyr
 			int constantBufferSize;
 		};
 
-		class Pipeline
+		class ZEPHYR_GRAPHICS_API Pipeline
 		{
 			public:
 				Pipeline(GraphicsEngine* pEngine);

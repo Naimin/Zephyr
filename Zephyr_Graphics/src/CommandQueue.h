@@ -17,7 +17,7 @@ namespace Zephyr
 			COPY = 3
 		};
 
-		class CommandQueue
+		class ZEPHYR_GRAPHICS_API CommandQueue
 		{
 			public:
 				CommandQueue(const int id, COMMAND_QUEUE_TYPE type, SharedPtr<ID3D12Device> pDevice);

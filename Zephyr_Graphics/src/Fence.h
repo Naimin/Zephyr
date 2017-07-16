@@ -9,7 +9,7 @@ namespace Zephyr
 	{
 		class CommandQueue;
 
-		class Fence
+		class ZEPHYR_GRAPHICS_API Fence
 		{
 			public:
 				Fence(SharedPtr<ID3D12Device> pDevice);

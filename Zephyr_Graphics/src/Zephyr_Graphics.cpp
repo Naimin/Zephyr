@@ -54,17 +54,21 @@ bool Zephyr::Graphics::GraphicsEngine::setupRenderPass()
 	mpRenderer->addRenderPass("BasicRenderPass2", basic2);
 	success = mpRenderer->enqueuRenderPass("BasicRenderPass2", 1);
 	*/
+
+	
 	mpRenderPass = new BasicRenderPass(FRAME_BUFFER_COUNT, this);
 	mpRenderPass->initialize();
-	mpRenderPass->setClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	mpRenderPass->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	mpRenderer->addRenderPass("BasicRenderPass3", mpRenderPass);
 	auto success = mpRenderer->enqueuRenderPass("BasicRenderPass3", 0);
+	
 
-	/*auto test = new TestRenderPass(FRAME_BUFFER_COUNT, this);
+	/*
+	auto test = new TestRenderPass(FRAME_BUFFER_COUNT, this);
 	test->setClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 	mpRenderer->addRenderPass("TestRenderPass", test);
-	success = mpRenderer->enqueuRenderPass("TestRenderPass", 1);*/
-
+	success = mpRenderer->enqueuRenderPass("TestRenderPass", 1);
+	*/
 	return success;
 }
 

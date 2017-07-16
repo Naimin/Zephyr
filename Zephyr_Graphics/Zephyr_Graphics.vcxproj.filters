@@ -19,7 +19,7 @@
     <Filter Include="Source Files\Primitive">
       <UniqueIdentifier>{a7afb5a6-bb80-4819-9cde-95b5a3cce552}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Shader">
+    <Filter Include="Source Files\RenderPass\Shader">
       <UniqueIdentifier>{070b66a4-b911-475b-bd57-e479d29109a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -116,10 +116,10 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\shader\pixel_shader.hlsl">
-      <Filter>Source Files\Shader</Filter>
+      <Filter>Source Files\RenderPass\Shader</Filter>
     </FxCompile>
     <FxCompile Include="..\shader\vertex_shader.hlsl">
-      <Filter>Source Files\Shader</Filter>
+      <Filter>Source Files\RenderPass\Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

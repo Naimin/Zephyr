@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B81896A6-AF16-4990-AD8A-FFD6404E6D0C}</ProjectGuid>
+    <RootNamespace>Nana</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\thirdparty\nana\include;$(IncludePath)</IncludePath>
+    <SourcePath>..\thirdparty\nana\source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\thirdparty\nana\include;</IncludePath>
+    <SourcePath>..\thirdparty\nana\source;$(VC_SourcePath);</SourcePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\thirdparty\nana\source\any.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\audio\detail\audio_device.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\audio\detail\audio_stream.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\audio\detail\buffer_preparation.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\audio\player.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\basic_types.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\charset.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\datetime.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\deploy.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\detail\platform_abstraction.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\detail\platform_spec_posix.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\detail\platform_spec_windows.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\filesystem\filesystem.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\animation.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\basis.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\basic_window.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\bedrock_pi.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\bedrock_posix.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\bedrock_windows.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\color_schemes.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\drawer.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\element_store.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\events_operation.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\native_window_interface.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\window_layout.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\detail\window_manager.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\dragger.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\drawing.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\effects.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\element.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\filebox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\layout_utility.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\msgbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\notifier.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\place.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\programming_interface.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\screen.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\state_cursor.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\timer.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\tooltip.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\button.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\categorize.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\checkbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\combox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\date_chooser.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\float_listbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\form.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\frame.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\group.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\label.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\listbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\menu.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\menubar.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\panel.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\picture.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\progress.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\scroll.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\skeletons\content_view.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\skeletons\text_editor.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\slider.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\spinbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\tabbar.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\textbox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\toolbar.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\treebox.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\widgets\widget.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\gui\wvl.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\internationalization.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\detail\image_process_provider.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\detail\native_paint_interface.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\graphics.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\image.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\image_process_selector.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\pixel_buffer.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\paint\text_renderer.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\stdc++.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\system\dataexch.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\system\platform.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\system\shared_wrapper.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\system\timepiece.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\threads\pool.cpp" />
+    <ClCompile Include="..\thirdparty\nana\source\unicode_bidi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\thirdparty\nana\source\detail\mswin\platform_spec.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\platform_abstraction.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\platform_abstraction_types.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\platform_spec_selector.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\posix\msg_dispatcher.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\posix\msg_packet.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\detail\posix\platform_spec.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\gui\detail\dynamic_drawing_object.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\gui\detail\window_register.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\gui\place_parts.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\gui\widgets\skeletons\content_view.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_bmp.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_ico.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_ico_resource.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_jpeg.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_pixbuf.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\detail\image_png.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\image_accessor.hpp" />
+    <ClInclude Include="..\thirdparty\nana\source\paint\truetype.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
