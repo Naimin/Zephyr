@@ -43,39 +43,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	nana::form form(nana::rectangle{ 0, 0, width, height });
 	form.caption(windowTitle);
 
-	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 20 }, nana::form::appear::bald<>());	
+	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 50 }, nana::form::appear::bald<>());	
 
 	//nana::label label(form, nana::rectangle(0, 0, 100, 50));
 	//label.caption("Hello Nana");
 	//form.show();
 	hwnd = reinterpret_cast<HWND>(form.native_handle());
-	
-
-	auto filePath = "..\\model\\Armadillo.ply";
-	//auto filePath = "..\\model\\bunny.obj";
-	//Common::Model model;
-	//Common::MeshLoader::loadFile(filePath, &model);
-
-	//auto mesh = model.getMesh(0);
-
-	//Algorithm::TriDualGraph graph(&mesh);
-
-	std::vector<std::vector<int>> input;
-	input.push_back(std::vector<int>());
-	input.back().push_back(10000);
-
-	input.push_back(std::vector<int>());
-	input.back().push_back(1);
-
-
-	input.push_back(std::vector<int>());
-	input.back().push_back(20750);
-
-
-	input.push_back(std::vector<int>());
-	input.back().push_back(5000);
-
-	//graph.segment(input);
 
 	Graphics::GraphicsEngine engine;
 	// initialize direct3d
@@ -121,7 +94,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 			pRenderPass->loadModel(modelPath);
 		}
 	});
-	btn.show();
+
+	nana::button segmentBtn(nfm, nana::rectangle{ 0, 30, 100, 20 });
+	segmentBtn.caption(L"Segment");
+	segmentBtn.events().click([&] {
+		auto pModel = pRenderPass->getModel();
+
+		if (nullptr == pModel)
+			return;
+
+		auto mesh = pModel->getMesh(0);
+		Algorithm::TriDualGraph graph(&mesh);
+
+		std::vector<std::vector<int>> input;
+		input.push_back(std::vector<int>());
+		input.back().push_back(10000);
+
+		input.push_back(std::vector<int>());
+		input.back().push_back(1);
+
+		input.push_back(std::vector<int>());
+		input.back().push_back(20750);
+
+		input.push_back(std::vector<int>());
+		input.back().push_back(5000);
+
+		graph.segment(input);
+	});
 
 	nfm.show();
 	form.show();

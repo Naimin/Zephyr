@@ -54,6 +54,11 @@ bool Zephyr::Graphics::BasicRenderPass::loadModel(const std::string & modelPath)
 	return true;
 }
 
+Zephyr::Graphics::RenderableModel* Zephyr::Graphics::BasicRenderPass::getModel()
+{
+	return mpModel.get();
+}
+
 bool Zephyr::Graphics::BasicRenderPass::initialize()
 {
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputLayout;

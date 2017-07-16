@@ -25,6 +25,8 @@ namespace Zephyr
 				void setClearColor(float r, float g, float b, float a);
 				virtual bool loadModel(const std::string& modelPath);
 
+				virtual RenderableModel* getModel();
+
 				virtual bool initialize();
 				virtual void update(const int frameIndex);
 

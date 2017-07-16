@@ -111,11 +111,12 @@
       <DisableSpecificWarnings>4251; 4996</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>..\thirdparty\assimp\include;..\thirdparty\Eigen;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\nana\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib;..\thirdparty\nana\lib\nana_v140_Debug_x64.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-sgd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-sgd-1_63.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -170,6 +171,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nana\Nana.vcxproj">
       <Project>{b81896a6-af16-4990-ad8a-ffd6404e6d0c}</Project>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\Zephyr_Algorithm\Zephyr_Algorithm.vcxproj">
       <Project>{7177341d-b995-4404-8b0c-c0aa959092de}</Project>
