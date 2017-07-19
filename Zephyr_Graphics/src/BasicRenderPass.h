@@ -3,6 +3,7 @@
 
 #include "IRenderPass.h"
 #include "RenderableModel.h"
+#include <Camera.h>
 
 namespace Zephyr
 {
@@ -22,6 +23,19 @@ namespace Zephyr
 				BasicRenderPass(const int frameBufferCount, GraphicsEngine* pEngine);
 				virtual ~BasicRenderPass();
 
+				void setCamera(const Common::Camera& camera);
+				Common::Camera& initalizeCamera(const Common::Vector3f& cameraPos,
+												const Common::Vector3f& cameraTarget,
+												const Common::Vector3f& cameraUp,
+												const float fov, // in radian
+												const float nearClip,
+												const float farClip,
+												const float aspectRatio);
+
+				Common::Camera& getCamera();
+				const Common::Camera& getCamera() const;
+				void updateCameraMatrix();
+
 				void setClearColor(float r, float g, float b, float a);
 				virtual bool loadModel(const std::string& modelPath);
 
@@ -36,12 +50,14 @@ namespace Zephyr
 				std::shared_ptr<RenderableModel> mpModel;
 				ConstantBuffer mConstantBuffer;
 
+				Common::Camera mCamera;
+
 				XMFLOAT4X4 cameraProjMat; // this will store our projection matrix
 				XMFLOAT4X4 cameraViewMat; // this will store our view matrix
 
-				XMFLOAT4 cameraPosition; // this is our cameras position vector
+				/*XMFLOAT4 cameraPosition; // this is our cameras position vector
 				XMFLOAT4 cameraTarget; // a vector describing the point in space our camera is looking at
-				XMFLOAT4 cameraUp; // the worlds up vector
+				XMFLOAT4 cameraUp; // the worlds up vector*/
 
 				XMFLOAT4X4 cube1WorldMat; // our first cubes world matrix (transformation matrix)
 				XMFLOAT4X4 cube1RotMat; // this will keep track of our rotation for the first cube

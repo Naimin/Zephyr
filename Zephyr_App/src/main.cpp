@@ -64,6 +64,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	pRenderPass->initialize();
 	pRenderPass->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
+	// Initalize the renderpass camera, and get reference to it
+	auto& camera = pRenderPass->initalizeCamera(
+					 Common::Vector3f(0.0f, 2.0f, -200.0f),
+					 Common::Vector3f(0, 0, 0),
+					 Common::Vector3f(0, 1.0f, 0),
+					 45.0f*(3.14f / 180.0f),
+					 0.1f,
+					 1000.0f,
+					 (float)width / (float)height);
+
 	engine.setupRenderPass(pRenderPass, "BasicRenderPass");
 
 	// Draw Through / Render Events
@@ -73,9 +83,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		if (engine.isRunning())
 		{
 			engine.render();
-			/*RECT r;
-			::GetClientRect(hwnd, &r);
-			::InvalidateRect(hwnd, &r, FALSE);*/
 		}
 	});
 
@@ -128,22 +135,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	// Mouse Events
 
 	float zoom = 0;
-	Eigen::Vector2f mousePosition;
+	Eigen::Vector2i mousePosition;
 
 	form.events().mouse_move([&](const nana::arg_mouse& mouseEvent)
 	{
-		mousePosition[0] = (float)mouseEvent.pos.x;
-		mousePosition[1] = (float)mouseEvent.pos.y;
+		int deltaX = mouseEvent.pos.x - mousePosition[0];
+		int deltaY = mouseEvent.pos.y - mousePosition[1];
+
+		// hold Mid mouse for zoom
+		if (mouseEvent.mid_button)
+		{
+			camera.zoom((float)-deltaY);
+		}
+
+		mousePosition[0] = mouseEvent.pos.x;
+		mousePosition[1] = mouseEvent.pos.y;
 	});
 
 	// one notch of mouse wheel delta is 120
 	const float MOUSE_WHEEL_DELTA = 120.0f;
 	form.events().mouse_wheel([&](const nana::arg_wheel& mouseWheelEvent)
 	{
-		auto distance = mouseWheelEvent.distance / MOUSE_WHEEL_DELTA;
+		auto distance = (mouseWheelEvent.distance / MOUSE_WHEEL_DELTA) * 10;
 		distance = mouseWheelEvent.upwards ? distance : -distance;
 		
-		zoom += distance;
+		camera.zoom(distance);
 	});
 
 	nana::timer tmr;

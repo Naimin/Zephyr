@@ -17,6 +17,50 @@ Zephyr::Graphics::BasicRenderPass::~BasicRenderPass()
 {
 }
 
+void Zephyr::Graphics::BasicRenderPass::setCamera(const Common::Camera & camera)
+{
+	mCamera = camera;
+	updateCameraMatrix();
+}
+
+Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::initalizeCamera(const Common::Vector3f & cameraPos, const Common::Vector3f & cameraTarget, const Common::Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const float aspectRatio)
+{
+	mCamera.intialize(cameraPos, cameraTarget, cameraUp, fov, nearClip, farClip, aspectRatio);
+	updateCameraMatrix();
+	
+	return mCamera;
+}
+
+void Zephyr::Graphics::BasicRenderPass::updateCameraMatrix()
+{
+	// build projection and view matrix
+	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(mCamera.mFOV, mCamera.mAspectRatio, mCamera.mNearClip, mCamera.mFarClip);
+	XMStoreFloat4x4(&cameraProjMat, tmpMat);
+
+	// build view matrix
+	XMFLOAT4 _cameraPos = XMFLOAT4(mCamera.mCameraPos.x(), mCamera.mCameraPos.y(), mCamera.mCameraPos.z(), 0);
+	XMVECTOR cPos = XMLoadFloat4(&_cameraPos);
+
+	XMFLOAT4 _cameraTarget = XMFLOAT4(mCamera.mCameraTarget.x(), mCamera.mCameraTarget.y(), mCamera.mCameraTarget.z(), 0);
+	XMVECTOR cTarg = XMLoadFloat4(&_cameraTarget);
+
+	XMFLOAT4 _cameraUp = XMFLOAT4(mCamera.mCameraUp.x(), mCamera.mCameraUp.y(), mCamera.mCameraUp.z(), 0);
+	XMVECTOR cUp = XMLoadFloat4(&_cameraUp);
+
+	tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
+	XMStoreFloat4x4(&cameraViewMat, tmpMat);
+}
+
+Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::getCamera()
+{
+	return mCamera;
+}
+
+const Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::getCamera() const
+{
+	return mCamera;
+}
+
 void Zephyr::Graphics::BasicRenderPass::setClearColor(float r, float g, float b, float a)
 {
 	clearColor[0] = r;
@@ -79,10 +123,10 @@ bool Zephyr::Graphics::BasicRenderPass::initialize()
 
 	mpPipelineState->initialize(option);
 	 
-	// build projection and view matrix
+	/*// build projection and view matrix
 	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(45.0f*(3.14f / 180.0f), (float)mpEngine->getWidth() / (float)mpEngine->getHeight(), 0.1f, 1000.0f);
 	XMStoreFloat4x4(&cameraProjMat, tmpMat);
-
+	
 	// set starting camera state
 	cameraPosition = XMFLOAT4(0.0f, 2.0f, -200.0f, 0.0f);
 	cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,13 +138,13 @@ bool Zephyr::Graphics::BasicRenderPass::initialize()
 	XMVECTOR cUp = XMLoadFloat4(&cameraUp);
 	tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
 	XMStoreFloat4x4(&cameraViewMat, tmpMat);
-
+	*/
 	// set starting cubes position
 	// first cube
 	cube1Position = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f); // set cube 1's position
 	XMVECTOR posVec = XMLoadFloat4(&cube1Position); // create xmvector for cube1's position
 
-	tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from cube1's position vector
+	XMMATRIX tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from cube1's position vector
 	XMStoreFloat4x4(&cube1RotMat, XMMatrixIdentity()); // initialize cube1's rotation matrix to identity matrix
 	XMStoreFloat4x4(&cube1WorldMat, tmpMat); // store cube1's world matrix
 
@@ -111,10 +155,12 @@ void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex, const doubl
 {
 		// update app logic, such as moving the camera or figuring out what objects are in view
 
+		updateCameraMatrix();
+
 		// create rotation matrices
-		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f * deltaTime);
-		XMMATRIX rotYMat = XMMatrixRotationY(0.5f * deltaTime);
-		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f * deltaTime);
+		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f * (float)deltaTime);
+		XMMATRIX rotYMat = XMMatrixRotationY(0.5f * (float)deltaTime);
+		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f * (float)deltaTime);
 
 		// add rotation to cube1's rotation matrix and store it
 		XMMATRIX rotMat = XMLoadFloat4x4(&cube1RotMat) * rotXMat * rotYMat * rotZMat;
