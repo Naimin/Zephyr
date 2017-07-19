@@ -25,7 +25,7 @@ namespace Zephyr
 
 				bool enqueueCommandList(std::shared_ptr<CommandList> pCommandList);
 
-				void update(const int frameIndex);
+				void update(const int frameIndex, const double deltaTime);
 				bool execute(const int frameIndex);
 				void clear();
 				void wait();

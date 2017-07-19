@@ -25,7 +25,7 @@ bool Zephyr::Graphics::TestRenderPass::initialize()
 	return true;
 }
 
-void Zephyr::Graphics::TestRenderPass::update(const int frameIndex)
+void Zephyr::Graphics::TestRenderPass::update(const int frameIndex, const double deltaTime)
 {
 	startRecording(frameIndex);
 

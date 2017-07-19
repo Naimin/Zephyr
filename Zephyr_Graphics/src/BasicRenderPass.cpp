@@ -107,14 +107,14 @@ bool Zephyr::Graphics::BasicRenderPass::initialize()
 	return true;
 }
 
-void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex)
+void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex, const double deltaTime)
 {
 		// update app logic, such as moving the camera or figuring out what objects are in view
 
 		// create rotation matrices
-		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f);
-		XMMATRIX rotYMat = XMMatrixRotationY(0.0002f);
-		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f);
+		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f * deltaTime);
+		XMMATRIX rotYMat = XMMatrixRotationY(0.5f * deltaTime);
+		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f * deltaTime);
 
 		// add rotation to cube1's rotation matrix and store it
 		XMMATRIX rotMat = XMLoadFloat4x4(&cube1RotMat) * rotXMat * rotYMat * rotZMat;

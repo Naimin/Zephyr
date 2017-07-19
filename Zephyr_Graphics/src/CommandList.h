@@ -18,7 +18,7 @@ namespace Zephyr
 				CommandList(const int frameBufferCount, GraphicsEngine* pEngine);
 				virtual ~CommandList();
 
-				virtual void update(const int frameIndex);
+				virtual void update(const int frameIndex, const double deltaTime);
 
 				virtual bool startRecording(const int frameIndex);
 				virtual bool endRecording(const int frameIndex);

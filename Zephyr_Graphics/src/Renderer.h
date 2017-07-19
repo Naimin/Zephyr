@@ -4,6 +4,7 @@
 #include "stdfx.h"
 #include "IRenderPass.h"
 #include "CommandQueue.h"
+#include <Timer.h>
 
 namespace Zephyr
 {
@@ -55,8 +56,6 @@ namespace Zephyr
 				bool createRenderTargetView();
 				bool createFence();
 
-				void update(int commandListId);
-
 				void cleanup(); // release com ojects and clean up memory
 
 			private:
@@ -85,6 +84,8 @@ namespace Zephyr
 				std::unordered_map <std::string, std::shared_ptr<IRenderPass>> mRenderPassMap; // storage for Render Pass
 
 				DXGI_SAMPLE_DESC mSampleDesc;
+
+				Common::Timer mTimer;
 		};
 	}
 }

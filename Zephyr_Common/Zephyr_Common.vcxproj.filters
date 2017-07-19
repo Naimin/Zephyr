@@ -60,6 +60,9 @@
     <ClInclude Include="src\MeshExporter.h">
       <Filter>Source Files\IO</Filter>
     </ClInclude>
+    <ClInclude Include="src\Timer.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Triangle.cpp">
@@ -88,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="src\MeshExporter.cpp">
       <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Timer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

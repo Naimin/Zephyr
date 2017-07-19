@@ -27,7 +27,7 @@ namespace Zephyr
 				virtual ~IRenderPass();
 
 				virtual bool initialize() = 0;
-				virtual void update(const int frameIndex) = 0;
+				virtual void update(const int frameIndex, const double deltaTime) = 0;
 
 			protected:
 				virtual bool setupViewport(); 

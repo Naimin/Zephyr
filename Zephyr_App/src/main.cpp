@@ -66,18 +66,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	engine.setupRenderPass(pRenderPass, "BasicRenderPass");
 
+	// Draw Through / Render Events
 	//Define a directX rendering function
 	form.draw_through([&]() mutable
 	{
 		if (engine.isRunning())
 		{
 			engine.render();
-			RECT r;
+			/*RECT r;
 			::GetClientRect(hwnd, &r);
-			::InvalidateRect(hwnd, &r, FALSE);
+			::InvalidateRect(hwnd, &r, FALSE);*/
 		}
 	});
 
+	// Load Model Events
 	// load the user specified model
 	nana::button btn(nfm, nana::rectangle{ 0, 0, 100, 20 });
 	btn.caption(L"Load");
@@ -95,6 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		}
 	});
 
+	// Segmentation Events
 	nana::button segmentBtn(nfm, nana::rectangle{ 0, 30, 100, 20 });
 	segmentBtn.caption(L"Segment");
 	segmentBtn.events().click([&] {
@@ -121,6 +124,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 		graph.segment(input);
 	});
+
+	// Mouse Events
+
+	float zoom = 0;
+	Eigen::Vector2f mousePosition;
+
+	form.events().mouse_move([&](const nana::arg_mouse& mouseEvent)
+	{
+		mousePosition[0] = (float)mouseEvent.pos.x;
+		mousePosition[1] = (float)mouseEvent.pos.y;
+	});
+
+	// one notch of mouse wheel delta is 120
+	const float MOUSE_WHEEL_DELTA = 120.0f;
+	form.events().mouse_wheel([&](const nana::arg_wheel& mouseWheelEvent)
+	{
+		auto distance = mouseWheelEvent.distance / MOUSE_WHEEL_DELTA;
+		distance = mouseWheelEvent.upwards ? distance : -distance;
+		
+		zoom += distance;
+	});
+
+	nana::timer tmr;
+	tmr.elapse([hwnd] {
+		RECT r;
+		::GetClientRect(hwnd, &r);
+		::InvalidateRect(hwnd, &r, FALSE);
+	});
+
+	tmr.interval(1);
+	tmr.start();
 
 	nfm.show();
 	form.show();

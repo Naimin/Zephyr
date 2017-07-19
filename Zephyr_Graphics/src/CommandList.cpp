@@ -29,7 +29,7 @@ Zephyr::Graphics::CommandList::~CommandList()
 	}
 }
 
-void Zephyr::Graphics::CommandList::update(const int frameIndex)
+void Zephyr::Graphics::CommandList::update(const int frameIndex, const double deltaTime)
 {
 	startRecording(frameIndex);
 

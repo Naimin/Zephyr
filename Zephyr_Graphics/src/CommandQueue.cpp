@@ -31,12 +31,12 @@ bool Zephyr::Graphics::CommandQueue::enqueueCommandList(std::shared_ptr<CommandL
 	return true;
 }
 
-void Zephyr::Graphics::CommandQueue::update(const int frameIndex)
+void Zephyr::Graphics::CommandQueue::update(const int frameIndex, const double deltaTime)
 {
 	tbb::parallel_for((size_t)0, mCommandLists.size(), [&](const size_t i)
 	{
 		auto commandList = mCommandLists[i];
-		commandList->update(frameIndex);
+		commandList->update(frameIndex, deltaTime);
 	});
 }
 

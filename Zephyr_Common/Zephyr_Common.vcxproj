@@ -144,6 +144,7 @@
     <ClInclude Include="src\Point.h" />
     <ClInclude Include="src\stdfx.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Triangle.h" />
     <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
@@ -155,6 +156,7 @@
     <ClCompile Include="src\MeshLoader.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
     <ClCompile Include="src\Vertex.cpp" />
   </ItemGroup>

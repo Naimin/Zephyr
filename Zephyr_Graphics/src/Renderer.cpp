@@ -99,18 +99,6 @@ void Zephyr::Graphics::Renderer::clearUIRenderPassQueue(const int queueIndex)
 	mUICommandQueues[queueIndex]->clear();
 }
 
-void Zephyr::Graphics::Renderer::update(int commandQueueId)
-{
-	if (commandQueueId >= mCommandQueues.size())
-	{
-		return;
-	}
-
-	auto& commandQueue = mCommandQueues[commandQueueId];
-
-	commandQueue->update(mFrameIndex);
-}
-
 void Zephyr::Graphics::Renderer::render()
 {
 	HRESULT hr = getDevice()->GetDeviceRemovedReason();
@@ -119,6 +107,9 @@ void Zephyr::Graphics::Renderer::render()
 
 	// We have to wait for the gpu to finish with the command allocator before we reset it
 	waitForPreviousFrame();
+
+	// Get the delta time since the previous render is called
+	double deltaTime = mTimer.getDeltaTime();
 
 	mFences[mFrameIndex]->increment();
 
@@ -137,7 +128,7 @@ void Zephyr::Graphics::Renderer::render()
 	int i = 0;
 	for (auto commandQueue : commandQueues)
 	{
-		commandQueue->update(mFrameIndex);
+		commandQueue->update(mFrameIndex, deltaTime);
 		//update(i++);
 	}
 

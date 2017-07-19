@@ -17,7 +17,7 @@ namespace Zephyr
 				void setClearColor(float r, float g, float b, float a);
 
 				virtual bool initialize();
-				virtual void update(const int frameIndex);
+				virtual void update(const int frameIndex, const double deltaTime);
 
 			protected:
 				float clearColor[4];

@@ -28,7 +28,7 @@ namespace Zephyr
 				virtual RenderableModel* getModel();
 
 				virtual bool initialize();
-				virtual void update(const int frameIndex);
+				virtual void update(const int frameIndex, const double deltaTime);
 
 			protected:
 				std::string mModelPath;
