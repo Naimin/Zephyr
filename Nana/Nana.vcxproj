@@ -74,7 +74,7 @@
     <SourcePath>..\thirdparty\nana\source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\thirdparty\nana\include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\thirdparty\nana\include</IncludePath>
     <SourcePath>..\thirdparty\nana\source;$(VC_SourcePath);</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

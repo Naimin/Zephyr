@@ -31,6 +31,8 @@ namespace Zephyr
 									  const Common::Vector3f& cameraUp);
 
 				void zoom(const float distance);
+				void pan(const float deltaX, const float deltaY);
+				void rotation(const float degreeX, const float degreeY);
 
 				Common::Vector3f getViewDirection() const;
 
@@ -38,6 +40,8 @@ namespace Zephyr
 				Common::Vector3f mCameraPos;
 				Common::Vector3f mCameraTarget;
 				Common::Vector3f mCameraUp;
+				Common::Vector3f mPolarCoord; // Radius, Latitude, Azimuth
+
 				float mFOV; // radian
 				float mNearClip;
 				float mFarClip;

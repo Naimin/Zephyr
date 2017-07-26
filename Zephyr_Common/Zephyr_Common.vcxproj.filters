@@ -66,6 +66,9 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\CoordinateConvertor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Triangle.cpp">

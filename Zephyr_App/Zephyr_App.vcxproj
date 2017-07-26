@@ -116,7 +116,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-sgd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-sgd-1_63.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-sgd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-sgd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>

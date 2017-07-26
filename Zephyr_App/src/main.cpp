@@ -148,6 +148,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 			camera.zoom((float)-deltaY);
 		}
 
+		if (mouseEvent.right_button)
+		{
+			camera.rotation((float)deltaX * 0.75f, (float)deltaY * 0.75f);
+		}
+
 		mousePosition[0] = mouseEvent.pos.x;
 		mousePosition[1] = mouseEvent.pos.y;
 	});

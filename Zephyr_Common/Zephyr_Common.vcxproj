@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CoordinateConvertor.h" />
     <ClInclude Include="src\GeometryMath.h" />
     <ClInclude Include="src\Line.h" />
     <ClInclude Include="src\LNormUtil.h" />

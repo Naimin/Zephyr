@@ -1,4 +1,6 @@
 #include "Camera.h"
+#include "CoordinateConvertor.h"
+#include <iostream>>
 
 using namespace Zephyr::Common;
 
@@ -12,9 +14,9 @@ Camera::~Camera()
 
 void Camera::intialize(const Vector3f & cameraPos, const Vector3f & cameraTarget, const Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const float aspectRatio)
 {
-	mCameraPos = cameraPos;
-	mCameraTarget = cameraTarget;
-	mCameraUp = cameraUp;
+	mCameraPos = cameraPos.normalized();
+	mCameraTarget = cameraTarget.normalized();
+	mCameraUp = cameraUp.normalized();
 	updateViewMatrix(mCameraPos, mCameraTarget, mCameraUp);
 
 	mFOV = fov;
@@ -22,6 +24,8 @@ void Camera::intialize(const Vector3f & cameraPos, const Vector3f & cameraTarget
 	mFarClip = farClip;
 	mAspectRatio = aspectRatio;
 	updatePerspectiveMatrix(mFOV, mNearClip, mFarClip, mAspectRatio);
+
+	mPolarCoord = CoordinateConvertor::CartesianToPolar(mCameraTarget - mCameraPos);
 }
 
 void Camera::updatePerspectiveMatrix(const float fov, const float aspectRatio, const float nearClip, const float farClip)
@@ -92,10 +96,24 @@ void Camera::updateViewMatrix(const Vector3f & cameraPos, const Vector3f & camer
 
 void Zephyr::Common::Camera::zoom(const float distance)
 {
-	auto zoomAmount = distance * getViewDirection();
+	mPolarCoord[0] += distance;
+	mCameraPos = CoordinateConvertor::PolarToCartesian(mPolarCoord);
+}
 
-	mCameraPos += zoomAmount;
-	mCameraTarget += zoomAmount;
+void Zephyr::Common::Camera::pan(const float deltaX, const float deltaY)
+{
+	auto sideDirection = getViewDirection().cross(mCameraUp);
+
+	mCameraPos += sideDirection * deltaX;
+	mCameraPos += mCameraUp * deltaY;
+}
+
+void Zephyr::Common::Camera::rotation(const float degreeX, const float degreeY)
+{
+	mPolarCoord[1] += CoordinateConvertor::DegreeToRadian(degreeY);
+	mPolarCoord[2] += CoordinateConvertor::DegreeToRadian(degreeX);
+
+	mCameraPos = CoordinateConvertor::PolarToCartesian(mPolarCoord);
 }
 
 Vector3f Camera::getViewDirection() const

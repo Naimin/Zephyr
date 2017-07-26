@@ -158,12 +158,18 @@ void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex, const doubl
 		updateCameraMatrix();
 
 		// create rotation matrices
+		
+		/*
 		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f * (float)deltaTime);
 		XMMATRIX rotYMat = XMMatrixRotationY(0.5f * (float)deltaTime);
 		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f * (float)deltaTime);
-
+		
+		XMMATRIX rotXMat = XMMatrixRotationX(0.0000f * (float)deltaTime);
+		XMMATRIX rotYMat = XMMatrixRotationY(0.0f * (float)deltaTime);
+		XMMATRIX rotZMat = XMMatrixRotationZ(0.0000f * (float)deltaTime);
+		*/
 		// add rotation to cube1's rotation matrix and store it
-		XMMATRIX rotMat = XMLoadFloat4x4(&cube1RotMat) * rotXMat * rotYMat * rotZMat;
+		XMMATRIX rotMat = XMLoadFloat4x4(&cube1RotMat) ;
 		XMStoreFloat4x4(&cube1RotMat, rotMat);
 
 		// create translation matrix for cube 1 from cube 1's position vector
