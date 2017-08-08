@@ -19,7 +19,8 @@ namespace Zephyr
 					const float fov, // in radian
 					const float nearClip,
 					const float farClip,
-					const float aspectRatio);
+					const int screenWidth,
+					const int screenHeight);
 
 				void updatePerspectiveMatrix(const float fov, // in radian
 											 const float aspectRatio,
@@ -36,6 +37,8 @@ namespace Zephyr
 
 				Common::Vector3f getViewDirection() const;
 
+				Common::Vector3f getPickingRay(const int mouseX, const int mouseY) const;
+
 			public:
 				Common::Vector3f mCameraPos;
 				Common::Vector3f mCameraTarget;
@@ -50,6 +53,9 @@ namespace Zephyr
 
 				Eigen::Matrix4f mPerspectiveMatrix;
 				Eigen::Matrix4f mViewMatrix;
+
+				int mScreenWidth;
+				int mScreenHeight;
 		};
 	}
 }

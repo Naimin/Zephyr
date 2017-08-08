@@ -32,7 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	auto windowName = L"Zephyr_App";
 	// title of the window
 	auto windowTitle = L"Zephyr_App";
-	
+
 	// width and height of the window
 	unsigned int width = 800;
 	unsigned int height = 600;
@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	nana::form form(nana::rectangle{ 0, 0, width, height });
 	form.caption(windowTitle);
 
-	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 50 }, nana::form::appear::bald<>());	
+	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 50 }, nana::form::appear::bald<>());
 
 	//nana::label label(form, nana::rectangle(0, 0, 100, 50));
 	//label.caption("Hello Nana");
@@ -66,13 +66,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	// Initalize the renderpass camera, and get reference to it
 	auto& camera = pRenderPass->initalizeCamera(
-					 Common::Vector3f(0.0f, 2.0f, -200.0f),
-					 Common::Vector3f(0, 0, 0),
-					 Common::Vector3f(0, 1.0f, 0),
-					 45.0f*(3.14f / 180.0f),
-					 0.1f,
-					 1000.0f,
-					 (float)width / (float)height);
+		Common::Vector3f(0.0f, 2.0f, -200.0f),
+		Common::Vector3f(0, 0, 0),
+		Common::Vector3f(0, 1.0f, 0),
+		45.0f*(3.14f / 180.0f),
+		0.1f,
+		1000.0f,
+		width,
+		height);
 
 	engine.setupRenderPass(pRenderPass, "BasicRenderPass");
 
@@ -155,6 +156,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 		mousePosition[0] = mouseEvent.pos.x;
 		mousePosition[1] = mouseEvent.pos.y;
+	});
+
+	form.events().click([&](const nana::arg_click& clickEvent)
+	{
+		if (clickEvent.mouse_args->is_left_button())
+		{
+			auto pickingRay = camera.getPickingRay(clickEvent.mouse_args->pos.x, clickEvent.mouse_args->pos.y);
+		}
 	});
 
 	// one notch of mouse wheel delta is 120

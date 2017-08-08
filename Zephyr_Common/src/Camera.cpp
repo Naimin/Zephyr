@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "CoordinateConvertor.h"
-#include <iostream>>
+#include <iostream>
 
 using namespace Zephyr::Common;
 
@@ -12,7 +12,7 @@ Camera::~Camera()
 {
 }
 
-void Camera::intialize(const Vector3f & cameraPos, const Vector3f & cameraTarget, const Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const float aspectRatio)
+void Camera::intialize(const Vector3f & cameraPos, const Vector3f & cameraTarget, const Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const int screenWidth, const int screenHeight)
 {
 	mCameraPos = cameraPos.normalized();
 	mCameraTarget = cameraTarget.normalized();
@@ -22,8 +22,11 @@ void Camera::intialize(const Vector3f & cameraPos, const Vector3f & cameraTarget
 	mFOV = fov;
 	mNearClip = nearClip;
 	mFarClip = farClip;
-	mAspectRatio = aspectRatio;
+	mAspectRatio = screenWidth / (float)screenHeight;
 	updatePerspectiveMatrix(mFOV, mNearClip, mFarClip, mAspectRatio);
+
+	mScreenWidth = screenWidth;
+	mScreenHeight = screenHeight;
 
 	mPolarCoord = CoordinateConvertor::CartesianToPolar(mCameraTarget - mCameraPos);
 }
@@ -32,7 +35,7 @@ void Camera::updatePerspectiveMatrix(const float fov, const float aspectRatio, c
 {
 	float yScale = 1.0f / std::tanf(fov / 2); // cot( fovY / 2)
 	float xScale = yScale / aspectRatio;
-
+	float fRange = farClip / (farClip - nearClip);
 	/* 
 	xScale     0          0               0
 		0    yScale       0               0
@@ -43,17 +46,13 @@ void Camera::updatePerspectiveMatrix(const float fov, const float aspectRatio, c
 	xScale = yScale / aspect ratio
 	*/
 
-	// Eigen is column-major vs directx row-major
 	mPerspectiveMatrix.Zero();
 
 	mPerspectiveMatrix(0, 0) = xScale;
 	mPerspectiveMatrix(1, 1) = yScale;
-	mPerspectiveMatrix(2, 2) = farClip / (farClip - nearClip);
-	mPerspectiveMatrix(3, 2) = 1.0f;
-	mPerspectiveMatrix(2, 3) = -nearClip * farClip / (farClip - nearClip);
-
-	// now it is in Row-Major
-	mViewMatrix.transposeInPlace();
+	mPerspectiveMatrix(2, 2) = fRange;
+	mPerspectiveMatrix(2, 3) = 1.0f;
+	mPerspectiveMatrix(3, 2) = -fRange * nearClip;
 }
 
 void Camera::updateViewMatrix(const Vector3f & cameraPos, const Vector3f & cameraTarget, const Vector3f & cameraUp)
@@ -73,34 +72,35 @@ void Camera::updateViewMatrix(const Vector3f & cameraPos, const Vector3f & camer
 	Vector3f xAxis = cameraUp.cross(zAxis).normalized();
 	Vector3f yAxis = zAxis.cross(xAxis);
 
+	Vector3f negCameraPos = -1 * cameraPos;
+
 	mViewMatrix.setIdentity();
 
 	mViewMatrix(0, 0) = xAxis.x();
 	mViewMatrix(1, 0) = xAxis.y();
-	mViewMatrix(2, 0) = xAxis.y();
-	mViewMatrix(3, 0) = -(xAxis.dot(cameraPos));
+	mViewMatrix(2, 0) = xAxis.z();
+	mViewMatrix(3, 0) = xAxis.dot(negCameraPos);
 
 	mViewMatrix(0, 1) = yAxis.x();
 	mViewMatrix(1, 1) = yAxis.y();
-	mViewMatrix(2, 1) = yAxis.y();
-	mViewMatrix(3, 1) = -(yAxis.dot(cameraPos));
+	mViewMatrix(2, 1) = yAxis.z();
+	mViewMatrix(3, 1) = yAxis.dot(negCameraPos);
 
 	mViewMatrix(0, 2) = zAxis.x();
 	mViewMatrix(1, 2) = zAxis.y();
-	mViewMatrix(2, 2) = zAxis.y();
-	mViewMatrix(3, 2) = -(zAxis.dot(cameraPos));
+	mViewMatrix(2, 2) = zAxis.z();
+	mViewMatrix(3, 2) = zAxis.dot(negCameraPos);
 
-	// now it is in Row-Major
 	mViewMatrix.transposeInPlace();
 }
 
-void Zephyr::Common::Camera::zoom(const float distance)
+void Camera::zoom(const float distance)
 {
 	mPolarCoord[0] += distance;
 	mCameraPos = CoordinateConvertor::PolarToCartesian(mPolarCoord);
 }
 
-void Zephyr::Common::Camera::pan(const float deltaX, const float deltaY)
+void Camera::pan(const float deltaX, const float deltaY)
 {
 	auto sideDirection = getViewDirection().cross(mCameraUp);
 
@@ -108,7 +108,7 @@ void Zephyr::Common::Camera::pan(const float deltaX, const float deltaY)
 	mCameraPos += mCameraUp * deltaY;
 }
 
-void Zephyr::Common::Camera::rotation(const float degreeX, const float degreeY)
+void Camera::rotation(const float degreeX, const float degreeY)
 {
 	mPolarCoord[1] += CoordinateConvertor::DegreeToRadian(degreeY);
 	mPolarCoord[2] += CoordinateConvertor::DegreeToRadian(degreeX);
@@ -119,4 +119,31 @@ void Zephyr::Common::Camera::rotation(const float degreeX, const float degreeY)
 Vector3f Camera::getViewDirection() const
 {
 	return (mCameraTarget - mCameraPos).normalized();
+}
+
+Vector3f Camera::getPickingRay(const int mouseX, const int mouseY) const
+{
+	// reference: http://www.rastertek.com/dx11tut47.html
+	
+	Vector2f p(mouseX, mouseY);
+
+	float X = ((2.0f * (float)mouseX) / (float)mScreenWidth) - 1.0f;
+	float Y = (((2.0f * (float)mouseY) / (float)mScreenHeight) - 1.0f) * -1.0f;
+
+	X /= mPerspectiveMatrix(0, 0);
+	Y /= mPerspectiveMatrix(1, 1);
+
+	Vector4f origin = Vector4f(X, Y, 0, 1);
+	Vector4f faraway = Vector4f(X, Y, 1, 1);
+
+	Eigen::Matrix4f inverseView = mViewMatrix.inverse();
+
+	Vector3f rayDirection;
+	rayDirection.x() = (X * inverseView(0, 0)) + (Y * inverseView(1, 0)) + inverseView(2, 0);
+	rayDirection.y() = (X * inverseView(0, 1)) + (Y * inverseView(1, 1)) + inverseView(2, 1);
+	rayDirection.z() = (X * inverseView(0, 2)) + (Y * inverseView(1, 2)) + inverseView(2, 2);
+
+	rayDirection.normalize();
+
+	return rayDirection;
 }

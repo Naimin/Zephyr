@@ -30,7 +30,8 @@ namespace Zephyr
 												const float fov, // in radian
 												const float nearClip,
 												const float farClip,
-												const float aspectRatio);
+												const int screenWidth,
+												const int screenHeight);
 
 				Common::Camera& getCamera();
 				const Common::Camera& getCamera() const;

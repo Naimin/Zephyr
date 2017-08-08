@@ -23,9 +23,9 @@ void Zephyr::Graphics::BasicRenderPass::setCamera(const Common::Camera & camera)
 	updateCameraMatrix();
 }
 
-Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::initalizeCamera(const Common::Vector3f & cameraPos, const Common::Vector3f & cameraTarget, const Common::Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const float aspectRatio)
+Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::initalizeCamera(const Common::Vector3f & cameraPos, const Common::Vector3f & cameraTarget, const Common::Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const int screenWidth, const int screenHeight)
 {
-	mCamera.intialize(cameraPos, cameraTarget, cameraUp, fov, nearClip, farClip, aspectRatio);
+	mCamera.intialize(cameraPos, cameraTarget, cameraUp, fov, nearClip, farClip, screenWidth, screenHeight);
 	updateCameraMatrix();
 	
 	return mCamera;
