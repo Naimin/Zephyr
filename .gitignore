@@ -50,3 +50,4 @@ thirdparty/**
 
 
 *.ipch
+Zephyr.VC.db
