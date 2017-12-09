@@ -12,7 +12,7 @@ namespace Zephyr
 	class App
 	{
 		public:
-			App();
+			App(const std::string& windowTitle, unsigned int width = 800, unsigned int height = 600, bool bFullScreen = false);
 			virtual ~App();
 		
 			bool initialize();

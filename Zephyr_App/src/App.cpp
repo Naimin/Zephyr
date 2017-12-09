@@ -4,29 +4,16 @@
 
 #include <windows.h>
 #include <Zephyr_Graphics.h>
-#include <iostream>
-#include <tchar.h>
-#include <TriDualGraph.h>
-#include <IO/MeshLoader.h>
 #include <BasicRenderPass.h>
-
-#include <Mesh/OM_Mesh.h>
 #include <nana/gui/timer.hpp>
 
 using namespace Zephyr;
 
-Zephyr::App::App() : mWidth(800), mHeight(600), mbFullScreen(false)
+Zephyr::App::App(const std::string& windowTitle, unsigned int width, unsigned int height, bool bFullScreen) : mWidth(width), mHeight(height), mbFullScreen(bFullScreen), mHwnd(NULL)
 {
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);
-
-	// Handle to the window
-	mHwnd = NULL;
-	// name of the window (not the title)
-	std::string windowName = "Zephyr_App";
-	// title of the window
-	std::string windowTitle = "Zephyr_App";
 
 	// setup UI
 	mpUI.reset(new UI(windowTitle, this));
