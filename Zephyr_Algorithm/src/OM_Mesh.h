@@ -3,6 +3,8 @@
 
 #include "stdfx.h"
 
+#include <OpenMesh/Core/IO/MeshIO.hh>
+
 // Wrapper class foor OpenMesh half-edge mesh representation
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <OpenMesh/Core/Mesh/TriMeshT.hh>
@@ -26,7 +28,12 @@ namespace Zephyr
 				OpenMeshMesh();
 				// take in a Zephyr::Graphics::Mesh and build half edge
 				OpenMeshMesh(Common::Mesh &mesh);
+
+				OpenMeshMesh(const std::string& path);
+
 				virtual ~OpenMeshMesh();
+
+				OMMesh& getMesh();
 
 			protected:
 				OMMesh mMesh;

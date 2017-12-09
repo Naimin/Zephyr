@@ -30,9 +30,22 @@ Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Common::Mesh & mesh)
 		}
 		mMesh.add_face(vertexHandles);
 	}
+
+	auto edgeCount = mMesh.n_edges();
+	auto halfEdgeCount = mMesh.n_halfedges();
+}
+
+Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(const std::string & path)
+{
+	OpenMesh::IO::read_mesh(mMesh, path);
 }
 
 Zephyr::Algorithm::OpenMeshMesh::~OpenMeshMesh()
 {
 	
+}
+
+OMMesh& Zephyr::Algorithm::OpenMeshMesh::getMesh()
+{
+	return mMesh;
 }
