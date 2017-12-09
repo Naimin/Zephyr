@@ -1,7 +1,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 #include "Texture.h"
 
 namespace Zephyr

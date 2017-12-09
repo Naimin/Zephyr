@@ -1,9 +1,9 @@
 #ifndef MESH_EXPORTER_H
 #define MESH_EXPORTER_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 
-#include "Model.h"
+#include "../Mesh/Model.h"
 
 namespace Zephyr
 {

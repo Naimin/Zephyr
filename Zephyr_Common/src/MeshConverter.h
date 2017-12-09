@@ -1,9 +1,9 @@
-#ifndef MESH_LOADER_H
-#define MESH_LOADER_H
+#ifndef MESH_CONVERTER_H
+#define MESH_CONVERTER_H
 
 #include "stdfx.h"
 
-#include "Model.h"
+#include "Mesh/Model.h"
 
 namespace Zephyr
 {

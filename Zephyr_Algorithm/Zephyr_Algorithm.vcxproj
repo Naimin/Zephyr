@@ -156,13 +156,11 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshTools.dll" "$(SolutionDir)$(Platform
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MeshSegmentation.cpp" />
-    <ClCompile Include="src\OM_Mesh.cpp" />
     <ClCompile Include="src\TriDualGraph.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\iDualGraph.h" />
     <ClInclude Include="src\MeshSegmentation.h" />
-    <ClInclude Include="src\OM_Mesh.h" />
     <ClInclude Include="src\stdfx.h" />
     <ClInclude Include="src\TriDualGraph.h" />
     <ClInclude Include="src\Zephyr_Algorithm.h" />

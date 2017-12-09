@@ -4,38 +4,44 @@
 #include "CommandList.h"
 #include "Zephyr_Graphics.h"
 #include "StringUtils.h"
-#include <MeshLoader.h>
+#include <IO/MeshLoader.h>
 #include <boost/filesystem/path.hpp>
 
+using namespace Zephyr;
 using namespace Zephyr::Common;
 
-Zephyr::Graphics::RenderableModel::RenderableModel(const std::wstring & name, ResourceManager* pResourceManager) : mName(name), mpResourceManager(pResourceManager)
+Graphics::RenderableModel::RenderableModel(const std::wstring & name, ResourceManager* pResourceManager) : mName(name), mpResourceManager(pResourceManager)
 {
 }
 
-Zephyr::Graphics::RenderableModel::~RenderableModel()
+Graphics::RenderableModel::~RenderableModel()
 {
 	unloadFromGPU();
 }
 
-D3D12_VERTEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getVertexResourceView(const int meshId)
+D3D12_VERTEX_BUFFER_VIEW Graphics::RenderableModel::getVertexResourceView(const int meshId)
 {
 	return mpResourceManager->getVertexResourceView(getVertexResourceName(meshId), sizeof(Common::Vertex));
 }
 
-D3D12_INDEX_BUFFER_VIEW Zephyr::Graphics::RenderableModel::getIndexResourceView(const int meshId)
+D3D12_INDEX_BUFFER_VIEW Graphics::RenderableModel::getIndexResourceView(const int meshId)
 {
 	return mpResourceManager->getIndexResourceView(getIndexResourceName(meshId));
 }
 
-bool Zephyr::Graphics::RenderableModel::loadFromFile(const std::string & path)
+bool Graphics::RenderableModel::loadFromFile(const std::string & path)
 {
 	mPath = boost::filesystem::path(path).wstring();
 	mName = this->mPath;
 	return Common::MeshLoader::loadFile(path, this);
 }
 
-bool Zephyr::Graphics::RenderableModel::uploadToGPU()
+bool Graphics::RenderableModel::loadOpenMesh(const OpenMeshMesh& mesh)
+{
+	return false;
+}
+
+bool Graphics::RenderableModel::uploadToGPU()
 {
 	for (int i = 0; i < (int)mMeshes.size(); ++i)
 	{
@@ -58,7 +64,7 @@ bool Zephyr::Graphics::RenderableModel::uploadToGPU()
 	return true;
 }
 
-void Zephyr::Graphics::RenderableModel::unloadFromGPU()
+void Graphics::RenderableModel::unloadFromGPU()
 {
 	if (nullptr == mpResourceManager)
 		return;
@@ -79,7 +85,7 @@ void Zephyr::Graphics::RenderableModel::unloadFromGPU()
 	mTextureHeap.clear();
 }
 
-bool Zephyr::Graphics::RenderableModel::drawMesh(const int meshId, SharedPtr<ID3D12GraphicsCommandList> pCommandList)
+bool Graphics::RenderableModel::drawMesh(const int meshId, SharedPtr<ID3D12GraphicsCommandList> pCommandList)
 {
 	if (meshId >= mMeshes.size())
 		return false;
@@ -103,7 +109,7 @@ bool Zephyr::Graphics::RenderableModel::drawMesh(const int meshId, SharedPtr<ID3
 	return true;
 }
 
-std::wstring Zephyr::Graphics::RenderableModel::getVertexResourceName(const int meshId) const
+std::wstring Graphics::RenderableModel::getVertexResourceName(const int meshId) const
 {
 	std::wstringstream vertexBufferName;
 	vertexBufferName << mName << L"_VB_" << meshId;
@@ -111,7 +117,7 @@ std::wstring Zephyr::Graphics::RenderableModel::getVertexResourceName(const int 
 	return std::wstring(vertexBufferName.str());
 }
 
-std::wstring Zephyr::Graphics::RenderableModel::getIndexResourceName(const int meshId) const
+std::wstring Graphics::RenderableModel::getIndexResourceName(const int meshId) const
 {
 	std::wstringstream indexBufferName;
 	indexBufferName << mName << L"_IB_" << meshId;
@@ -119,7 +125,7 @@ std::wstring Zephyr::Graphics::RenderableModel::getIndexResourceName(const int m
 	return std::wstring(indexBufferName.str());
 }
 
-bool Zephyr::Graphics::RenderableModel::uploadVerticesToGPU(const int meshId)
+bool Graphics::RenderableModel::uploadVerticesToGPU(const int meshId)
 {
 	if (meshId >= mMeshes.size())
 		return false;
@@ -135,7 +141,7 @@ bool Zephyr::Graphics::RenderableModel::uploadVerticesToGPU(const int meshId)
 	return true;
 }
 
-bool Zephyr::Graphics::RenderableModel::uploadIndicesToGPU(const int meshId)
+bool Graphics::RenderableModel::uploadIndicesToGPU(const int meshId)
 {
 	if (meshId >= mMeshes.size())
 		return false;
@@ -151,7 +157,7 @@ bool Zephyr::Graphics::RenderableModel::uploadIndicesToGPU(const int meshId)
 	return true;
 }
 
-bool Zephyr::Graphics::RenderableModel::uploadTextureToGPU(const int materialId)
+bool Graphics::RenderableModel::uploadTextureToGPU(const int materialId)
 {
 	if (materialId >= mMaterials.size())
 		return false;

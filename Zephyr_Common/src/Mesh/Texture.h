@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 #include <FreeImagePlus.h>
 #include <boost/filesystem/path.hpp>
 

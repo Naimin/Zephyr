@@ -1,7 +1,7 @@
 #include "TestRenderPass.h"
 #include "Renderer.h"
 #include "Zephyr_Graphics.h"
-#include "Vertex.h"
+#include <Primitive/Vertex.h>
 
 Zephyr::Graphics::TestRenderPass::TestRenderPass(const int frameBufferCount, GraphicsEngine* pEngine) : IRenderPass(frameBufferCount, pEngine)
 {

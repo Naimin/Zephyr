@@ -19,46 +19,19 @@
     <Filter Include="Source Files\Mesh">
       <UniqueIdentifier>{c4cd1c49-8025-4b9d-9fb5-b636cd62d1bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{ac22e39f-55fc-4a9b-811e-5664e36ed402}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Primitive">
+      <UniqueIdentifier>{8d6c4d86-b2b2-4a68-a6f4-8962a35a674c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Point.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Line.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\GeometryMath.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\stdfx.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LNormUtil.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshLoader.h">
-      <Filter>Source Files\IO</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Material.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vertex.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Texture.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>Source Files\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Triangle.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshExporter.h">
-      <Filter>Source Files\IO</Filter>
     </ClInclude>
     <ClInclude Include="src\Timer.h">
       <Filter>Source Files</Filter>
@@ -66,43 +39,88 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CoordinateConvertor.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\Mesh\Model.h">
+      <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\OM_Mesh.h">
+      <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\Texture.h">
+      <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\Material.h">
+      <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh\Mesh.h">
+      <Filter>Source Files\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IO\MeshConverter.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IO\MeshExporter.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IO\MeshLoader.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitive\Point.h">
+      <Filter>Source Files\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitive\Triangle.h">
+      <Filter>Source Files\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitive\Line.h">
+      <Filter>Source Files\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\CoordinateConvertor.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\LNormUtil.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitive\Vertex.h">
+      <Filter>Source Files\Primitive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Triangle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LNormUtil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshLoader.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Material.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Vertex.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model.cpp">
-      <Filter>Source Files\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MeshExporter.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\Model.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\OM_Mesh.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\Texture.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\Material.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh\Mesh.cpp">
+      <Filter>Source Files\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IO\MeshConverter.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IO\MeshExporter.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IO\MeshLoader.cpp">
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Primitive\Triangle.cpp">
+      <Filter>Source Files\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\LNormUtil.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Primitive\Vertex.cpp">
+      <Filter>Source Files\Primitive</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

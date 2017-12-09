@@ -1,7 +1,7 @@
 #ifndef L_NORM_UTIL_H
 #define L_NORM_UTIL_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 #include <algorithm>
 #include <cmath>
 

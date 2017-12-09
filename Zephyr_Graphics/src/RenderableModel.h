@@ -3,8 +3,8 @@
 
 #include "stdfx.h"
 
-#include <Model.h>
-#include "Material.h"
+#include <Mesh/Model.h>
+#include <Mesh/Material.h>
 
 namespace Zephyr
 {
@@ -12,6 +12,7 @@ namespace Zephyr
 	{
 		class CommandList;
 		class ResourceManager;
+		class OpenMeshMesh;
 		// class of renderable model
 		class ZEPHYR_GRAPHICS_API RenderableModel : public Common::Model
 		{
@@ -26,6 +27,7 @@ namespace Zephyr
 				D3D12_INDEX_BUFFER_VIEW getIndexResourceView(const int meshId);
 
 				bool loadFromFile(const std::string& path);
+				bool loadOpenMesh(const OpenMeshMesh & mesh);
 				bool uploadToGPU();
 				void unloadFromGPU();
 

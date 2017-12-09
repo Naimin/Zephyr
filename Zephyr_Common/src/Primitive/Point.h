@@ -1,7 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 
 namespace Zephyr
 {

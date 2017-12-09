@@ -7,7 +7,7 @@
 #include <iostream>
 #include <tchar.h>
 #include <TriDualGraph.h>
-#include <MeshLoader.h>
+#include <IO/MeshLoader.h>
 #include "UI.h"
 #include "App.h"
 #include <BasicRenderPass.h>
@@ -17,6 +17,8 @@
 #include <nana/gui/widgets/button.hpp>
 #include <nana/gui/timer.hpp>
 #include <nana/gui/filebox.hpp>
+
+#include <Mesh/OM_Mesh.h>
 
 using namespace Zephyr;
 
@@ -43,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	nana::form form(nana::rectangle{ 0, 0, width, height });
 	form.caption(windowTitle);
 
-	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 50 }, nana::form::appear::bald<>());
+	nana::nested_form nfm(form, nana::rectangle{ 10, 10, 100, 110 }, nana::form::appear::bald<>());
 
 	//nana::label label(form, nana::rectangle(0, 0, 100, 50));
 	//label.caption("Hello Nana");
@@ -89,6 +91,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 
 	// Load Model Events
 	// load the user specified model
+	OMMesh openMesh;
+
 	nana::button btn(nfm, nana::rectangle{ 0, 0, 100, 20 });
 	btn.caption(L"Load");
 	btn.events().click([&] {
@@ -101,7 +105,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 			auto modelPath = fb.file();
 			std::cout << modelPath << std::endl;
 
-			pRenderPass->loadModel(modelPath);
+			Common::OpenMeshMesh ommesh(modelPath);
+			openMesh = ommesh.getMesh();
+
+			//pRenderPass->loadModel(modelPath);
+			//Algorithm::OpenMeshMesh mesh(pRenderPass->getModel()->getMesh(0));
 		}
 	});
 
@@ -131,6 +139,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 		input.back().push_back(5000);
 
 		graph.segment(input);
+	});
+
+	// greedy decimate
+	nana::button greedyDecimateBtn(nfm, nana::rectangle{ 0, 60, 100, 20 });
+	greedyDecimateBtn.caption(L"Greedy Decimate");
+	greedyDecimateBtn.events().click([&] {
+
+	});
+
+	// random decimate
+	nana::button randomDecimateBtn(nfm, nana::rectangle{ 0, 90, 100, 20 });
+	randomDecimateBtn.caption(L"Random Decimate");
+	randomDecimateBtn.events().click([&] {
+
 	});
 
 	// Mouse Events

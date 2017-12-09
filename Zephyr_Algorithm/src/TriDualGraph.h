@@ -2,9 +2,9 @@
 #define TRI_DUAL_GRAPH_H
 
 #include "iDualGraph.h"
-#include "Triangle.h"
-#include <Line.h>
-#include <Model.h>
+#include <Primitive/Triangle.h>
+#include <Primitive/Line.h>
+#include <Mesh/Model.h>
 
 namespace Zephyr
 {

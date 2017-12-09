@@ -1,7 +1,7 @@
 #ifndef OM_MESH_H
 #define OM_MESH_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
@@ -9,9 +9,7 @@
 #include <OpenMesh/Core/Mesh/TriMesh_ArrayKernelT.hh>
 #include <OpenMesh/Core/Mesh/TriMeshT.hh>
 
-#include <Mesh.h>
-
-#include "TriDualGraph.h"
+#include "Mesh.h"
 
 using namespace OpenMesh;
 
@@ -20,9 +18,9 @@ typedef OpenMesh::TriMesh_ArrayKernelT<> OMMesh;
 
 namespace Zephyr
 {
-	namespace Algorithm
+	namespace Common
 	{
-		class ZEPHYR_ALGORITHM_API OpenMeshMesh
+		class ZEPHYR_COMMON_API OpenMeshMesh
 		{
 			public:
 				OpenMeshMesh();

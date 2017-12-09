@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\OM_Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\MeshSegmentation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -26,22 +23,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\OM_Mesh.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\stdfx.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Zephyr_Algorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MeshSegmentation.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\iDualGraph.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TriDualGraph.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MeshSegmentation.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

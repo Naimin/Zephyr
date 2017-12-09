@@ -1,7 +1,7 @@
 #include "BasicRenderPass.h"
 #include "Renderer.h"
 #include "Zephyr_Graphics.h"
-#include "Vertex.h"
+#include <Primitive/Vertex.h>
 #include "Pipeline.h"
 #include "RenderableModel.h"
 #include <boost/algorithm/string.hpp>

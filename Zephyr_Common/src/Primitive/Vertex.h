@@ -1,7 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 
 namespace Zephyr
 {

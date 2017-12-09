@@ -12,11 +12,11 @@
 #include <Eigen/CholmodSupport>
 #include <Eigen/SparseLU>
 #include <algorithm>
-#include <LNormUtil.h>
+#include <Utils/LNormUtil.h>
 #include <ctime>
 
-#include <MeshLoader.h>
-#include <MeshExporter.h>
+#include <IO/MeshLoader.h>
+#include <IO/MeshExporter.h>
 
 using namespace Zephyr::Common;
 //using namespace Zephyr::Graphics;

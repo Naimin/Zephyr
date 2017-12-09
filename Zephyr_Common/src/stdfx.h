@@ -6,6 +6,8 @@
 #define ZEPHYR_COMMON_API __declspec(dllimport)   
 #endif 
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 
 #include "GeometryMath.h"

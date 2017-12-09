@@ -2,13 +2,13 @@
 #include <tbb/parallel_for.h>
 
 using namespace Zephyr;
-using namespace Zephyr::Algorithm;
+using namespace Zephyr::Common;
 
-Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh()
+Zephyr::Common::OpenMeshMesh::OpenMeshMesh()
 {
 }
 
-Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Common::Mesh & mesh)
+Zephyr::Common::OpenMeshMesh::OpenMeshMesh(Common::Mesh & mesh)
 {
 	auto vertices = mesh.getVertices();
 	
@@ -35,17 +35,17 @@ Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(Common::Mesh & mesh)
 	auto halfEdgeCount = mMesh.n_halfedges();
 }
 
-Zephyr::Algorithm::OpenMeshMesh::OpenMeshMesh(const std::string & path)
+Zephyr::Common::OpenMeshMesh::OpenMeshMesh(const std::string & path)
 {
 	OpenMesh::IO::read_mesh(mMesh, path);
 }
 
-Zephyr::Algorithm::OpenMeshMesh::~OpenMeshMesh()
+Zephyr::Common::OpenMeshMesh::~OpenMeshMesh()
 {
 	
 }
 
-OMMesh& Zephyr::Algorithm::OpenMeshMesh::getMesh()
+OMMesh& Zephyr::Common::OpenMeshMesh::getMesh()
 {
 	return mMesh;
 }

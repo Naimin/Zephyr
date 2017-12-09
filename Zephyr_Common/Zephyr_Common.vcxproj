@@ -85,13 +85,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ZEPHYR_COMMON_EXPORTS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\thirdparty\Eigen;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\tbb\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZEPHYR_COMMON_EXPORTS;EIGEN_USE_MKL_ALL;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\thirdparty\Eigen;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\tbb\include;..\thirdparty\openmesh\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb_debug.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-gd-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-gd-1_63.lib;..\thirdparty\openmesh\lib\OpenMeshCored.lib;..\thirdparty\openmesh\lib\OpenMeshToolsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmp\bin\libiomp5md.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libiomp5md.dll"</Command>
@@ -117,8 +117,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\thirdparty\Eigen;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\tbb\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZEPHYR_COMMON_EXPORTS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\thirdparty\Eigen;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\tbb\include;..\thirdparty\openmesh\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZEPHYR_COMMON_EXPORTS;EIGEN_USE_MKL_ALL;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
@@ -126,7 +126,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-1_63.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\thirdparty\tbb\lib\intel64\vc14\tbb.lib;..\thirdparty\assimp\lib\$(Configuration)\assimp-vc140-mt.lib;..\thirdparty\freeImage\lib\FreeImagePlus.lib;..\thirdparty\freeImage\lib\FreeImage.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_filesystem-vc140-mt-1_63.lib;..\thirdparty\boost_1_63_0\lib64-msvc-14.0\libboost_system-vc140-mt-1_63.lib;..\thirdparty\openmesh\lib\OpenMeshCore.lib;..\thirdparty\openmesh\lib\OpenMeshTools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "..\thirdparty\openmp\bin\libiomp5md.dll" "$(SolutionDir)$(Platform)\$(Configuration)\libiomp5md.dll"</Command>
@@ -134,34 +134,38 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
-    <ClInclude Include="src\CoordinateConvertor.h" />
     <ClInclude Include="src\GeometryMath.h" />
-    <ClInclude Include="src\Line.h" />
-    <ClInclude Include="src\LNormUtil.h" />
-    <ClInclude Include="src\Material.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\MeshExporter.h" />
-    <ClInclude Include="src\MeshLoader.h" />
-    <ClInclude Include="src\Model.h" />
-    <ClInclude Include="src\Point.h" />
+    <ClInclude Include="src\IO\MeshConverter.h" />
+    <ClInclude Include="src\IO\MeshExporter.h" />
+    <ClInclude Include="src\IO\MeshLoader.h" />
+    <ClInclude Include="src\Mesh\Material.h" />
+    <ClInclude Include="src\Mesh\Mesh.h" />
+    <ClInclude Include="src\Mesh\Model.h" />
+    <ClInclude Include="src\Mesh\OM_Mesh.h" />
+    <ClInclude Include="src\Mesh\Texture.h" />
+    <ClInclude Include="src\Primitive\Line.h" />
+    <ClInclude Include="src\Primitive\Point.h" />
+    <ClInclude Include="src\Primitive\Triangle.h" />
+    <ClInclude Include="src\Primitive\Vertex.h" />
     <ClInclude Include="src\stdfx.h" />
-    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Timer.h" />
-    <ClInclude Include="src\Triangle.h" />
-    <ClInclude Include="src\Vertex.h" />
+    <ClInclude Include="src\Utils\CoordinateConvertor.h" />
+    <ClInclude Include="src\Utils\LNormUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\LNormUtil.cpp" />
-    <ClCompile Include="src\Material.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\MeshExporter.cpp" />
-    <ClCompile Include="src\MeshLoader.cpp" />
-    <ClCompile Include="src\Model.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\IO\MeshConverter.cpp" />
+    <ClCompile Include="src\IO\MeshExporter.cpp" />
+    <ClCompile Include="src\IO\MeshLoader.cpp" />
+    <ClCompile Include="src\Mesh\Material.cpp" />
+    <ClCompile Include="src\Mesh\Mesh.cpp" />
+    <ClCompile Include="src\Mesh\Model.cpp" />
+    <ClCompile Include="src\Mesh\OM_Mesh.cpp" />
+    <ClCompile Include="src\Mesh\Texture.cpp" />
+    <ClCompile Include="src\Primitive\Triangle.cpp" />
+    <ClCompile Include="src\Primitive\Vertex.cpp" />
     <ClCompile Include="src\Timer.cpp" />
-    <ClCompile Include="src\Triangle.cpp" />
-    <ClCompile Include="src\Vertex.cpp" />
+    <ClCompile Include="src\Utils\LNormUtil.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
