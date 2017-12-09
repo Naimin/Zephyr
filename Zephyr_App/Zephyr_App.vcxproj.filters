@@ -21,10 +21,10 @@
     <ClCompile Include="src\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\UIRenderPass.cpp">
+    <ClCompile Include="src\App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\App.cpp">
+    <ClCompile Include="src\AppEvents.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClInclude Include="src\UI.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\UIRenderPass.h">
+    <ClInclude Include="src\App.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\App.h">
+    <ClInclude Include="src\AppEvents.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
