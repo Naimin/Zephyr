@@ -17,6 +17,7 @@ namespace Zephyr
 				virtual ~MeshConverter();
 
 				static OpenMeshMesh ModelToOpenMesh(const Model& model);
+				static Model OpenMeshToModel(const OpenMeshMesh& omesh);
 		};
 	}
 }

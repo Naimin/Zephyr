@@ -44,25 +44,27 @@ bool MeshLoader::loadFile(const std::string & path, Model* pModel)
 		// copy over the vertex information
 		int vertexCount = mesh->mNumVertices;
 		modelMesh.resizeVertices(vertexCount);
+		auto& vertices = modelMesh.getVertices();
 		tbb::parallel_for(0, vertexCount, [&](const int vertexId)
 		{
 			aiVector3D pos = mesh->mVertices[vertexId];
 			aiVector3D normal = mesh->HasNormals() ? mesh->mNormals[vertexId] : aiVector3D(1.0f, 1.0f, 1.0f);
 			aiVector3D uv = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][vertexId] : aiVector3D(0.0f, 0.0f, 0.0f);
 
-			modelMesh.getVertices()[vertexId] = Vertex(pos.x, pos.y, pos.z, normal.x, normal.y, normal.z, uv.x, uv.y);
+			vertices[vertexId] = Vertex(pos.x, pos.y, pos.z, normal.x, normal.y, normal.z, uv.x, uv.y);
 		});
 
 		// setup the index buffer
 		int faceCount = mesh->mNumFaces;
 		modelMesh.resizeIndices(faceCount * 3);
+		auto& indices = modelMesh.getIndices();
 		tbb::parallel_for(0, faceCount, [&](const int faceId)
 		{
 			const aiFace& face = mesh->mFaces[faceId];
 			int currentFaceId = faceId * 3;
 			for (int i = 0; i < 3; ++i)
 			{
-				modelMesh.getIndices()[currentFaceId] = face.mIndices[i];
+				indices[currentFaceId] = face.mIndices[i];
 				++currentFaceId;
 			}
 		});

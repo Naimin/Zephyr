@@ -13,13 +13,13 @@
 
 using namespace OpenMesh;
 
-// define traits
-typedef OpenMesh::TriMesh_ArrayKernelT<> OMMesh;
-
 namespace Zephyr
 {
 	namespace Common
 	{
+		// define traits
+		typedef OpenMesh::TriMesh_ArrayKernelT<> OMMesh;
+
 		class ZEPHYR_COMMON_API OpenMeshMesh
 		{
 			public:
@@ -31,7 +31,13 @@ namespace Zephyr
 
 				virtual ~OpenMeshMesh();
 
+				void loadMesh(Common::Mesh& mesh);
+
 				OMMesh& getMesh();
+
+				void decimate(unsigned targetFaceCount);
+
+				bool exports(const std::string& path);
 
 			protected:
 				OMMesh mMesh;

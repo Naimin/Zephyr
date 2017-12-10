@@ -2,6 +2,10 @@
 #include <nana/gui/filebox.hpp>
 #include <BasicRenderPass.h>
 
+// external algorithms
+#include "TriDualGraph.h"
+#include <IO/MeshConverter.h>
+
 Zephyr::AppEvents::AppEvents(App* pApp, UI * pUI) : mpApp(pApp), mpUI(pUI)
 {
 }
@@ -40,8 +44,8 @@ void Zephyr::AppEvents::setupLoadButtonEvents(std::shared_ptr<nana::button> pBut
 			auto modelPath = fb.file();
 			std::cout << modelPath << std::endl;
 
-			//Common::OpenMeshMesh ommesh(modelPath);
-			//openMesh = ommesh.getMesh();
+			//Common::OpenMeshMesh omesh(modelPath);
+			//omesh.exports("D:\\sandbox\\mesh_openmesh.obj");
 
 			auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
 			pRenderPass->loadModel(modelPath);
@@ -55,13 +59,14 @@ void Zephyr::AppEvents::setupLoadButtonEvents(std::shared_ptr<nana::button> pBut
 void Zephyr::AppEvents::setupSegmentButtonEvents(std::shared_ptr<nana::button> pButton)
 {
 	pButton->events().click([&] {
-		//auto pModel = pRenderPass->getModel();
+		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
+		auto pModel = pRenderPass->getModel();
 
-		//if (nullptr == pModel)
-		//	return;
+		if (nullptr == pModel)
+			return;
 
-		//auto mesh = pModel->getMesh(0);
-		//Algorithm::TriDualGraph graph(&mesh);
+		auto mesh = pModel->getMesh(0);
+		Algorithm::TriDualGraph graph(&mesh);
 
 		std::vector<std::vector<int>> input;
 		input.push_back(std::vector<int>());
@@ -76,12 +81,24 @@ void Zephyr::AppEvents::setupSegmentButtonEvents(std::shared_ptr<nana::button> p
 		input.push_back(std::vector<int>());
 		input.back().push_back(5000);
 
-	//	graph.segment(input);
+		graph.segment(input);
 	});
 }
 
 void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton)
 {
+	pButton->events().click([&] {
+		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
+		auto pModel = pRenderPass->getModel();
+
+		if (nullptr == pModel)
+			return;
+
+		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
+		
+
+	});
+
 }
 
 void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton)
