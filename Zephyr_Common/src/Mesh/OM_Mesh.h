@@ -20,6 +20,12 @@ namespace Zephyr
 		// define traits
 		typedef OpenMesh::TriMesh_ArrayKernelT<> OMMesh;
 
+		enum DecimationType
+		{
+			GREEDY_DECIMATE = 0,
+			RANDOM_DECIMATE
+		};
+
 		class ZEPHYR_COMMON_API OpenMeshMesh
 		{
 			public:
@@ -35,9 +41,14 @@ namespace Zephyr
 
 				OMMesh& getMesh();
 
-				void decimate(unsigned targetFaceCount);
+				int decimate(unsigned int targetFaceCount, DecimationType type = GREEDY_DECIMATE);
 
 				bool exports(const std::string& path);
+
+			protected:
+				int decimateGreedy(unsigned int targetFaceCount);
+
+				int decimateRandom(unsigned int targetFaceCount);
 
 			protected:
 				OMMesh mMesh;

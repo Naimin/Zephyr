@@ -95,8 +95,11 @@ void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::
 			return;
 
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
-		
+		auto numOfFaces = omesh.getMesh().n_faces();
 
+		omesh.decimate(numOfFaces / 2, Common::GREEDY_DECIMATE);
+
+		//omesh.exports("D:\\sandbox\\decimatedMesh.obj");
 	});
 
 }

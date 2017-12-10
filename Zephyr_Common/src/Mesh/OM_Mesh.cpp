@@ -7,6 +7,8 @@
 
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
+#include "../Timer.h"
+
 using namespace Zephyr;
 using namespace Zephyr::Common;
 
@@ -85,7 +87,60 @@ bool Common::OpenMeshMesh::exports(const std::string & path)
 	return true;
 }
 
-void Zephyr::Common::OpenMeshMesh::decimate(unsigned targetFaceCount)
+int Zephyr::Common::OpenMeshMesh::decimate(unsigned int targetFaceCount, DecimationType type)
 {
+	Timer timer;
+	int collapseCount = -1;
+	auto previousFaceCount = mMesh.n_faces();
+	std::cout << "Using ";
+	if (RANDOM_DECIMATE == type)
+	{
+		std::cout << "Random Decimation...";
+		collapseCount = decimateRandom(targetFaceCount);
+	}
+	else
+	{
+		std::cout << "Greedy Decimation...";
+		collapseCount = decimateGreedy(targetFaceCount);
+	}
+	mMesh.garbage_collection();
+	auto elapseTime = timer.getElapsedTime();
 
+	std::cout << "Done in " << elapseTime << " sec" << std::endl;
+	std::cout << "Original Face Count: " << previousFaceCount << std::endl;
+	std::cout << "Target Face Count: " << targetFaceCount << std::endl;
+	std::cout << "Decimated Face Count: " << mMesh.n_faces() << std::endl;
+	std::cout << "Percentage decimated: " << mMesh.n_faces() / (float)previousFaceCount << " %" << std::endl;
+
+	exports("D:\\sandbox\\decimatedMesh.obj");
+
+	return collapseCount;
+}
+
+int Zephyr::Common::OpenMeshMesh::decimateGreedy(unsigned int targetFaceCount)
+{
+	Decimator decimator(mMesh);
+	HModQuadric hModQuadric;      // use a quadric module
+
+	decimator.add(hModQuadric); // register module at the decimater
+	
+	/*
+	* since we need exactly one priority module (non-binary)
+	* we have to call set_binary(false) for our priority module
+	* in the case of HModQuadric, unset_max_err() calls set_binary(false) internally
+	*/
+	//
+	//decimator.module(hModQuadric).unset_max_err();
+	decimator.initialize();
+
+	size_t numOfCollapseRequired = mMesh.n_faces() - targetFaceCount;
+
+	size_t actualNumOfCollapse = decimator.decimate(numOfCollapseRequired);
+
+	return (int)actualNumOfCollapse;
+}
+
+int Zephyr::Common::OpenMeshMesh::decimateRandom(unsigned int targetFaceCount)
+{
+	return 0;
 }
