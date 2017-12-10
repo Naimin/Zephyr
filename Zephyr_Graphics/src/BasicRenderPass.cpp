@@ -7,8 +7,9 @@
 #include <boost/algorithm/string.hpp>
 
 using namespace DirectX;
+using namespace Zephyr;
 
-Zephyr::Graphics::BasicRenderPass::BasicRenderPass(const int frameBufferCount, GraphicsEngine* pEngine) : IRenderPass(frameBufferCount, pEngine)
+Zephyr::Graphics::BasicRenderPass::BasicRenderPass(const int frameBufferCount, GraphicsEngine* pEngine) : IRenderPass(frameBufferCount, pEngine), mpCamera(new Common::Camera())
 {
 	setClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
@@ -19,46 +20,46 @@ Zephyr::Graphics::BasicRenderPass::~BasicRenderPass()
 
 void Zephyr::Graphics::BasicRenderPass::setCamera(const Common::Camera & camera)
 {
-	mCamera = camera;
+	*mpCamera = camera;
 	updateCameraMatrix();
 }
 
-Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::initalizeCamera(const Common::Vector3f & cameraPos, const Common::Vector3f & cameraTarget, const Common::Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const int screenWidth, const int screenHeight)
+std::shared_ptr<Common::Camera> Zephyr::Graphics::BasicRenderPass::initalizeCamera(const Common::Vector3f & cameraPos, const Common::Vector3f & cameraTarget, const Common::Vector3f & cameraUp, const float fov, const float nearClip, const float farClip, const int screenWidth, const int screenHeight)
 {
-	mCamera.intialize(cameraPos, cameraTarget, cameraUp, fov, nearClip, farClip, screenWidth, screenHeight);
+	mpCamera->intialize(cameraPos, cameraTarget, cameraUp, fov, nearClip, farClip, screenWidth, screenHeight);
 	updateCameraMatrix();
 	
-	return mCamera;
+	return mpCamera;
 }
 
 void Zephyr::Graphics::BasicRenderPass::updateCameraMatrix()
 {
 	// build projection and view matrix
-	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(mCamera.mFOV, mCamera.mAspectRatio, mCamera.mNearClip, mCamera.mFarClip);
+	XMMATRIX tmpMat = XMMatrixPerspectiveFovLH(mpCamera->mFOV, mpCamera->mAspectRatio, mpCamera->mNearClip, mpCamera->mFarClip);
 	XMStoreFloat4x4(&cameraProjMat, tmpMat);
 
 	// build view matrix
-	XMFLOAT4 _cameraPos = XMFLOAT4(mCamera.mCameraPos.x(), mCamera.mCameraPos.y(), mCamera.mCameraPos.z(), 0);
+	XMFLOAT4 _cameraPos = XMFLOAT4(mpCamera->mCameraPos.x(), mpCamera->mCameraPos.y(), mpCamera->mCameraPos.z(), 0);
 	XMVECTOR cPos = XMLoadFloat4(&_cameraPos);
 
-	XMFLOAT4 _cameraTarget = XMFLOAT4(mCamera.mCameraTarget.x(), mCamera.mCameraTarget.y(), mCamera.mCameraTarget.z(), 0);
+	XMFLOAT4 _cameraTarget = XMFLOAT4(mpCamera->mCameraTarget.x(), mpCamera->mCameraTarget.y(), mpCamera->mCameraTarget.z(), 0);
 	XMVECTOR cTarg = XMLoadFloat4(&_cameraTarget);
 
-	XMFLOAT4 _cameraUp = XMFLOAT4(mCamera.mCameraUp.x(), mCamera.mCameraUp.y(), mCamera.mCameraUp.z(), 0);
+	XMFLOAT4 _cameraUp = XMFLOAT4(mpCamera->mCameraUp.x(), mpCamera->mCameraUp.y(), mpCamera->mCameraUp.z(), 0);
 	XMVECTOR cUp = XMLoadFloat4(&_cameraUp);
 
 	tmpMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
 	XMStoreFloat4x4(&cameraViewMat, tmpMat);
 }
 
-Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::getCamera()
+std::shared_ptr<Common::Camera> Zephyr::Graphics::BasicRenderPass::getCamera()
 {
-	return mCamera;
+	return mpCamera;
 }
 
-const Zephyr::Common::Camera & Zephyr::Graphics::BasicRenderPass::getCamera() const
+const std::shared_ptr<Common::Camera> Zephyr::Graphics::BasicRenderPass::getCamera() const
 {
-	return mCamera;
+	return mpCamera;
 }
 
 void Zephyr::Graphics::BasicRenderPass::setClearColor(float r, float g, float b, float a)

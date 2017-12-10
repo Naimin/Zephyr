@@ -24,7 +24,7 @@ namespace Zephyr
 				virtual ~BasicRenderPass();
 
 				void setCamera(const Common::Camera& camera);
-				Common::Camera& initalizeCamera(const Common::Vector3f& cameraPos,
+				std::shared_ptr<Common::Camera> initalizeCamera(const Common::Vector3f& cameraPos,
 												const Common::Vector3f& cameraTarget,
 												const Common::Vector3f& cameraUp,
 												const float fov, // in radian
@@ -33,8 +33,8 @@ namespace Zephyr
 												const int screenWidth,
 												const int screenHeight);
 
-				Common::Camera& getCamera();
-				const Common::Camera& getCamera() const;
+				std::shared_ptr<Common::Camera> getCamera();
+				const std::shared_ptr<Common::Camera> getCamera() const;
 				void updateCameraMatrix();
 
 				void setClearColor(float r, float g, float b, float a);
@@ -51,7 +51,7 @@ namespace Zephyr
 				std::shared_ptr<RenderableModel> mpModel;
 				ConstantBuffer mConstantBuffer;
 
-				Common::Camera mCamera;
+				std::shared_ptr<Common::Camera> mpCamera;
 
 				XMFLOAT4X4 cameraProjMat; // this will store our projection matrix
 				XMFLOAT4X4 cameraViewMat; // this will store our view matrix

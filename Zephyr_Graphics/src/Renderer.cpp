@@ -73,7 +73,18 @@ void Zephyr::Graphics::Renderer::clearRenderPassQueue(const int queueIndex)
 	mCommandQueues[queueIndex]->clear();
 }
 
-bool Zephyr::Graphics::Renderer::enqueuUIRenderPass(const std::string & renderPassName, const int queueIndex)
+std::shared_ptr<Graphics::IRenderPass> Zephyr::Graphics::Renderer::getRenderPass(const std::string & renderPassName)
+{
+	if (mRenderPassMap.find(renderPassName) == mRenderPassMap.end())
+	{
+		std::cout << "Warning: Render pass name " << renderPassName << " is not found." << std::endl;
+		return nullptr;
+	}
+
+	return mRenderPassMap[renderPassName];
+}
+
+bool Zephyr::Graphics::Renderer::enqueueUIRenderPass(const std::string & renderPassName, const int queueIndex)
 {
 	if (mRenderPassMap.find(renderPassName) == mRenderPassMap.end())
 		return false;

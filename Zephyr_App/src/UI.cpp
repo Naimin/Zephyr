@@ -76,12 +76,12 @@ void Zephyr::UI::setupMouseMouseEvent()
 		// hold Mid mouse for zoom
 		if (mouseEvent.mid_button)
 		{
-			mpApp->getCamera().zoom((float)-deltaY);
+			mpApp->getCamera()->zoom((float)-deltaY);
 		}
 
 		if (mouseEvent.right_button)
 		{
-			mpApp->getCamera().rotation((float)deltaX * 0.75f, (float)deltaY * 0.75f);
+			mpApp->getCamera()->rotation((float)deltaX * 0.75f, (float)deltaY * 0.75f);
 		}
 
 		mMousePosition[0] = mouseEvent.pos.x;
@@ -95,7 +95,7 @@ void Zephyr::UI::setupMouseClickEvent()
 	{
 		if (clickEvent.mouse_args->is_left_button())
 		{
-			auto pickingRay = mpApp->getCamera().getPickingRay(clickEvent.mouse_args->pos.x, clickEvent.mouse_args->pos.y);
+			auto pickingRay = mpApp->getCamera()->getPickingRay(clickEvent.mouse_args->pos.x, clickEvent.mouse_args->pos.y);
 		}
 	});
 }
@@ -109,6 +109,6 @@ void Zephyr::UI::setupMouseWheelEvent()
 		auto distance = (mouseWheelEvent.distance / MOUSE_WHEEL_DELTA) * 10;
 		distance = mouseWheelEvent.upwards ? distance : -distance;
 
-		mpApp->getCamera().zoom(distance);
+		mpApp->getCamera()->zoom(distance);
 	});
 }

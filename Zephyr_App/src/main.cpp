@@ -9,12 +9,6 @@ using namespace Zephyr;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
-	AllocConsole();
-	freopen("CONOUT$", "w", stdout);
-	freopen("CONOUT$", "w", stderr);
-
-	// Handle to the window
-	HWND hwnd = NULL;
 	// title of the window
 	std::string windowTitle = "Zephyr_App";
 

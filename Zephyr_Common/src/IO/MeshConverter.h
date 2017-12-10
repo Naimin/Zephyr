@@ -4,6 +4,7 @@
 #include "../stdfx.h"
 
 #include "../Mesh/Model.h"
+#include "../Mesh/OM_Mesh.h"
 
 namespace Zephyr
 {
@@ -15,7 +16,7 @@ namespace Zephyr
 				MeshConverter();
 				virtual ~MeshConverter();
 
-				//static bool loadFile(const std::string& path, Model* pModel);*/
+				static OpenMeshMesh ModelToOpenMesh(const Model& model);
 		};
 	}
 }

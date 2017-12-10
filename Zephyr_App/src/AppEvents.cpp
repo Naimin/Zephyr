@@ -1,5 +1,6 @@
 #include "AppEvents.h"
 #include <nana/gui/filebox.hpp>
+#include <BasicRenderPass.h>
 
 Zephyr::AppEvents::AppEvents(App* pApp, UI * pUI) : mpApp(pApp), mpUI(pUI)
 {
@@ -41,6 +42,9 @@ void Zephyr::AppEvents::setupLoadButtonEvents(std::shared_ptr<nana::button> pBut
 
 			//Common::OpenMeshMesh ommesh(modelPath);
 			//openMesh = ommesh.getMesh();
+
+			auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
+			pRenderPass->loadModel(modelPath);
 
 			//pRenderPass->loadModel(modelPath);
 			//Algorithm::OpenMeshMesh mesh(pRenderPass->getModel()->getMesh(0));

@@ -6,7 +6,10 @@
 
 namespace Zephyr
 {
+	const std::string DEFAULT_RENDERPASS_NAME = "BasicRenderPass";
+
 	class UI;
+	class AppEvents;
 	class Common::Camera;
 
 	class App
@@ -20,7 +23,7 @@ namespace Zephyr
 			
 			std::shared_ptr<Graphics::GraphicsEngine> getGraphicsEngine();
 			std::shared_ptr<UI> getUI();
-			Common::Camera& getCamera();
+			std::shared_ptr<Common::Camera> getCamera();
 			HWND& getHwnd();
 			unsigned int getWidth() const;
 			unsigned int getHeight() const;
@@ -28,7 +31,9 @@ namespace Zephyr
 		private:
 			std::shared_ptr<Graphics::GraphicsEngine> mpEngine;
 			std::shared_ptr<UI> mpUI;
-			Common::Camera mCamera;
+			std::shared_ptr<AppEvents> mpAppEvents;
+			std::shared_ptr<Common::Camera> mpCamera;
+			
 			HWND mHwnd;
 			unsigned int mWidth;
 			unsigned int mHeight;

@@ -29,7 +29,9 @@ namespace Zephyr
 				bool enqueuRenderPass(const std::string& renderPassName, const int queueIndex);
 				void clearRenderPassQueue(const int queueIndex);
 
-				bool enqueuUIRenderPass(const std::string& renderPassName, const int queueIndex);
+				std::shared_ptr<Graphics::IRenderPass> getRenderPass(const std::string& renderPassName);
+
+				bool enqueueUIRenderPass(const std::string& renderPassName, const int queueIndex);
 				void clearUIRenderPassQueue(const int queueIndex);
 
 				void render(); // execute the command list

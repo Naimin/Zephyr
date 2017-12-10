@@ -40,7 +40,7 @@ bool Zephyr::App::initialize()
 	pRenderPass->setClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	// Initalize the renderpass camera, and get reference to it
-	mCamera = pRenderPass->initalizeCamera(
+	mpCamera = pRenderPass->initalizeCamera(
 		Common::Vector3f(0.0f, 2.0f, -200.0f),
 		Common::Vector3f(0, 0, 0),
 		Common::Vector3f(0, 1.0f, 0),
@@ -50,7 +50,7 @@ bool Zephyr::App::initialize()
 		(int)mWidth,
 		(int)mHeight);
 
-	mpEngine->setupRenderPass(pRenderPass, "BasicRenderPass");
+	mpEngine->setupRenderPass(pRenderPass, DEFAULT_RENDERPASS_NAME);
 
 	if (!mpUI->initialize())
 	{
@@ -61,8 +61,8 @@ bool Zephyr::App::initialize()
 	}
 	
 	// setup buttons event
-	AppEvents appEvents(this, mpUI.get());
-	if (!appEvents.initialize())
+	mpAppEvents.reset(new AppEvents(this, mpUI.get()));
+	if (!mpAppEvents->initialize())
 	{
 		MessageBox(0, L"Failed to initialize App Events",
 			L"Error", MB_OK);
@@ -112,9 +112,9 @@ std::shared_ptr<UI> Zephyr::App::getUI()
 	return mpUI;
 }
 
-Common::Camera & Zephyr::App::getCamera()
+std::shared_ptr<Common::Camera> Zephyr::App::getCamera()
 {
-	return mCamera;
+	return mpCamera;
 }
 
 HWND & Zephyr::App::getHwnd()
