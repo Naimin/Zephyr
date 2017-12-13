@@ -114,7 +114,7 @@ int Zephyr::Common::OpenMeshMesh::decimate(unsigned int targetFaceCount, Decimat
 
 	//exports("D:\\sandbox\\decimatedMesh.obj");
 
-	return collapseCount;
+	return collapseCount; 
 }
 
 int Zephyr::Common::OpenMeshMesh::decimateGreedy(unsigned int targetFaceCount)
