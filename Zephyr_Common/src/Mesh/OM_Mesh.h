@@ -13,12 +13,20 @@
 
 using namespace OpenMesh;
 
+struct ZephyrTraits : public OpenMesh::DefaultTraits
+{
+	VertexAttributes(OpenMesh::Attributes::Status);
+	FaceAttributes(OpenMesh::Attributes::Status);
+	EdgeAttributes(OpenMesh::Attributes::Status);
+	HalfedgeAttributes(OpenMesh::Attributes::Status);
+};
+
 namespace Zephyr
 {
 	namespace Common
 	{
 		// define traits
-		typedef OpenMesh::TriMesh_ArrayKernelT<> OMMesh;
+		typedef OpenMesh::TriMesh_ArrayKernelT<ZephyrTraits> OMMesh;
 
 		enum DecimationType
 		{
@@ -48,7 +56,7 @@ namespace Zephyr
 			protected:
 				int decimateGreedy(unsigned int targetFaceCount);
 
-				int decimateRandom(unsigned int targetFaceCount);
+				int decimateRandom(unsigned int targetFaceCount, int binSize);
 
 			protected:
 				OMMesh mMesh;

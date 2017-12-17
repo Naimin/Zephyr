@@ -12,7 +12,7 @@ namespace Zephyr
 		{
 			public:
 				Timer();
-				~Timer();
+				virtual ~Timer();
 
 				double getElapsedTime(); // Time since creation of the Timer
 				double getDeltaTime(); // Time since last call to this function

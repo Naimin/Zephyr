@@ -99,11 +99,24 @@ void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::
 
 		omesh.decimate(numOfFaces / 2, Common::GREEDY_DECIMATE);
 
-		//omesh.exports("D:\\sandbox\\decimatedMesh.obj");
+		omesh.exports("D:\\sandbox\\decimatedGreedyMesh.obj");
 	});
-
 }
 
 void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton)
 {
+	pButton->events().click([&] {
+		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
+		auto pModel = pRenderPass->getModel();
+
+		if (nullptr == pModel)
+			return;
+
+		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
+		auto numOfFaces = omesh.getMesh().n_faces();
+
+		omesh.decimate(numOfFaces / 2, Common::RANDOM_DECIMATE);
+
+		omesh.exports("D:\\sandbox\\decimatedRandomMesh.obj");
+	});
 }

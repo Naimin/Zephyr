@@ -81,6 +81,9 @@
     <ClInclude Include="src\Primitive\Vertex.h">
       <Filter>Source Files\Primitive</Filter>
     </ClInclude>
+    <ClInclude Include="src\Random.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Timer.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="src\Primitive\Vertex.cpp">
       <Filter>Source Files\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Random.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
