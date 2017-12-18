@@ -3,7 +3,7 @@
 #include <BasicRenderPass.h>
 
 // external algorithms
-#include "TriDualGraph.h"
+#include <Segmentation/TriDualGraph.h>
 #include <IO/MeshConverter.h>
 
 Zephyr::AppEvents::AppEvents(App* pApp, UI * pUI) : mpApp(pApp), mpUI(pUI)

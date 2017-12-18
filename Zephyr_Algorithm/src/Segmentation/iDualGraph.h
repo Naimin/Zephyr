@@ -1,7 +1,7 @@
 #ifndef I_DUAL_GRAPH_H
 #define I_DUAL_GRAPH_H
 
-#include "stdfx.h"
+#include "../stdfx.h"
 #include <vector>
 #include <algorithm>
 
@@ -9,7 +9,8 @@ namespace Zephyr
 {
 	namespace Algorithm
 	{
-		template <class NodeType, class EdgeType> class ZEPHYR_ALGORITHM_API DualGraph
+		template <class NodeType, class EdgeType> 
+		class ZEPHYR_ALGORITHM_API DualGraph
 		{
 		public:
 

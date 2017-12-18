@@ -155,15 +155,19 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshTools.dll" "$(SolutionDir)$(Platform
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MeshSegmentation.cpp" />
-    <ClCompile Include="src\TriDualGraph.cpp" />
+    <ClInclude Include="src\Decimate\Decimate.h" />
+    <ClInclude Include="src\Decimate\QuadricError.h" />
+    <ClInclude Include="src\Segmentation\iDualGraph.h" />
+    <ClInclude Include="src\Segmentation\MeshSegmentation.h" />
+    <ClInclude Include="src\Segmentation\TriDualGraph.h" />
+    <ClInclude Include="src\stdfx.h" />
+    <ClInclude Include="src\Zephyr_Algorithm.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\iDualGraph.h" />
-    <ClInclude Include="src\MeshSegmentation.h" />
-    <ClInclude Include="src\stdfx.h" />
-    <ClInclude Include="src\TriDualGraph.h" />
-    <ClInclude Include="src\Zephyr_Algorithm.h" />
+    <ClCompile Include="src\Decimate\Decimate.cpp" />
+    <ClCompile Include="src\Decimate\QuadricError.cpp" />
+    <ClCompile Include="src\Segmentation\MeshSegmentation.cpp" />
+    <ClCompile Include="src\Segmentation\TriDualGraph.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

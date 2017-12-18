@@ -13,14 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\MeshSegmentation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\TriDualGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Filter Include="Source Files\Decimate">
+      <UniqueIdentifier>{6c4f427f-81ec-4de1-9262-b767e1b7c05f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Segmentation">
+      <UniqueIdentifier>{e45ea848-a621-4255-aadc-d04ae28dd962}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdfx.h">
@@ -29,14 +27,34 @@
     <ClInclude Include="src\Zephyr_Algorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\iDualGraph.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\Decimate\Decimate.h">
+      <Filter>Source Files\Decimate</Filter>
     </ClInclude>
-    <ClInclude Include="src\TriDualGraph.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\Decimate\QuadricError.h">
+      <Filter>Source Files\Decimate</Filter>
     </ClInclude>
-    <ClInclude Include="src\MeshSegmentation.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="src\Segmentation\iDualGraph.h">
+      <Filter>Source Files\Segmentation</Filter>
     </ClInclude>
+    <ClInclude Include="src\Segmentation\MeshSegmentation.h">
+      <Filter>Source Files\Segmentation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Segmentation\TriDualGraph.h">
+      <Filter>Source Files\Segmentation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Decimate\Decimate.cpp">
+      <Filter>Source Files\Decimate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Decimate\QuadricError.cpp">
+      <Filter>Source Files\Decimate</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Segmentation\MeshSegmentation.cpp">
+      <Filter>Source Files\Segmentation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Segmentation\TriDualGraph.cpp">
+      <Filter>Source Files\Segmentation</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
