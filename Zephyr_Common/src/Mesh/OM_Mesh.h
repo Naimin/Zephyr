@@ -16,7 +16,7 @@ using namespace OpenMesh;
 struct ZephyrTraits : public OpenMesh::DefaultTraits
 {
 	VertexAttributes(OpenMesh::Attributes::Status);
-	FaceAttributes(OpenMesh::Attributes::Status);
+	FaceAttributes(OpenMesh::Attributes::Status|OpenMesh::Attributes::Normal);
 	EdgeAttributes(OpenMesh::Attributes::Status);
 	HalfedgeAttributes(OpenMesh::Attributes::Status);
 };
@@ -27,12 +27,6 @@ namespace Zephyr
 	{
 		// define traits
 		typedef OpenMesh::TriMesh_ArrayKernelT<ZephyrTraits> OMMesh;
-
-		enum DecimationType
-		{
-			GREEDY_DECIMATE = 0,
-			RANDOM_DECIMATE
-		};
 
 		class ZEPHYR_COMMON_API OpenMeshMesh
 		{
@@ -49,14 +43,7 @@ namespace Zephyr
 
 				OMMesh& getMesh();
 
-				int decimate(unsigned int targetFaceCount, DecimationType type = GREEDY_DECIMATE);
-
 				bool exports(const std::string& path);
-
-			protected:
-				int decimateGreedy(unsigned int targetFaceCount);
-
-				int decimateRandom(unsigned int targetFaceCount, int binSize);
 
 			protected:
 				OMMesh mMesh;

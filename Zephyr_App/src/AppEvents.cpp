@@ -5,6 +5,7 @@
 // external algorithms
 #include <Segmentation/TriDualGraph.h>
 #include <IO/MeshConverter.h>
+#include <Decimate/Decimate.h>
 
 Zephyr::AppEvents::AppEvents(App* pApp, UI * pUI) : mpApp(pApp), mpUI(pUI)
 {
@@ -97,7 +98,7 @@ void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
-		omesh.decimate(numOfFaces / 2, Common::GREEDY_DECIMATE);
+		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces / 2), Algorithm::GREEDY_DECIMATE);
 
 		omesh.exports("D:\\sandbox\\decimatedGreedyMesh.obj");
 	});
@@ -115,7 +116,7 @@ void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
-		omesh.decimate(numOfFaces / 2, Common::RANDOM_DECIMATE);
+		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces / 2), Algorithm::RANDOM_DECIMATE);
 
 		omesh.exports("D:\\sandbox\\decimatedRandomMesh.obj");
 	});
