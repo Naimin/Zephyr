@@ -3,6 +3,8 @@
 #include <nana/gui/widgets/slider.hpp>
 #include <BasicRenderPass.h>
 
+#include <boost/filesystem/path.hpp>
+
 // external algorithms
 #include <Segmentation/TriDualGraph.h>
 #include <IO/MeshConverter.h>
@@ -43,7 +45,7 @@ void Zephyr::AppEvents::setupLoadButtonEvents(std::shared_ptr<nana::button> pBut
 {
 	pButton->events().click([&] {
 		nana::filebox fb(*mpUI->getNestedForm(), true);
-		fb.add_filter("Model File", "*.obj;*.ply;*.fbx");
+		fb.add_filter("Model File (.obj, .ply, .fbx)", "*.obj;*.ply;*.fbx");
 		fb.add_filter("All Files", "*.*");
 
 		if (fb())
@@ -101,14 +103,19 @@ void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::
 		if (nullptr == pModel)
 			return;
 
+		// get the export path
+		auto exportPath = getExportPath();
+
+		// get the target face count number
 		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
 
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
+		// Decimate
 		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::GREEDY_DECIMATE);
 
-		omesh.exports("D:\\sandbox\\decimatedGreedyMesh.obj");
+		omesh.exports(exportPath);
 	});
 }
 
@@ -121,14 +128,19 @@ void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::
 		if (nullptr == pModel)
 			return;
 
+		// get the export path
+		auto exportPath = getExportPath();
+
+		// get the target face count number
 		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
 
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
+		// Decimate
 		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::RANDOM_DECIMATE);
 
-		omesh.exports("D:\\sandbox\\decimatedRandomMesh.obj");
+		omesh.exports(exportPath);
 	});
 }
 
@@ -148,4 +160,20 @@ void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSli
 		pLabel->caption("Decimate by: " + std::to_string(slider.widget.value() * 100 / slider.widget.maximum()) + "%");
 	});
 
+}
+
+std::string Zephyr::AppEvents::getExportPath()
+{
+	nana::filebox fb(*mpUI->getNestedForm(), false);
+	fb.add_filter("Object File (.obj)", "*.obj");
+	fb.add_filter("PLY File (.ply)", "*.ply");
+	fb.add_filter("FilmBox File (.fbx)", "*.fbx");
+	fb.add_filter("Model File (.obj, .ply, .fbx)", "*.obj;*.ply;*.fbx");
+	fb.add_filter("All Files", "*.*");
+
+	std::string exportPath;
+	if (fb())
+		exportPath = fb.file();
+
+	return exportPath;
 }

@@ -21,6 +21,8 @@ namespace Zephyr
 			virtual void setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
 			virtual void setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel);
 		
+			virtual std::string getExportPath();
+
 		private:
 			App* mpApp;
 			UI* mpUI;

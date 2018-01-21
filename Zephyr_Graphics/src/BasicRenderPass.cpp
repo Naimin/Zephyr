@@ -255,3 +255,8 @@ void Zephyr::Graphics::BasicRenderPass::update(const int frameIndex, const doubl
 
 	endRecording(frameIndex);
 }
+
+std::string Zephyr::Graphics::BasicRenderPass::getModelPath() const
+{
+	return mModelPath;
+}

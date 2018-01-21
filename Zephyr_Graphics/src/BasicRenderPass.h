@@ -45,6 +45,9 @@ namespace Zephyr
 				virtual bool initialize();
 				virtual void update(const int frameIndex, const double deltaTime);
 
+
+				std::string getModelPath() const;
+
 			protected:
 				std::string mModelPath;
 				float clearColor[4];
