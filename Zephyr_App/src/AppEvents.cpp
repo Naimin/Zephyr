@@ -1,5 +1,6 @@
 #include "AppEvents.h"
 #include <nana/gui/filebox.hpp>
+#include <nana/gui/widgets/slider.hpp>
 #include <BasicRenderPass.h>
 
 // external algorithms
@@ -24,11 +25,16 @@ bool Zephyr::AppEvents::initialize()
 	auto segmentBtn = mpUI->createButton(mpUI->getNestedForm(), "Segment", nana::rectangle{ 0, 30, 120, 20 });
 	setupSegmentButtonEvents(segmentBtn);
 
+	auto decimationLabel = mpUI->createLabel(mpUI->getNestedForm(), "Decimate by: 50%", nana::rectangle{ 0, 120, 120, 20 });
+
+	auto decimationSlider = mpUI->createSlider(mpUI->getNestedForm(), "Decimation Slider", nana::rectangle{ 0, 140, 120, 20 });
+	setupDecimationSlider(decimationSlider, decimationLabel);
+
 	auto greedyDecimateBtn = mpUI->createButton(mpUI->getNestedForm(), "Greedy Decimation", nana::rectangle{ 0, 60, 120, 20 });
-	setupGreedyDecimationButtonEvents(greedyDecimateBtn);
+	setupGreedyDecimationButtonEvents(greedyDecimateBtn, decimationSlider);
 
 	auto randomDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Random Decimation", nana::rectangle{ 0, 90, 120, 20 });
-	setupRandomDecimationButtonEvents(randomDecimationBtn);
+	setupRandomDecimationButtonEvents(randomDecimationBtn, decimationSlider);
 
 	return true;
 }
@@ -86,38 +92,60 @@ void Zephyr::AppEvents::setupSegmentButtonEvents(std::shared_ptr<nana::button> p
 	});
 }
 
-void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton)
+void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
 {
-	pButton->events().click([&] {
+	pButton->events().click([&, pSlider] {
 		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
 		auto pModel = pRenderPass->getModel();
 
 		if (nullptr == pModel)
 			return;
 
+		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
+
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
-		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces / 2), Algorithm::GREEDY_DECIMATE);
+		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::GREEDY_DECIMATE);
 
 		omesh.exports("D:\\sandbox\\decimatedGreedyMesh.obj");
 	});
 }
 
-void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton)
+void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
 {
-	pButton->events().click([&] {
+	pButton->events().click([&, pSlider] {
 		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
 		auto pModel = pRenderPass->getModel();
 
 		if (nullptr == pModel)
 			return;
 
+		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
+
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
 
-		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces / 2), Algorithm::RANDOM_DECIMATE);
+		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::RANDOM_DECIMATE);
 
 		omesh.exports("D:\\sandbox\\decimatedRandomMesh.obj");
 	});
+}
+
+void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel)
+{
+	pSlider->maximum(100);
+	pSlider->value(50);
+
+	pSlider->scheme().vernier_text_margin = 0; //Modify the margin of the tip label
+	pSlider->vernier([](unsigned maximum, unsigned cursor_value)
+	{
+		return std::to_string(cursor_value * 100 / maximum) + "%"; //It should return a UTF-8 string.
+	});
+
+	pSlider->events().value_changed([&, pLabel](const nana::arg_slider& slider)
+	{
+		pLabel->caption("Decimate by: " + std::to_string(slider.widget.value() * 100 / slider.widget.maximum()) + "%");
+	});
+
 }

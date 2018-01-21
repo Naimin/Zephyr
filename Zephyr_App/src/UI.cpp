@@ -11,7 +11,7 @@ Zephyr::UI::UI(const std::string & windowTitle, App * pApp) : mpApp(pApp), mZoom
 	mpForm.reset( new nana::form(nana::rectangle{ 0, 0, mpApp->getWidth(), mpApp->getHeight() }) );
 	mpForm->caption(windowTitle);
 
-	nana::rectangle UIRect = nana::rectangle{ 10, 10, 120, 110 };
+	nana::rectangle UIRect = nana::rectangle{ 10, 10, 120, 180 };
 
 	mpNfm.reset(new nana::nested_form(*mpForm, UIRect, nana::form::appear::bald<>()));
 
@@ -51,9 +51,30 @@ std::shared_ptr<nana::nested_form> Zephyr::UI::getNestedForm()
 	return mpNfm;
 }
 
+std::shared_ptr<nana::label> Zephyr::UI::getLabel(const std::string & labelName)
+{
+	return std::shared_ptr<nana::label>(dynamic_cast<nana::label*>(mWidgetList[labelName].get()));
+}
+
+std::shared_ptr<nana::label> Zephyr::UI::createLabel(std::shared_ptr<nana::nested_form> parent, const std::string & labelName, nana::rectangle & rect)
+{
+	std::shared_ptr<nana::label> pLabel(new nana::label(*parent, rect));
+	pLabel->caption(labelName);
+
+	mWidgetList.insert(std::make_pair(labelName, pLabel));
+
+	return pLabel;
+}
+
+void Zephyr::UI::updateCaption(const std::string & widgetName, const std::string caption)
+{
+	auto widget = mWidgetList[widgetName];
+	widget->caption(caption);
+}
+
 std::shared_ptr<nana::button> Zephyr::UI::getButton(const std::string & buttonName)
 {
-	return mButtonList[buttonName];
+	return std::shared_ptr<nana::button>(dynamic_cast<nana::button*>(mWidgetList[buttonName].get()));
 }
 
 std::shared_ptr<nana::button> Zephyr::UI::createButton(std::shared_ptr<nana::nested_form> parent, const std::string & buttonName, nana::rectangle& rect)
@@ -61,9 +82,24 @@ std::shared_ptr<nana::button> Zephyr::UI::createButton(std::shared_ptr<nana::nes
 	std::shared_ptr<nana::button> pButton(new nana::button(*parent, rect));
 	pButton->caption(buttonName);
 
-	mButtonList.insert(std::make_pair(buttonName, pButton));
+	mWidgetList.insert(std::make_pair(buttonName, pButton));
 
 	return pButton;
+}
+
+std::shared_ptr<nana::slider> Zephyr::UI::getSlider(const std::string & sliderName)
+{
+	return std::shared_ptr<nana::slider>(dynamic_cast<nana::slider*>(mWidgetList[sliderName].get()));
+}
+
+std::shared_ptr<nana::slider> Zephyr::UI::createSlider(std::shared_ptr<nana::nested_form> parent, const std::string & sliderName, nana::rectangle & rect)
+{
+	std::shared_ptr<nana::slider> pSlider(new nana::slider(*parent, rect));
+	pSlider->caption(sliderName);
+
+	mWidgetList.insert(std::make_pair(sliderName, pSlider));
+
+	return pSlider;
 }
 
 void Zephyr::UI::setupMouseMouseEvent()

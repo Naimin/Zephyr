@@ -60,7 +60,7 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 
 int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount)
 {
-	const float maxQuadricError = 0.001f;
+	const float maxQuadricError = 0.01f;
 	const float maxNormalFlipDeviation = 45.0f;
 	const float maxNormalDeviation = 15.0f;
 
@@ -95,7 +95,7 @@ int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, un
 
 int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.001f;
+	const float maxQuadricError = 0.01f;
 	const float maxNormalFlipDeviation = 15.0f;
 
 	auto& omesh = mesh.getMesh();
