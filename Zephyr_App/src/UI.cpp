@@ -11,7 +11,7 @@ Zephyr::UI::UI(const std::string & windowTitle, App * pApp) : mpApp(pApp), mZoom
 	mpForm.reset( new nana::form(nana::rectangle{ 0, 0, mpApp->getWidth(), mpApp->getHeight() }) );
 	mpForm->caption(windowTitle);
 
-	nana::rectangle UIRect = nana::rectangle{ 10, 10, 120, 180 };
+	nana::rectangle UIRect = nana::rectangle{ 10, 10, 125, 210 };
 
 	mpNfm.reset(new nana::nested_form(*mpForm, UIRect, nana::form::appear::bald<>()));
 

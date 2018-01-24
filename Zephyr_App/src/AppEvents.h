@@ -6,6 +6,11 @@
 
 namespace Zephyr
 {
+	namespace Algorithm
+	{
+		enum DecimationType;
+	}
+
 	class AppEvents
 	{
 		public:
@@ -19,9 +24,12 @@ namespace Zephyr
 			virtual void setupSegmentButtonEvents(std::shared_ptr<nana::button> pButton);
 			virtual void setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
 			virtual void setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
+			virtual void setupAdaptiveRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
 			virtual void setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel);
 		
-			virtual std::string getExportPath();
+			// helper function
+			virtual void setupDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider, Algorithm::DecimationType decimationType);
+			virtual std::string getExportPath(); // use FileBox to get export path
 
 		private:
 			App* mpApp;

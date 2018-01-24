@@ -32,18 +32,25 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 	Timer timer;
 	int collapseCount = -1;
 	auto previousFaceCount = omesh.n_faces();
+	int binCount = 8;
+
 	std::cout << "Using ";
 	if (RANDOM_DECIMATE == type)
 	{
-		int binCount = 8;
 		std::cout << "Random Decimation..." << std::endl;
 		collapseCount = decimateRandom(mesh, targetFaceCount, binCount);
 	}
-	else
+	else if(GREEDY_DECIMATE == type)
 	{
 		std::cout << "Greedy Decimation..." << std::endl;
 		collapseCount = decimateGreedy(mesh, targetFaceCount);
 	}
+	else if (ADAPTIVE_RANDOM_DECIMATE == type)
+	{
+		std::cout << "Adaptive Random Decimation..." << std::endl;
+		collapseCount = decimateAdaptiveRandom(mesh, targetFaceCount, binCount);
+	}
+
 	auto elapseTime = timer.getElapsedTime();
 
 	auto& omeshDecimated = mesh.getMesh();
@@ -53,7 +60,7 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 	std::cout << "Target Face Count: " << targetFaceCount << std::endl;
 	std::cout << "Removed Face Count: " << collapseCount << std::endl;
 	std::cout << "Decimated Face Count: " << omeshDecimated.n_faces() << std::endl;
-	std::cout << "Percentage decimated: " << ((previousFaceCount - omeshDecimated.n_faces()) / (float)previousFaceCount) * 100.0f << " %" << std::endl << std::endl;
+	std::cout << "Percentage decimated: " << ((previousFaceCount - omeshDecimated.n_faces()) / (float)previousFaceCount) * 100.0f << " %" << std::endl;
 
 	return collapseCount;
 }
@@ -97,6 +104,7 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 {
 	const float maxQuadricError = 0.01f;
 	const float maxNormalFlipDeviation = 15.0f;
+	const int maxRetryCount = 500;
 
 	auto& omesh = mesh.getMesh();
 
@@ -117,7 +125,7 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 	}
 
 	int totalCollapseCount = 0;
-	while (retryCount < 500 && currentFaceCount > targetFaceCount)
+	while (retryCount < maxRetryCount && currentFaceCount > targetFaceCount)
 	{
 		// parallelly select edge to collapse
 		tbb::parallel_for(0, numOfThreads, [&](const int threadId)
@@ -175,17 +183,20 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 			}
 		});
 
-		std::set<int> bestEdges;
-		bestEdges.insert(bestEdgesTemp.begin(), bestEdgesTemp.end());
-		bestEdges.erase(-1);
+		std::vector<int> bestEdges(bestEdgesTemp.begin(), bestEdgesTemp.end());
+		bestEdges.erase(std::remove(bestEdges.begin(), bestEdges.end(), -1), bestEdges.end());
 
 		// do the exact collapse
 		int collapseCount = 0;
+		int faceCollapsed = 0;
 		for (auto bestEdgeId : bestEdges)
 		{
 			HalfedgeHandle halfEdgeHandle(bestEdgeId);
 			if (!omesh.is_collapse_ok(halfEdgeHandle))
 				continue;
+
+			// if the edge is a boundary edge only 1 face is removed by the collapse, otherwise 2 face is removed
+			faceCollapsed += omesh.is_boundary(halfEdgeHandle) ? 1 : 2;
 
 			omesh.collapse(halfEdgeHandle);
 			++collapseCount;
@@ -202,9 +213,34 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 			//std::cout << "Retrying: " << retryCount << std::endl;
 		}
 
-		currentFaceCount -= collapseCount * 2; // each collapse remove 2 face
+		currentFaceCount -= faceCollapsed;
 	}
 	omesh.garbage_collection();
 
+	if (retryCount == maxRetryCount)
+	{
+		std::cout << "Reach max retry count of " << maxRetryCount << ", teriminating early" << std::endl;
+	}
+
+	return totalCollapseCount;
+}
+
+int Zephyr::Algorithm::Decimater::decimateAdaptiveRandom(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
+{
+	const int maxRetryCount = 10;
+
+	auto& omesh = mesh.getMesh();
+
+	int totalCollapseCount = 0;
+
+	int retryCount = 0;
+	while (retryCount < maxRetryCount && omesh.n_faces() > targetFaceCount)
+	{
+		int adaptiveBinSize = binSize + retryCount; // for each incomplete run of the decimateRandom, we increase the bin size by 1
+		totalCollapseCount += decimateRandom(mesh, targetFaceCount, adaptiveBinSize);
+
+		++retryCount;
+	}
+	
 	return totalCollapseCount;
 }

@@ -20,23 +20,35 @@ Zephyr::AppEvents::~AppEvents()
 
 bool Zephyr::AppEvents::initialize()
 {
+	const unsigned int width = 125;
+	int yPos = 0;
 	// Buttons creation and events
-	auto loadBtn = mpUI->createButton(mpUI->getNestedForm(), "Load", nana::rectangle{ 0, 0, 120, 20 });
+	auto loadBtn = mpUI->createButton(mpUI->getNestedForm(), "Load", nana::rectangle{ 0, yPos, width, 20 });
 	setupLoadButtonEvents(loadBtn);
 
-	auto segmentBtn = mpUI->createButton(mpUI->getNestedForm(), "Segment", nana::rectangle{ 0, 30, 120, 20 });
+	yPos += 30;
+	auto segmentBtn = mpUI->createButton(mpUI->getNestedForm(), "Segment", nana::rectangle{ 0, yPos, width, 20 });
 	setupSegmentButtonEvents(segmentBtn);
 
-	auto decimationLabel = mpUI->createLabel(mpUI->getNestedForm(), "Decimate by: 50%", nana::rectangle{ 0, 120, 120, 20 });
 
-	auto decimationSlider = mpUI->createSlider(mpUI->getNestedForm(), "Decimation Slider", nana::rectangle{ 0, 140, 120, 20 });
+	// decimation Slider uses this label
+	auto decimationLabel = mpUI->createLabel(mpUI->getNestedForm(), "Decimate by: 50%", nana::rectangle{ 0, 150, width, 20 });
+
+	// the different decimation buttons uses this slider
+	auto decimationSlider = mpUI->createSlider(mpUI->getNestedForm(), "Decimation Slider", nana::rectangle{ 0, 170, width, 20 });
 	setupDecimationSlider(decimationSlider, decimationLabel);
 
-	auto greedyDecimateBtn = mpUI->createButton(mpUI->getNestedForm(), "Greedy Decimation", nana::rectangle{ 0, 60, 120, 20 });
+	yPos += 30;
+	auto greedyDecimateBtn = mpUI->createButton(mpUI->getNestedForm(), "Greedy Decimation", nana::rectangle{ 0, yPos, width, 20 });
 	setupGreedyDecimationButtonEvents(greedyDecimateBtn, decimationSlider);
 
-	auto randomDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Random Decimation", nana::rectangle{ 0, 90, 120, 20 });
+	yPos += 30;
+	auto randomDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Random Decimation", nana::rectangle{ 0, yPos, width, 20 });
 	setupRandomDecimationButtonEvents(randomDecimationBtn, decimationSlider);
+
+	yPos += 30;
+	auto adaptiveDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Adaptive Random Deci", nana::rectangle{ 0, yPos, width, 20 });
+	setupAdaptiveRandomDecimationButtonEvents(adaptiveDecimationBtn, decimationSlider);
 
 	return true;
 }
@@ -51,16 +63,9 @@ void Zephyr::AppEvents::setupLoadButtonEvents(std::shared_ptr<nana::button> pBut
 		if (fb())
 		{
 			auto modelPath = fb.file();
-			std::cout << modelPath << std::endl;
-
-			//Common::OpenMeshMesh omesh(modelPath);
-			//omesh.exports("D:\\sandbox\\mesh_openmesh.obj");
 
 			auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
 			pRenderPass->loadModel(modelPath);
-
-			//pRenderPass->loadModel(modelPath);
-			//Algorithm::OpenMeshMesh mesh(pRenderPass->getModel()->getMesh(0));
 		}
 	});
 }
@@ -96,52 +101,17 @@ void Zephyr::AppEvents::setupSegmentButtonEvents(std::shared_ptr<nana::button> p
 
 void Zephyr::AppEvents::setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
 {
-	pButton->events().click([&, pSlider] {
-		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
-		auto pModel = pRenderPass->getModel();
-
-		if (nullptr == pModel)
-			return;
-
-		// get the export path
-		auto exportPath = getExportPath();
-
-		// get the target face count number
-		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
-
-		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
-		auto numOfFaces = omesh.getMesh().n_faces();
-
-		// Decimate
-		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::GREEDY_DECIMATE);
-
-		omesh.exports(exportPath);
-	});
+	setupDecimationButtonEvents(pButton, pSlider, Algorithm::GREEDY_DECIMATE);
 }
 
 void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
 {
-	pButton->events().click([&, pSlider] {
-		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
-		auto pModel = pRenderPass->getModel();
+	setupDecimationButtonEvents(pButton, pSlider, Algorithm::RANDOM_DECIMATE);
+}
 
-		if (nullptr == pModel)
-			return;
-
-		// get the export path
-		auto exportPath = getExportPath();
-
-		// get the target face count number
-		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
-
-		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
-		auto numOfFaces = omesh.getMesh().n_faces();
-
-		// Decimate
-		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), Algorithm::RANDOM_DECIMATE);
-
-		omesh.exports(exportPath);
-	});
+void Zephyr::AppEvents::setupAdaptiveRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
+{
+	setupDecimationButtonEvents(pButton, pSlider, Algorithm::ADAPTIVE_RANDOM_DECIMATE);
 }
 
 void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel)
@@ -159,7 +129,32 @@ void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSli
 	{
 		pLabel->caption("Decimate by: " + std::to_string(slider.widget.value() * 100 / slider.widget.maximum()) + "%");
 	});
+}
 
+void Zephyr::AppEvents::setupDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider, Algorithm::DecimationType decimationType)
+{
+	pButton->events().click([&, pSlider, decimationType] {
+		auto pRenderPass = dynamic_cast<Graphics::BasicRenderPass*>(mpApp->getGraphicsEngine()->getRenderer()->getRenderPass(DEFAULT_RENDERPASS_NAME).get());
+		auto pModel = pRenderPass->getModel();
+
+		if (nullptr == pModel)
+			return;
+
+		// get the export path
+		auto exportPath = getExportPath();
+
+		// get the target face count number
+		float percentage = 1.0f - (pSlider->value() / (float)pSlider->maximum());
+
+		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
+		auto numOfFaces = omesh.getMesh().n_faces();
+
+		// Decimate
+		Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), decimationType);
+
+		std::cout << "Saving decimation output to: " << exportPath << std::endl << std::endl;
+		omesh.exports(exportPath);
+	});
 }
 
 std::string Zephyr::AppEvents::getExportPath()
