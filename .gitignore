@@ -51,3 +51,4 @@ thirdparty/**
 
 *.ipch
 Zephyr.VC.db
+model/
