@@ -216,7 +216,9 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 #ifdef nearest_collapse
 			// Perform another collapse in the vicinity of the previous collapse
 			auto toVertex = omesh.to_vertex_handle(halfEdgeHandle);
-
+			
+			// Only allow the QEM error to be within 10% more than the original edge collapse's QEM
+			// This prevent collapsing of edges that further aggrevate the density mismatch problem.
 			tbb::atomic<float> minError = bestEdgesError[threadCount] * 1.1f;
 			tbb::mutex mutex;
 			HalfedgeHandle lowestErrorEdge;
