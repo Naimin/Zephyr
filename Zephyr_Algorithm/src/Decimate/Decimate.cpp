@@ -1,6 +1,7 @@
 #include "Decimate.h"
 
 #include <tbb/parallel_for.h>
+#include <tbb/parallel_for_each.h>
 #include <tbb/mutex.h>
 #include <map>
 
@@ -15,6 +16,8 @@
 #include <OpenMesh/Core/IO/MeshIO.hh>
 
 #include "QuadricError.h"
+
+#define nearest_collapse 1
 
 using namespace Zephyr;
 using namespace Zephyr::Common;
@@ -54,6 +57,7 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 	auto elapseTime = timer.getElapsedTime();
 
 	auto& omeshDecimated = mesh.getMesh();
+	omesh.garbage_collection();
 
 	std::cout << "Decimation done in " << elapseTime << " sec" << std::endl;
 	std::cout << "Original Face Count: " << previousFaceCount << std::endl;
@@ -67,9 +71,9 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 
 int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount)
 {
-	const float maxQuadricError = 0.01f;
-	const float maxNormalFlipDeviation = 45.0f;
-	const float maxNormalDeviation = 15.0f;
+	const double maxQuadricError = 0.01;
+	const double maxNormalFlipDeviation = 45.0;
+	const double maxNormalDeviation = 15.0;
 
 	auto& omesh = mesh.getMesh();
 
@@ -86,7 +90,7 @@ int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, un
 	HModNormalDeviation hModNormalDeviation; // use a module that prevent large change in face normal
 	decimator.add(hModNormalDeviation); // register module to the decimator
 	decimator.module(hModNormalDeviation).set_binary(true); // set to true if not the main decimation score
-	decimator.module(hModNormalDeviation).set_normal_deviation(maxNormalDeviation);
+	decimator.module(hModNormalDeviation).set_normal_deviation((float)maxNormalDeviation);
 
 	if (!decimator.initialize())
 		return -1;
@@ -152,11 +156,12 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 
 		// Get the lowest error edge
 		tbb::mutex mutex;
-		std::vector<int> bestEdgesTemp(numOfThreads, -1);
+		std::vector<int> bestEdges(numOfThreads, -1);
+		std::vector<float> bestEdgesError(numOfThreads, -1);
 		tbb::parallel_for(0, numOfThreads, [&](const int threadId)
 		{
 			auto& selectedEdges = selectedErrorEdgesPerThread[threadId];
-
+			
 			HalfedgeHandle bestEdge;
 			float bestError = Algorithm::INVALID_COLLAPSE;
 			for (auto errorEdge : selectedEdges)
@@ -179,18 +184,24 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 
 			if (bestEdge.is_valid())
 			{
-				bestEdgesTemp[threadId] = bestEdge.idx();
+				bestEdges[threadId] = bestEdge.idx();
+				bestEdgesError[threadId] = bestError;
 			}
 		});
 
-		std::vector<int> bestEdges(bestEdgesTemp.begin(), bestEdgesTemp.end());
-		bestEdges.erase(std::remove(bestEdges.begin(), bestEdges.end(), -1), bestEdges.end());
-
 		// do the exact collapse
 		int collapseCount = 0;
+		int originalCollapse = 0;
+		int additionalCollapse = 0;
+
 		int faceCollapsed = 0;
+		int threadCount = -1;
 		for (auto bestEdgeId : bestEdges)
 		{
+			++threadCount;
+			if (bestEdgeId == -1)
+				continue;
+
 			HalfedgeHandle halfEdgeHandle(bestEdgeId);
 			if (!omesh.is_collapse_ok(halfEdgeHandle))
 				continue;
@@ -200,10 +211,57 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 
 			omesh.collapse(halfEdgeHandle);
 			++collapseCount;
+			++originalCollapse;
+
+#ifdef nearest_collapse
+			// Perform another collapse in the vicinity of the previous collapse
+			auto toVertex = omesh.to_vertex_handle(halfEdgeHandle);
+
+			tbb::atomic<float> minError = bestEdgesError[threadCount] * 1.1f;
+			tbb::mutex mutex;
+			HalfedgeHandle lowestErrorEdge;
+
+			//for (OMMesh::VertexVertexIter vv_it = omesh.vv_begin(toVertex); vv_it.is_valid(); ++vv_it)
+			//tbb::parallel_for_each(omesh.vv_begin(toVertex), omesh.vv_end(toVertex), [&](VertexHandle vh)
+			{
+				// incoming half edge to the newly collapsed vertex
+				for (OMMesh::VertexIHalfedgeIter ve_it = omesh.vih_begin(toVertex); ve_it.is_valid(); ++ve_it)
+				{
+					float QEM = QuadricError::computeQuadricError(*ve_it, mesh, maxQuadricError, maxNormalFlipDeviation);
+					if (minError > QEM)
+					{
+						minError = QEM;
+						tbb::mutex::scoped_lock lock(mutex);
+						lowestErrorEdge = *ve_it;
+					}
+				}
+				// outgoing half edge to the newly collapsed vertex
+				for (OMMesh::VertexOHalfedgeIter ve_it = omesh.voh_begin(toVertex); ve_it.is_valid(); ++ve_it)
+				{
+					float QEM = QuadricError::computeQuadricError(*ve_it, mesh, maxQuadricError, maxNormalFlipDeviation);
+					if (minError > QEM)
+					{
+						minError = QEM;
+						tbb::mutex::scoped_lock lock(mutex);
+						lowestErrorEdge = *ve_it;
+					}
+				}
+			}//);
+
+			if (!lowestErrorEdge.is_valid() || !omesh.is_collapse_ok(lowestErrorEdge))
+				continue;
+
+			omesh.collapse(lowestErrorEdge);
+			++collapseCount;
+			++additionalCollapse;
+#endif
+
 		}
 		totalCollapseCount += collapseCount;
 
-		//std::cout << "Collapsed this iteration: " << collapseCount << std::endl;
+		//std::cout << "Total Collapsed this iteration: " << collapseCount << std::endl;
+		//std::cout << "Original Collapsed this iteration: " << originalCollapse << std::endl;
+		//std::cout << "Additional Collapsed this iteration: " << additionalCollapse << std::endl;
 		//std::cout << "Total Collapsed : " << totalCollapseCount << std::endl;
 
 		// if there is no changes in face count, retry

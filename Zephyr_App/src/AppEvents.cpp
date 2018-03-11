@@ -117,7 +117,8 @@ void Zephyr::AppEvents::setupAdaptiveRandomDecimationButtonEvents(std::shared_pt
 void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel)
 {
 	pSlider->maximum(100);
-	pSlider->value(50);
+	pSlider->value(85);
+	pLabel->caption("Decimate by: " + std::to_string(pSlider->value() * 100 / pSlider->maximum()) + "%");
 
 	pSlider->scheme().vernier_text_margin = 0; //Modify the margin of the tip label
 	pSlider->vernier([](unsigned maximum, unsigned cursor_value)
