@@ -111,7 +111,7 @@ void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::
 
 void Zephyr::AppEvents::setupAdaptiveRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider)
 {
-	setupDecimationButtonEvents(pButton, pSlider, Algorithm::ADAPTIVE_RANDOM_DECIMATE);
+	setupDecimationButtonEvents(pButton, pSlider, Algorithm::RANDOM_DECIMATE_VERTEX);
 }
 
 void Zephyr::AppEvents::setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel)

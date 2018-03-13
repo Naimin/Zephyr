@@ -12,6 +12,7 @@ namespace Zephyr
 		{
 			GREEDY_DECIMATE = 0,
 			RANDOM_DECIMATE,
+			RANDOM_DECIMATE_VERTEX,
 			ADAPTIVE_RANDOM_DECIMATE
 		};
 
@@ -22,6 +23,7 @@ namespace Zephyr
 
 				static int decimateGreedy(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount);
 				static int decimateRandom(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize = 8);
+				static int decimateRandomVertex(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize = 8);
 				static int decimateAdaptiveRandom(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize = 8);
 		};
 
