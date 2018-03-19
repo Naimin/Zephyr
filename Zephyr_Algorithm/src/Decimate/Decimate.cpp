@@ -435,7 +435,7 @@ int Zephyr::Algorithm::Decimater::decimateRandomVertex(Common::OpenMeshMesh & me
 			omesh.collapse(halfEdgeHandle);
 			++collapseCount;
 			++originalCollapse;
-
+/*
 #ifdef nearest_collapse
 			// Perform another collapse in the vicinity of the previous collapse
 			auto toVertex = omesh.to_vertex_handle(halfEdgeHandle);
@@ -480,7 +480,7 @@ int Zephyr::Algorithm::Decimater::decimateRandomVertex(Common::OpenMeshMesh & me
 			++collapseCount;
 			++additionalCollapse;
 #endif
-
+			*/
 		}
 		totalCollapseCount += collapseCount;
 

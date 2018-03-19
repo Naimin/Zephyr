@@ -24,7 +24,8 @@ namespace Zephyr
 			virtual void setupSegmentButtonEvents(std::shared_ptr<nana::button> pButton);
 			virtual void setupGreedyDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
 			virtual void setupRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
-			virtual void setupAdaptiveRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
+			virtual void setupVertexRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
+			virtual void setupGPURandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider);
 			virtual void setupDecimationSlider(std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::label> pLabel);
 		
 			// helper function

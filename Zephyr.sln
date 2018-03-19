@@ -8,6 +8,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_App", "Zephyr_App\Zephyr_App.vcxproj", "{AF97CEB8-E7D6-4C77-A1AC-5B17CC0CA33A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8FAE23C9-0DC2-4F56-82AB-820CC5296582} = {8FAE23C9-0DC2-4F56-82AB-820CC5296582}
+		{C872CDEE-2705-4770-975B-0CAA37771B16} = {C872CDEE-2705-4770-975B-0CAA37771B16}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_Algorithm", "Zephyr_Algorithm\Zephyr_Algorithm.vcxproj", "{7177341D-B995-4404-8B0C-C0AA959092DE}"
@@ -15,6 +16,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_Common", "Zephyr_Common\Zephyr_Common.vcxproj", "{8FAE23C9-0DC2-4F56-82AB-820CC5296582}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Nana", "Nana\Nana.vcxproj", "{B81896A6-AF16-4990-AD8A-FFD6404E6D0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zephyr_GPU", "Zephyr_GPU\Zephyr_GPU.vcxproj", "{C872CDEE-2705-4770-975B-0CAA37771B16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7177341D-B995-4404-8B0C-C0AA959092DE} = {7177341D-B995-4404-8B0C-C0AA959092DE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +82,16 @@ Global
 		{B81896A6-AF16-4990-AD8A-FFD6404E6D0C}.Release|x64.Build.0 = Release|x64
 		{B81896A6-AF16-4990-AD8A-FFD6404E6D0C}.Release|x86.ActiveCfg = Release|Win32
 		{B81896A6-AF16-4990-AD8A-FFD6404E6D0C}.Release|x86.Build.0 = Release|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Debug|ARM.ActiveCfg = Debug|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Debug|x64.ActiveCfg = Debug|x64
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Debug|x64.Build.0 = Debug|x64
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Debug|x86.ActiveCfg = Debug|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Debug|x86.Build.0 = Debug|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Release|ARM.ActiveCfg = Release|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Release|x64.ActiveCfg = Release|x64
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Release|x64.Build.0 = Release|x64
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Release|x86.ActiveCfg = Release|Win32
+		{C872CDEE-2705-4770-975B-0CAA37771B16}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

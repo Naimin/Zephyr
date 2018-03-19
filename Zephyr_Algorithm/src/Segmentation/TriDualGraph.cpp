@@ -8,9 +8,9 @@
 #include <tbb/parallel_for_each.h>
 #include <tbb/blocked_range2d.h>
 #include <tbb/concurrent_vector.h>
-#include <Eigen/SparseCholesky>
-#include <Eigen/CholmodSupport>
-#include <Eigen/SparseLU>
+//#include <Eigen/SparseCholesky>
+//#include <Eigen/CholmodSupport>
+//#include <Eigen/SparseLU>
 #include <algorithm>
 #include <Utils/LNormUtil.h>
 #include <ctime>
@@ -144,6 +144,7 @@ void Zephyr::Algorithm::TriDualGraph::build(const Common::Mesh & mesh)
 
 Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector<std::vector<int>>& inStrokes)
 {
+	/*
 	// Data Term
 	// Build X
 	int numOfNode = (int)mNodes.size(); // n
@@ -519,5 +520,6 @@ Zephyr::Common::Model Zephyr::Algorithm::TriDualGraph::segment(const std::vector
 	outputPath /= ss.str();
 	Common::MeshExporter::exportMesh(outputPath.string(), &resultModel);
 
-	return resultModel;
+	return resultModel;*/
+	return Model();
 }

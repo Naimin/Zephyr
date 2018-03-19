@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="src\Algorithm\Decimate.cu">
+      <Filter>Source Files\Algorithm</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\QueryDevice.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{dc494f93-97a0-41d2-af2e-5c4133515b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Algorithm">
+      <UniqueIdentifier>{af9e49b8-ee65-4931-9871-c7fef82d2699}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Random.cuh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stdfx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Zephyr_GPU.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Algorithm\Decimate.h">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="src\QueryDevice.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Zephyr_GPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
