@@ -175,6 +175,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <CudaCompile Include="src\Algorithm\Decimate.cu" />
     <ClCompile Include="src\Algorithm\OpenMesh_GPU.cpp">
       <FileType>Document</FileType>
+      <FavorSizeOrSpeed Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Speed</FavorSizeOrSpeed>
     </ClCompile>
     <CudaCompile Include="src\QueryDevice.cu" />
   </ItemGroup>

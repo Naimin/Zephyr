@@ -173,7 +173,7 @@ void Zephyr::AppEvents::setupDecimationButtonEvents(std::shared_ptr<nana::button
 			int binCount = 8;
 
 			std::cout << "GPU Random Decimation..." << std::endl;
-			GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage), binCount);
+			collapseCount = GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage), binCount);
 
 			auto elapseTime = timer.getElapsedTime();
 

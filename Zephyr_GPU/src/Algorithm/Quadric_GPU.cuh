@@ -61,61 +61,34 @@ namespace Zephyr
 			}
 		};
 
-		struct QEM_Data_GPU
-		{
-			QEM_Data_GPU() {}
-
-			QEM_Data_GPU(QEM_Data& QEM_data) : vertexCount((INDEX_TYPE)QEM_data.vertices.size()), indexCount((INDEX_TYPE)QEM_data.indices.size())
-			{
-				size_t vertexSize = QEM_data.vertices.size() * sizeof(QEM_data.vertices[0]);
-				cudaMalloc((void**)&vertices, vertexSize);
-				cudaMemcpy(vertices, &QEM_data.vertices[0], vertexSize, cudaMemcpyHostToDevice);
-				size_t indexSize = QEM_data.indices.size() * sizeof(QEM_data.indices[0]);
-				cudaMalloc((void**)&indices, indexSize);
-				cudaMemcpy(indices, &QEM_data.indices[0], indexSize, cudaMemcpyHostToDevice);
-			}
-
-			void free()
-			{
-				cudaFree(vertices);
-				cudaFree(indices);
-			}
-
-			Common::Vector3f* vertices;
-			INDEX_TYPE vertexCount;
-			INDEX_TYPE* indices;
-			INDEX_TYPE indexCount;
-			INDEX_TYPE vertexToKeepId;
-		};
-
 		struct QEM_Data_Package
 		{
+			QEM_Data_Package(size_t numQEM_Data) 
+			{
+				size_t QEM_size = numQEM_Data * sizeof(QEM_Data);
+				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
+			}
+
 			QEM_Data_Package(std::vector<QEM_Data>& QEM_Datas)
 			{
-				m_QEM_Data_GPUs.resize(QEM_Datas.size());
-				tbb::parallel_for((size_t)0, QEM_Datas.size(), [&](const size_t id)
-				{
-					m_QEM_Data_GPUs[id] = QEM_Data_GPU(QEM_Datas[id]);
-				});
-				QEM_Datas.clear();
-
-				size_t QEM_size = m_QEM_Data_GPUs.size() * sizeof(m_QEM_Data_GPUs[0]);
+				size_t QEM_size = QEM_Datas.size() * sizeof(QEM_Data);
 				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
-				cudaMemcpy(mp_QEM_Data_GPU, &m_QEM_Data_GPUs[0], QEM_size, cudaMemcpyHostToDevice);
+				setup(QEM_Datas);
+			}
+
+			void setup(std::vector<QEM_Data>& QEM_Datas)
+			{
+				size_t QEM_size = QEM_Datas.size() * sizeof(QEM_Data);
+				cudaMemcpy(mp_QEM_Data_GPU, &QEM_Datas[0], QEM_size, cudaMemcpyHostToDevice);
 			}
 
 			~QEM_Data_Package()
 			{
-				cudaFree(mp_QEM_Data_GPU);
-				tbb::parallel_for((size_t)0, m_QEM_Data_GPUs.size(), [&](const size_t id)
-				{
-					m_QEM_Data_GPUs[id].free();
-				});
+				//cudaFree(mp_QEM_Data_GPU);
 			}
 
 			// device ptr
-			QEM_Data_GPU* mp_QEM_Data_GPU;
-			std::vector<QEM_Data_GPU> m_QEM_Data_GPUs;
+			QEM_Data* mp_QEM_Data_GPU;
 		};
 
 		

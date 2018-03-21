@@ -46,9 +46,16 @@ std::vector<QEM_Data> OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const 
 	tbb::parallel_for(0, (int)randomList.size(), [&](const int idx)
 	{
 		int randomNum = randomList[idx];
-		CollapseInfo collapseInfo(mesh, HalfedgeHandle(randomNum));
-
 		QEM_Data& QEM_Data = QEM_Datas[idx];
+
+		HalfedgeHandle halfEdgeHandle(randomNum);
+		if (mesh.status(halfEdgeHandle).deleted() || !mesh.is_collapse_ok(halfEdgeHandle))
+		{
+			QEM_Data.bValid = false;
+			return;
+		}
+
+		CollapseInfo collapseInfo(mesh, halfEdgeHandle);
 
 		std::vector<Common::Vector3f> vertexBuffer;
 		std::vector<INDEX_TYPE> indexBuffer;
@@ -59,8 +66,20 @@ std::vector<QEM_Data> OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const 
 		collectOneRingNeighbour(collapseInfo.v0, mesh, vertexBuffer, indexBuffer, uniqueVertex);
 		collectOneRingNeighbour(collapseInfo.v1, mesh, vertexBuffer, indexBuffer, uniqueVertex);
 
-		QEM_Data.indices.swap(indexBuffer);
-		QEM_Data.vertices.swap(vertexBuffer);
+		auto pointToKeep = mesh.point(collapseInfo.v1);
+		QEM_Data.vertexToKeepId = uniqueVertex[SortVector3f(pointToKeep[0], pointToKeep[1], pointToKeep[2])];
+
+		QEM_Data.vertexCount = std::min(MAX_VALENCE, (INDEX_TYPE)vertexBuffer.size());
+		for (int i = 0; i < QEM_Data.vertexCount; ++i)
+		{
+			QEM_Data.vertices[i] = vertexBuffer[i];
+		}
+
+		QEM_Data.indexCount = std::min((INDEX_TYPE)(MAX_FACE * 3), (INDEX_TYPE)indexBuffer.size());
+		for (int i = 0; i < QEM_Data.indexCount; ++i)
+		{
+			QEM_Data.indices[i] = indexBuffer[i];
+		}
 	});
 
 	return QEM_Datas;

@@ -20,18 +20,27 @@ namespace Zephyr
 			}
 		};
 
+		const INDEX_TYPE MAX_VALENCE = 16;
+		const INDEX_TYPE MAX_FACE = 32;
+
 		struct QEM_Data
 		{
-			std::vector<Common::Vector3f> vertices; // vertex buffer
-			std::vector<unsigned char> indices; // all the faces formed
+			QEM_Data() : bValid(true) {}
+
+			Common::Vector3f vertices[MAX_VALENCE]; // vertex buffer
+			INDEX_TYPE indices[MAX_FACE*3]; // all the faces formed
+			INDEX_TYPE vertexCount;
+			INDEX_TYPE indexCount;
+			INDEX_TYPE vertexToKeepId;
+			bool bValid;
 		};
 
 		struct OpenMesh_GPU
 		{
-			std::vector<QEM_Data> copyPartialMesh(Common::OMMesh& mesh, const std::vector<int>& randomList);
+			static std::vector<QEM_Data> copyPartialMesh(Common::OMMesh& mesh, const std::vector<int>& randomList);
 		
 		protected:
-			void collectOneRingNeighbour(VertexHandle vh, Common::OMMesh & mesh, std::vector<Common::Vector3f>& vertexBuffer, std::vector<INDEX_TYPE>& indexBuffer, std::map<SortVector3f, INDEX_TYPE>& uniqueVertex);
+			static void collectOneRingNeighbour(VertexHandle vh, Common::OMMesh & mesh, std::vector<Common::Vector3f>& vertexBuffer, std::vector<INDEX_TYPE>& indexBuffer, std::map<SortVector3f, INDEX_TYPE>& uniqueVertex);
 		};
 	}
 }

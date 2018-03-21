@@ -266,7 +266,7 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 		}
 		totalCollapseCount += collapseCount;
 
-		//std::cout << "Total Collapsed this iteration: " << collapseCount << std::endl;
+		//std::cout << "Total Collapsed this iteration: " << collapseCount << " Total Collapsed: " << totalCollapseCount << std::endl;
 		//std::cout << "Original Collapsed this iteration: " << originalCollapse << std::endl;
 		//std::cout << "Additional Collapsed this iteration: " << additionalCollapse << std::endl;
 		//std::cout << "Total Collapsed : " << totalCollapseCount << std::endl;
