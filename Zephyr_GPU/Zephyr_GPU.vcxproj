@@ -173,10 +173,15 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="src\Algorithm\Decimate.cu" />
+    <ClCompile Include="src\Algorithm\OpenMesh_GPU.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
     <CudaCompile Include="src\QueryDevice.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Algorithm\Decimate.h" />
+    <ClInclude Include="src\Algorithm\OpenMesh_GPU.h" />
+    <ClInclude Include="src\Algorithm\Quadric_GPU.cuh" />
     <ClInclude Include="src\QueryDevice.h" />
     <ClInclude Include="src\Random.cuh" />
     <ClInclude Include="src\stdfx.h" />

@@ -10,6 +10,7 @@
 #include <IO/MeshConverter.h>
 #include <Decimate/Decimate.h>
 #include <Algorithm/Decimate.h>
+#include <Timer.h>
 
 Zephyr::AppEvents::AppEvents(App* pApp, UI * pUI) : mpApp(pApp), mpUI(pUI)
 {
@@ -163,8 +164,27 @@ void Zephyr::AppEvents::setupDecimationButtonEvents(std::shared_ptr<nana::button
 		// Decimate
 		if (Algorithm::DecimationType::GPU_RANDOM_DECIMATE == decimationType)
 		{
+			Common::Timer timer;
+
+			int collapseCount = -1;
+			auto& omeshDecimated = omesh.getMesh();
+			auto previousFaceCount = omeshDecimated.n_faces();
+			int targetFaceCount = previousFaceCount - (int)(numOfFaces * percentage);
+			int binCount = 8;
+
 			std::cout << "GPU Random Decimation..." << std::endl;
-			GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage));
+			GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage), binCount);
+
+			auto elapseTime = timer.getElapsedTime();
+
+			omeshDecimated.garbage_collection();
+
+			std::cout << "Decimation done in " << elapseTime << " sec" << std::endl;
+			std::cout << "Original Face Count: " << previousFaceCount << std::endl;
+			std::cout << "Target Face Count: " << targetFaceCount << std::endl;
+			std::cout << "Removed Face Count: " << collapseCount << std::endl;
+			std::cout << "Decimated Face Count: " << omeshDecimated.n_faces() << std::endl;
+			std::cout << "Percentage decimated: " << ((previousFaceCount - omeshDecimated.n_faces()) / (float)previousFaceCount) * 100.0f << " %" << std::endl;
 		}
 		else
 		{

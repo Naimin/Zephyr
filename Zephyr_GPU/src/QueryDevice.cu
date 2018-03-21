@@ -150,7 +150,10 @@ int Zephyr::GPU::QueryDevice::computeOptimalBlockCount(const int workSize, const
 
 	int maxBlockOneIter = numOfMP * maxBlockPerMP;
 	// check if there is enough work in the first place
-	int blocksRequired = (workSize / threadPerBlock) + 1;
+	int blocksRequired = ((workSize + (threadPerBlock-1)) / threadPerBlock);
+
+	std::cout << "Max block allowed: " << maxBlockOneIter << std::endl;
+	std::cout << "Block Required: " << blocksRequired << std::endl;
 
 	// return the min of either maxBlockOneIter or blocksRequired.
 	return std::min(blocksRequired, maxBlockOneIter);

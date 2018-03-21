@@ -63,7 +63,7 @@ QuadricD Zephyr::Algorithm::QuadricError::computeQuadricForFace(FaceHandle faceH
 
 QuadricD Zephyr::Algorithm::QuadricError::computeQuadricForVertex(VertexHandle vertexHandle, Common::OpenMeshMesh & mesh)
 {
-	// iterate over all faee linked to the vertex and compute quadric
+	// iterate over all face linked to the vertex and compute quadric
 	QuadricD q;
 	for (OMMesh::VertexFaceIter vf_Itr = mesh.getMesh().vf_iter(vertexHandle); vf_Itr.is_valid(); ++vf_Itr)
 	{
