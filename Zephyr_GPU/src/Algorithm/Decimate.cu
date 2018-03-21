@@ -234,7 +234,9 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	thrust::device_vector<double> d_Errors(oneIterationBlockCount);
 	thrust::device_vector<int> d_bestEdges(oneIterationBlockCount);
 	thrust::host_vector<int> h_BestEdge(oneIterationBlockCount);
+
 	QEM_Data_Package QEM_package(oneIterationSelectionSize);
+	OpenMesh_GPU OpenMeshGpu(oneIterationSelectionSize);
 
 	int* d_BestEdges_ptr = thrust::raw_pointer_cast(&d_bestEdges[0]);
 	int* d_randomEdgesId_ptr = thrust::raw_pointer_cast(&d_randomEdgesId[0]);
@@ -248,21 +250,21 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 		collapseCount = 0;
 		Timer time;
 		Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
-		//std::cout << "Generate Random time: " << time.getElapsedTime() << std::endl;
+		thrust::host_vector<int> h_randomEdgesId = d_randomEdgesId;
 		// advance the randomSequence
 		randomSequence += N;
-
+		//std::cout << "Generate Random time: " << time.getElapsedTime() << std::endl;
+		
 		// Data marshalling and CUDA kernel call
 		{
 			Timer copyPartialTimer;
-			std::vector<int> randomEdgesId(d_randomEdgesId.begin(), d_randomEdgesId.end());
-			auto& QEM_Datas = OpenMesh_GPU::copyPartialMesh(omesh, randomEdgesId);
-			std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
+			std::vector<QEM_Data>* QEM_Data_ptr = OpenMeshGpu.copyPartialMesh(omesh, h_randomEdgesId);
+			//std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
 
 			Timer QEM_Package_Timer;
-			QEM_package.setup(QEM_Datas);
+			QEM_package.setup(QEM_Data_ptr);
 			QEM_Data* d_QEM_Datas_ptr = QEM_package.mp_QEM_Data_GPU;
-			std::cout << "QEM_Package time: " << QEM_Package_Timer.getElapsedTime() << std::endl;
+			//std::cout << "QEM_Package time: " << QEM_Package_Timer.getElapsedTime() << std::endl;
 
 			Timer ComputeErrorTimer;
 			// Compute the Error of each random edge selected.

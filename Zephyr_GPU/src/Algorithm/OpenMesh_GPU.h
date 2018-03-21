@@ -3,6 +3,7 @@
 
 #include "../stdfx.h"
 #include <Mesh/OM_Mesh.h>
+#include <thrust/host_vector.h>
 
 namespace Zephyr
 {
@@ -20,12 +21,12 @@ namespace Zephyr
 			}
 		};
 
-		const INDEX_TYPE MAX_VALENCE = 16;
-		const INDEX_TYPE MAX_FACE = 32;
+		const INDEX_TYPE MAX_VALENCE = 32;
+		const INDEX_TYPE MAX_FACE = 48;
 
 		struct QEM_Data
 		{
-			QEM_Data() : bValid(true) {}
+			QEM_Data() : bValid(true), vertexCount(0), indexCount(0), vertexToKeepId(-1) {}
 
 			Common::Vector3f vertices[MAX_VALENCE]; // vertex buffer
 			INDEX_TYPE indices[MAX_FACE*3]; // all the faces formed
@@ -33,14 +34,27 @@ namespace Zephyr
 			INDEX_TYPE indexCount;
 			INDEX_TYPE vertexToKeepId;
 			bool bValid;
+
+			void reset()
+			{
+				bValid = true;
+				vertexCount = 0;
+				indexCount = 0;
+				vertexToKeepId = -1;
+			}
 		};
 
 		struct OpenMesh_GPU
 		{
-			static std::vector<QEM_Data> copyPartialMesh(Common::OMMesh& mesh, const std::vector<int>& randomList);
+			OpenMesh_GPU(size_t totalSelectionCount);
+			std::vector<QEM_Data>* copyPartialMesh(Common::OMMesh& mesh, const thrust::host_vector<int>& randomList);
 		
+			std::vector<QEM_Data>* getQEM_Data();
+
 		protected:
-			static void collectOneRingNeighbour(VertexHandle vh, Common::OMMesh & mesh, std::vector<Common::Vector3f>& vertexBuffer, std::vector<INDEX_TYPE>& indexBuffer, std::map<SortVector3f, INDEX_TYPE>& uniqueVertex);
+			void collectOneRingNeighbour(VertexHandle vh, Common::OMMesh & mesh, Common::Vector3f* vertexBuffer, INDEX_TYPE& vertexCount, INDEX_TYPE* indexBuffer, INDEX_TYPE& indexCount, std::map<SortVector3f, INDEX_TYPE>& uniqueVertex);
+
+			std::vector<QEM_Data> mQEM_Data;
 		};
 	}
 }

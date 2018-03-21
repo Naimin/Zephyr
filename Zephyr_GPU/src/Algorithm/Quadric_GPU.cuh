@@ -69,17 +69,17 @@ namespace Zephyr
 				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
 			}
 
-			QEM_Data_Package(std::vector<QEM_Data>& QEM_Datas)
+			QEM_Data_Package(std::vector<QEM_Data>* QEM_Datas)
 			{
-				size_t QEM_size = QEM_Datas.size() * sizeof(QEM_Data);
+				size_t QEM_size = QEM_Datas->size() * sizeof(QEM_Data);
 				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
 				setup(QEM_Datas);
 			}
 
-			void setup(std::vector<QEM_Data>& QEM_Datas)
+			void setup(std::vector<QEM_Data>* QEM_Datas)
 			{
-				size_t QEM_size = QEM_Datas.size() * sizeof(QEM_Data);
-				cudaMemcpy(mp_QEM_Data_GPU, &QEM_Datas[0], QEM_size, cudaMemcpyHostToDevice);
+				size_t QEM_size = QEM_Datas->size() * sizeof(QEM_Data);
+				cudaMemcpy(mp_QEM_Data_GPU, &(*QEM_Datas)[0], QEM_size, cudaMemcpyHostToDevice);
 			}
 
 			~QEM_Data_Package()

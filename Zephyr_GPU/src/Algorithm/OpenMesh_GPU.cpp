@@ -2,12 +2,19 @@
 #include <Decimate/QuadricError.h>
 #include <tbb/parallel_for.h>
 #include <map>
+#include <Timer.h>
 
 using namespace Zephyr;
 using namespace Zephyr::GPU;
 using namespace Zephyr::Common;
 
-void OpenMesh_GPU::collectOneRingNeighbour(VertexHandle vh, Common::OMMesh& mesh, std::vector<Common::Vector3f>& vertexBuffer, std::vector<INDEX_TYPE>& indexBuffer, std::map<SortVector3f, INDEX_TYPE>& uniqueVertex)
+void OpenMesh_GPU::collectOneRingNeighbour(VertexHandle vh, 
+										   Common::OMMesh& mesh, 
+										   Common::Vector3f* vertexBuffer, 
+										   INDEX_TYPE& vertexCount,
+										   INDEX_TYPE* indexBuffer, 
+										   INDEX_TYPE& indexCount,
+										   std::map<SortVector3f, INDEX_TYPE>& uniqueVertex)
 {
 	// For each face of the vertex iterate over it to collect them
 	for (OMMesh::VertexFaceIter vf_Itr = mesh.vf_iter(vh); vf_Itr.is_valid(); ++vf_Itr)
@@ -28,59 +35,52 @@ void OpenMesh_GPU::collectOneRingNeighbour(VertexHandle vh, Common::OMMesh& mesh
 			auto uniqueItr = uniqueVertex.find(vertices[i]);
 			if (uniqueVertex.end() == uniqueItr)
 			{
-				vertexBuffer.push_back(vertices[i]);
+				vertexBuffer[vertexCount++] = vertices[i];
 				uniqueVertex.insert(std::make_pair(vertices[i], uniqueVertex.size()));
 				uniqueItr = uniqueVertex.find(vertices[i]);
 			}
-			indexBuffer.push_back(uniqueItr->second);
+			indexBuffer[indexCount++] = uniqueItr->second;
 		}
 	}
 }
 
-std::vector<QEM_Data> OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const std::vector<int>& randomList)
+Zephyr::GPU::OpenMesh_GPU::OpenMesh_GPU(size_t totalSelectionCount) : mQEM_Data(totalSelectionCount)
 {
-	// pre-allocate
-	std::vector<QEM_Data> QEM_Datas(randomList.size());
+}
 
+std::vector<QEM_Data>* OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const thrust::host_vector<int>& randomList)
+{
 	// collect only the information needed to compute all the quadric
 	tbb::parallel_for(0, (int)randomList.size(), [&](const int idx)
 	{
 		int randomNum = randomList[idx];
-		QEM_Data& QEM_Data = QEM_Datas[idx];
+		QEM_Data& data = mQEM_Data[idx];
+
+		// reset and reuse
+		data.reset();
 
 		HalfedgeHandle halfEdgeHandle(randomNum);
 		if (mesh.status(halfEdgeHandle).deleted() || !mesh.is_collapse_ok(halfEdgeHandle))
 		{
-			QEM_Data.bValid = false;
+			data.bValid = false;
 			return;
 		}
 
 		CollapseInfo collapseInfo(mesh, halfEdgeHandle);
-
-		std::vector<Common::Vector3f> vertexBuffer;
-		std::vector<INDEX_TYPE> indexBuffer;
-
 		std::map<SortVector3f, INDEX_TYPE> uniqueVertex;
 
 		// Collect all the vertices
-		collectOneRingNeighbour(collapseInfo.v0, mesh, vertexBuffer, indexBuffer, uniqueVertex);
-		collectOneRingNeighbour(collapseInfo.v1, mesh, vertexBuffer, indexBuffer, uniqueVertex);
-
+		// TODO: need proper bound check if vertex go beyond MAX_VALENCE and similarly MAX_FACE
+		collectOneRingNeighbour(collapseInfo.v0, mesh, data.vertices, data.vertexCount, data.indices, data.indexCount, uniqueVertex);
+		collectOneRingNeighbour(collapseInfo.v1, mesh, data.vertices, data.vertexCount, data.indices, data.indexCount, uniqueVertex);
+		
 		auto pointToKeep = mesh.point(collapseInfo.v1);
-		QEM_Data.vertexToKeepId = uniqueVertex[SortVector3f(pointToKeep[0], pointToKeep[1], pointToKeep[2])];
-
-		QEM_Data.vertexCount = std::min(MAX_VALENCE, (INDEX_TYPE)vertexBuffer.size());
-		for (int i = 0; i < QEM_Data.vertexCount; ++i)
-		{
-			QEM_Data.vertices[i] = vertexBuffer[i];
-		}
-
-		QEM_Data.indexCount = std::min((INDEX_TYPE)(MAX_FACE * 3), (INDEX_TYPE)indexBuffer.size());
-		for (int i = 0; i < QEM_Data.indexCount; ++i)
-		{
-			QEM_Data.indices[i] = indexBuffer[i];
-		}
+		data.vertexToKeepId = uniqueVertex[SortVector3f(pointToKeep[0], pointToKeep[1], pointToKeep[2])];
 	});
+	return &mQEM_Data;
+}
 
-	return QEM_Datas;
+std::vector<QEM_Data>* Zephyr::GPU::OpenMesh_GPU::getQEM_Data()
+{
+	return &mQEM_Data;
 }
