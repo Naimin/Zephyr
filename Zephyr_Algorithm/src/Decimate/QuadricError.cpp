@@ -77,6 +77,11 @@ float Zephyr::Algorithm::QuadricError::computeTriangleFlipAngle(CollapseInfo & c
 {
 	auto& omesh = mesh.getMesh();
 
+	return computeTriangleFlipAngle(collapseInfo, omesh, maxAngle);
+}
+
+float Zephyr::Algorithm::QuadricError::computeTriangleFlipAngle(CollapseInfo & collapseInfo, Common::OMMesh& omesh, float maxAngle)
+{
 	// Set the maximum angular deviation of the orignal normal and the new normal in degrees.
 	double max_deviation_ = maxAngle / 180.0 * M_PI;
 	double min_cos_ = cos(max_deviation_);

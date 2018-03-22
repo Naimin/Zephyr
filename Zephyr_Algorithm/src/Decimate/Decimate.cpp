@@ -113,7 +113,7 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 {
 	const float maxQuadricError = 0.01f;
 	const float maxNormalFlipDeviation = 15.0f;
-	const int maxRetryCount = 500;
+	const int maxRetryCount = 50;
 
 	auto& omesh = mesh.getMesh();
 

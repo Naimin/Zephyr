@@ -67,6 +67,13 @@ std::vector<QEM_Data>* OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const
 		}
 
 		CollapseInfo collapseInfo(mesh, halfEdgeHandle);
+		float angleError = Algorithm::QuadricError::computeTriangleFlipAngle(collapseInfo, mesh, 15.0f);
+		if (angleError == Algorithm::INVALID_COLLAPSE)
+		{
+			data.bValid = false;
+			return;
+		}
+
 		std::map<SortVector3f, INDEX_TYPE> uniqueVertex;
 
 		// Collect all the vertices

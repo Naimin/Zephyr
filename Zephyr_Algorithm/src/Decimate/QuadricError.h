@@ -27,6 +27,7 @@ namespace Zephyr
 				static QuadricD computeQuadricForVertex(VertexHandle vertexHandle, Common::OpenMeshMesh& mesh);
 
 				static float computeTriangleFlipAngle(CollapseInfo& collapseInfo, Common::OpenMeshMesh& mesh, float maxAngle);
+				static float computeTriangleFlipAngle(CollapseInfo & collapseInfo, Common::OMMesh & omesh, float maxAngle);
 
 			private:
 				float mMaxError;

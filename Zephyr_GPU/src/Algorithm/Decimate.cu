@@ -73,6 +73,15 @@ __constant__ double MAX_ERRORS[2]; // quadric error, max flip error
 __device__
 double computeFlipAngle(INDEX_TYPE halfEdgeId, INDEX_TYPE* index, Vector3f* vertices)
 {
+	// Set the maximum angular deviation of the orignal normal and the new normal in degrees.
+	double max_deviation_ = maxAngle / 180.0 * M_PI;
+	double min_cos_ = cos(max_deviation_);
+
+	// check for flipping normals
+	OMMesh::ConstVertexFaceIter vf_it(omesh, collapseInfo.v0);
+	FaceHandle					fh;
+	OMMesh::Scalar              c(1.0);
+
 	// put point to remain in vertex to be removed
 	omesh.set_point(collapseInfo.v0, collapseInfo.p1);
 
@@ -95,8 +104,8 @@ double computeFlipAngle(INDEX_TYPE halfEdgeId, INDEX_TYPE* index, Vector3f* vert
 	omesh.set_point(collapseInfo.v0, collapseInfo.p0);
 
 	return float((c < min_cos_) ? INVALID_COLLAPSE : c);
-}*/
-
+}
+*/
 __device__
 Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* vertices)
 {
@@ -221,7 +230,6 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	// compute the total number of block we require to complete the task
 	int N = totalCollapseRequired;
 	int threadPerBlock = binSize;
-	int numOfBlock = (N / threadPerBlock) + 1;
 
 	// check how many block we can run together at once
 	int oneIterationBlockCount = QueryDevice::computeOptimalBlockCount(N, threadPerBlock, 0);
@@ -245,7 +253,7 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	int totalCollapseCount = 0;
 	// do the exact collapse
 	int collapseCount = std::numeric_limits<int>::max();
-	while (retryCount < maxRetryCount && currentFaceCount > targetFaceCount && collapseCount > (0.25 * oneIterationBlockCount))
+	while (retryCount < maxRetryCount && currentFaceCount > targetFaceCount && collapseCount > (0.05 * oneIterationBlockCount))
 	{
 		collapseCount = 0;
 		Timer time;
