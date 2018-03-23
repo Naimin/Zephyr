@@ -22,41 +22,42 @@ Zephyr::AppEvents::~AppEvents()
 
 bool Zephyr::AppEvents::initialize()
 {
-	const unsigned int width = 145;
-	int yPos = 0;
+	const unsigned int width = 140;
+	int yPos = 5;
+	int margin = 5;
 	// Buttons creation and events
-	auto loadBtn = mpUI->createButton(mpUI->getNestedForm(), "Load", nana::rectangle{ 0, yPos, width, 20 });
+	auto loadBtn = mpUI->createButton(mpUI->getNestedForm(), "Load", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupLoadButtonEvents(loadBtn);
 
 	yPos += 30;
-	auto segmentBtn = mpUI->createButton(mpUI->getNestedForm(), "Segment", nana::rectangle{ 0, yPos, width, 20 });
+	auto segmentBtn = mpUI->createButton(mpUI->getNestedForm(), "Segment", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupSegmentButtonEvents(segmentBtn);
 
 	// decimation Slider uses this label
-	auto decimationLabel = mpUI->createLabel(mpUI->getNestedForm(), "Decimate by: 50%", nana::rectangle{ 0, 170, width, 20 });
+	auto decimationLabel = mpUI->createLabel(mpUI->getNestedForm(), "Decimate by: 50%", nana::rectangle{ margin, 180, width - margin, 20 });
 	// the different decimation buttons uses this slider
-	auto decimationSlider = mpUI->createSlider(mpUI->getNestedForm(), "Decimation Slider", nana::rectangle{ 0, 190, width, 20 });
+	auto decimationSlider = mpUI->createSlider(mpUI->getNestedForm(), "Decimation Slider", nana::rectangle{ margin, 195, width - margin, 20 });
 	setupDecimationSlider(decimationSlider, decimationLabel);
 
 	// bin size slider uses this labe;
-	auto binLabel = mpUI->createLabel(mpUI->getNestedForm(), "Bin Size: 8", nana::rectangle{ 0, 210, width, 20 });
-	auto binSlider = mpUI->createSlider(mpUI->getNestedForm(), "Bin Slider", nana::rectangle{ 0, 230, width, 20 });
+	auto binLabel = mpUI->createLabel(mpUI->getNestedForm(), "Bin Size: 8", nana::rectangle{ margin, 220, width - margin, 20 });
+	auto binSlider = mpUI->createSlider(mpUI->getNestedForm(), "Bin Slider", nana::rectangle{ margin, 235, width - margin, 20 });
 	setupBinSlider(binSlider, binLabel);
 
 	yPos += 30;
-	auto greedyDecimateBtn = mpUI->createButton(mpUI->getNestedForm(), "Greedy Decimation", nana::rectangle{ 0, yPos, width, 20 });
+	auto greedyDecimateBtn = mpUI->createButton(mpUI->getNestedForm(), "Greedy Decimation", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupGreedyDecimationButtonEvents(greedyDecimateBtn, decimationSlider, binSlider);
 
 	yPos += 30;
-	auto randomDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Random Decimation", nana::rectangle{ 0, yPos, width, 20 });
+	auto randomDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Random Decimation", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupRandomDecimationButtonEvents(randomDecimationBtn, decimationSlider, binSlider);
 
 	yPos += 30;
-	auto vertexDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Vertex Random Deci", nana::rectangle{ 0, yPos, width, 20 });
+	auto vertexDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "Vertex Random Deci", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupVertexRandomDecimationButtonEvents(vertexDecimationBtn, decimationSlider, binSlider);
 
 	yPos += 30;
-	auto gpuDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "GPU Random Deci", nana::rectangle{ 0, yPos, width, 20 });
+	auto gpuDecimationBtn = mpUI->createButton(mpUI->getNestedForm(), "GPU Random Deci", nana::rectangle{ margin, yPos, width - margin, 20 });
 	setupGPURandomDecimationButtonEvents(gpuDecimationBtn, decimationSlider, binSlider);
 
 	return true;
@@ -199,7 +200,7 @@ void Zephyr::AppEvents::setupDecimationButtonEvents(std::shared_ptr<nana::button
 			int collapseCount = -1;
 			auto& omeshDecimated = omesh.getMesh();
 			auto previousFaceCount = omeshDecimated.n_faces();
-			int targetFaceCount =previousFaceCount - (int)(numOfFaces * percentage);
+			int targetFaceCount = (int)previousFaceCount - (int)(numOfFaces * percentage);
 
 			std::cout << "GPU Random Decimation..." << std::endl;
 			collapseCount = GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage), binSize);

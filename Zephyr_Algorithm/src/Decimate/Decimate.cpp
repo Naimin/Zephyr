@@ -17,7 +17,7 @@
 
 #include "QuadricError.h"
 
-#define nearest_collapse 0
+//#define nearest_collapse 0
 
 using namespace Zephyr;
 using namespace Zephyr::Common;
