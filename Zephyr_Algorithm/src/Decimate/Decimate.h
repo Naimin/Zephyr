@@ -20,7 +20,7 @@ namespace Zephyr
 		class ZEPHYR_ALGORITHM_API Decimater
 		{
 			public:
-				static int decimate(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, DecimationType type = GREEDY_DECIMATE);
+				static int decimate(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount,int binSize, DecimationType type = GREEDY_DECIMATE);
 
 				static int decimateGreedy(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount);
 				static int decimateRandom(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize = 8);

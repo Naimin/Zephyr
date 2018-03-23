@@ -17,7 +17,7 @@
 
 #include "QuadricError.h"
 
-#define nearest_collapse 1
+#define nearest_collapse 0
 
 using namespace Zephyr;
 using namespace Zephyr::Common;
@@ -28,25 +28,24 @@ typedef Decimater::ModQuadricT< Zephyr::Common::OMMesh >::Handle HModQuadric;
 typedef Decimater::ModNormalFlippingT< Zephyr::Common::OMMesh >::Handle HModNormalFlipping;
 typedef Decimater::ModNormalDeviationT< Zephyr::Common::OMMesh >::Handle HModNormalDeviation;
 
-int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, DecimationType type)
+int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, int binSize, DecimationType type)
 {
 	auto& omesh = mesh.getMesh();
 
 	Timer timer;
 	int collapseCount = -1;
 	auto previousFaceCount = omesh.n_faces();
-	int binCount = 8;
 
 	std::cout << "Using ";
 	if (RANDOM_DECIMATE == type)
 	{
 		std::cout << "Random Decimation..." << std::endl;
-		collapseCount = decimateRandom(mesh, targetFaceCount, binCount);
+		collapseCount = decimateRandom(mesh, targetFaceCount, binSize);
 	}
 	else if (RANDOM_DECIMATE_VERTEX == type)
 	{
 		std::cout << "Random Decimation Vertex..." << std::endl;
-		collapseCount = decimateRandomVertex(mesh, targetFaceCount, binCount);
+		collapseCount = decimateRandomVertex(mesh, targetFaceCount, binSize);
 	}
 	else if(GREEDY_DECIMATE == type)
 	{
@@ -56,7 +55,7 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 	else if (ADAPTIVE_RANDOM_DECIMATE == type)
 	{
 		std::cout << "Adaptive Random Decimation..." << std::endl;
-		collapseCount = decimateAdaptiveRandom(mesh, targetFaceCount, binCount);
+		collapseCount = decimateAdaptiveRandom(mesh, targetFaceCount, binSize);
 	}
 
 	auto elapseTime = timer.getElapsedTime();
@@ -76,7 +75,7 @@ int Zephyr::Algorithm::Decimater::decimate(Common::OpenMeshMesh & mesh, unsigned
 
 int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount)
 {
-	const double maxQuadricError = 0.01;
+	const double maxQuadricError = 0.1;
 	const double maxNormalFlipDeviation = 45.0;
 	const double maxNormalDeviation = 15.0;
 
@@ -100,7 +99,7 @@ int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, un
 	if (!decimator.initialize())
 		return -1;
 
-	size_t numOfCollapseRequired = omesh.n_faces() - targetFaceCount;
+	size_t numOfCollapseRequired = (omesh.n_faces() - targetFaceCount) / 2;
 
 	size_t actualNumOfCollapse = decimator.decimate(numOfCollapseRequired);
 
@@ -111,8 +110,8 @@ int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, un
 
 int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.01f;
-	const float maxNormalFlipDeviation = 15.0f;
+	const float maxQuadricError = 0.1f;
+	const float maxNormalFlipDeviation = 45.0;
 	const int maxRetryCount = 50;
 
 	auto& omesh = mesh.getMesh();
@@ -292,8 +291,8 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 
 int Zephyr::Algorithm::Decimater::decimateRandomVertex(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.01f;
-	const float maxNormalFlipDeviation = 15.0f;
+	const float maxQuadricError = 0.1f;
+	const float maxNormalFlipDeviation = 45.0f;
 	const int maxRetryCount = 500;
 
 	auto& omesh = mesh.getMesh();

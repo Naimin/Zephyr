@@ -205,9 +205,9 @@ struct ConstError
 
 int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.01f;
-	const float maxNormalFlipDeviation = 15.0f;
-	const int maxRetryCount = 500;
+	const float maxQuadricError = 0.1f;
+	const float maxNormalFlipDeviation = 45.0;
+	const int maxRetryCount = 50;
 
 	// set the constant memory data
 	ConstError constError(maxQuadricError, maxNormalFlipDeviation);
@@ -239,6 +239,7 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 
 	int randomSequence = 0;
 	thrust::device_vector<int> d_randomEdgesId(oneIterationSelectionSize);
+	thrust::host_vector<int> h_randomEdgesId(oneIterationSelectionSize);
 	thrust::device_vector<double> d_Errors(oneIterationBlockCount);
 	thrust::device_vector<int> d_bestEdges(oneIterationBlockCount);
 	thrust::host_vector<int> h_BestEdge(oneIterationBlockCount);
@@ -258,7 +259,7 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 		collapseCount = 0;
 		Timer time;
 		Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
-		thrust::host_vector<int> h_randomEdgesId = d_randomEdgesId;
+		h_randomEdgesId = d_randomEdgesId;
 		// advance the randomSequence
 		randomSequence += N;
 		//std::cout << "Generate Random time: " << time.getElapsedTime() << std::endl;
