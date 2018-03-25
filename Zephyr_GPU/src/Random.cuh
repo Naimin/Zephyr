@@ -63,7 +63,7 @@ namespace Zephyr
 		}
 
 		template <typename T>
-		static void generateRandomInt(thrust::device_vector<T>& output, const T minValue, const T maxValue, const int sequence)
+		static void generateRandomInt(thrust::device_vector<T>& output, const T minValue, const T maxValue, int& sequence)
 		{
 			thrust::counting_iterator<unsigned int> index_sequence_begin(sequence);
 			Random::prg_int<T> randomRange(minValue, maxValue);
@@ -72,6 +72,7 @@ namespace Zephyr
 				index_sequence_begin + (int)output.size(),
 				output.begin(),
 				randomRange);
+			sequence += output.size();
 		}
 	}
 }

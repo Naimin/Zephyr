@@ -250,21 +250,22 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	int* d_randomEdgesId_ptr = thrust::raw_pointer_cast(&d_randomEdgesId[0]);
 	double* d_Errors_ptr = thrust::raw_pointer_cast(&d_Errors[0]);
 	
+	// do the first random generation outside of iteration.
+	Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
+	h_randomEdgesId = d_randomEdgesId;
+
 	int totalCollapseCount = 0;
 	// do the exact collapse
 	int collapseCount = std::numeric_limits<int>::max();
 	while (retryCount < maxRetryCount && currentFaceCount > targetFaceCount && collapseCount > (0.05 * oneIterationBlockCount))
 	{
 		collapseCount = 0;
-		Timer time;
-		Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
-		h_randomEdgesId = d_randomEdgesId;
-		// advance the randomSequence
-		randomSequence += N;
-		//std::cout << "Generate Random time: " << time.getElapsedTime() << std::endl;
-		
+
 		// Data marshalling and CUDA kernel call
 		{
+			// Synchronize the async copy of random edge id from device to host.
+			cudaDeviceSynchronize();
+
 			Timer copyPartialTimer;
 			QEM_Data* d_QEM_Datas_ptr = partialMesh.copyPartialMesh(omesh, h_randomEdgesId);
 			//std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
@@ -283,11 +284,21 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 			selectBestEdge <<< oneIterationBlockCount, threadPerBlock, threadPerBlock * sizeof(double) >>>(d_Errors_ptr, d_randomEdgesId_ptr, d_BestEdges_ptr);
 			//std::cout << "Best Edge time: " << bestEdgeTimer.getElapsedTime() << std::endl;
 			CudaCheckError();
+			
+			// generate the next set of random number
+			Timer randomTimer;
+			Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
+			// Interleave, Async copy from device to host
+			cudaMemcpyAsync(thrust::raw_pointer_cast(h_randomEdgesId.data()),
+				thrust::raw_pointer_cast(d_randomEdgesId.data()),
+				d_randomEdgesId.size()*sizeof(int),
+				cudaMemcpyDeviceToHost);
+			//std::cout << "Generate Random time: " << randomTimer.getElapsedTime() << std::endl;
+
 			// copy the result of the kernel back to host
 			h_BestEdge = d_bestEdges;
-			//std::cout << "Exiting" << std::endl;
 		}
-		
+
 		Timer collapseTimer;
 
 		int faceCollapsed = 0;
