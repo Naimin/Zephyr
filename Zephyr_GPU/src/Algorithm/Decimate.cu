@@ -255,6 +255,8 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	h_randomEdgesId = d_randomEdgesId;
 
 	int totalCollapseCount = 0;
+	int garbageCollectTrigger = oneIterationBlockCount / 2;
+
 	// do the exact collapse
 	int collapseCount = std::numeric_limits<int>::max();
 	while (retryCount < maxRetryCount && currentFaceCount > targetFaceCount && collapseCount > (0.05 * oneIterationBlockCount))
@@ -266,27 +268,24 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 			// Synchronize the async copy of random edge id from device to host.
 			cudaDeviceSynchronize();
 
-			Timer copyPartialTimer;
+			//Timer copyPartialTimer;
 			QEM_Data* d_QEM_Datas_ptr = partialMesh.copyPartialMesh(omesh, h_randomEdgesId);
 			//std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
 
-			Timer QEM_Package_Timer;
-			//std::cout << "QEM_Package time: " << QEM_Package_Timer.getElapsedTime() << std::endl;
-
-			Timer ComputeErrorTimer;
+			//Timer ComputeErrorTimer;
 			// Compute the Error of each random edge selected.
 			computeErrors <<< oneIterationBlockCount, threadPerBlock >>>(d_QEM_Datas_ptr, d_Errors_ptr);
 			//std::cout << "Compute Error time: " << ComputeErrorTimer.getElapsedTime() << std::endl;
-			CudaCheckError();
+			//CudaCheckError();
 			// Compare and find the edge with best score.
 
-			Timer bestEdgeTimer;
+			//Timer bestEdgeTimer;
 			selectBestEdge <<< oneIterationBlockCount, threadPerBlock, threadPerBlock * sizeof(double) >>>(d_Errors_ptr, d_randomEdgesId_ptr, d_BestEdges_ptr);
 			//std::cout << "Best Edge time: " << bestEdgeTimer.getElapsedTime() << std::endl;
-			CudaCheckError();
+			//CudaCheckError();
 			
 			// generate the next set of random number
-			Timer randomTimer;
+			//Timer randomTimer;
 			Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
 			// Interleave, Async copy from device to host
 			cudaMemcpyAsync(thrust::raw_pointer_cast(h_randomEdgesId.data()),
@@ -317,6 +316,17 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 			omesh.collapse(halfEdgeHandle);
 			++collapseCount;
 		}
+
+		// Do a garbage collection when invalid cross the trigger threshold
+		// Doing garbage collection will remove the deleted edge from the data set, hence removing chance of picking an already deleted edge.
+		if (collapseCount < garbageCollectTrigger)
+		{
+			omesh.garbage_collection();
+			totalHalfEdgeCount = omesh.n_halfedges();
+			garbageCollectTrigger /= 2;
+			//std::cout << "Remaining Half Edge: " << totalHalfEdgeCount << std::endl;
+		}
+
 		totalCollapseCount += collapseCount;
 
 		//std::cout << "Total Collapsed this iteration: " << collapseCount << " Total Collapsed: " << totalCollapseCount  << std::endl;
@@ -324,23 +334,11 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 		//std::cout << "Additional Collapsed this iteration: " << additionalCollapse << std::endl;
 		//std::cout << "Total Collapsed : " << totalCollapseCount << std::endl;
 
-		// if there is no changes in face count, retry
-		if (0 == collapseCount)
-		{
-			++retryCount;
-			std::cout << "Retrying: " << retryCount << std::endl;
-		}
-
 		currentFaceCount -= faceCollapsed;
 
 		//std::cout << "Collapse time: " << collapseTimer.getElapsedTime() << std::endl;
 	}
 	omesh.garbage_collection();
-
-	if (retryCount == maxRetryCount)
-	{
-		std::cout << "Reach max retry count of " << maxRetryCount << ", teriminating early" << std::endl;
-	}
 
 	return totalCollapseCount;
 }
