@@ -5,7 +5,7 @@
       <Filter>Source Files\Algorithm</Filter>
     </CudaCompile>
     <CudaCompile Include="src\QueryDevice.cu" />
-    <CudaCompile Include="src\Algorithm\OpenMesh_GPU.cpp">
+    <CudaCompile Include="src\Algorithm\QEM_Data.cu">
       <Filter>Source Files\Algorithm</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -34,7 +34,7 @@
     <ClInclude Include="src\Algorithm\Quadric_GPU.cuh">
       <Filter>Source Files\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="src\Algorithm\OpenMesh_GPU.h">
+    <ClInclude Include="src\Algorithm\QEM_Data.h">
       <Filter>Source Files\Algorithm</Filter>
     </ClInclude>
   </ItemGroup>

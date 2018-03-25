@@ -1,4 +1,4 @@
-#include "OpenMesh_GPU.h"
+#include "QEM_Data.h"
 #include <Decimate/QuadricError.h>
 #include <tbb/parallel_for.h>
 #include <map>
@@ -8,7 +8,7 @@ using namespace Zephyr;
 using namespace Zephyr::GPU;
 using namespace Zephyr::Common;
 
-void OpenMesh_GPU::collectOneRingNeighbour(VertexHandle vh, 
+void CopyPartialMesh::collectOneRingNeighbour(VertexHandle vh,
 										   Common::OMMesh& mesh, 
 										   Common::Vector3f* vertexBuffer, 
 										   INDEX_TYPE& vertexCount,
@@ -44,11 +44,11 @@ void OpenMesh_GPU::collectOneRingNeighbour(VertexHandle vh,
 	}
 }
 
-Zephyr::GPU::OpenMesh_GPU::OpenMesh_GPU(size_t totalSelectionCount) : mQEM_Data(totalSelectionCount)
+Zephyr::GPU::CopyPartialMesh::CopyPartialMesh(size_t totalSelectionCount) : mQEM_Data(totalSelectionCount), mQEM_Data_Package(totalSelectionCount)
 {
 }
 
-std::vector<QEM_Data>* OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const thrust::host_vector<int>& randomList)
+QEM_Data* CopyPartialMesh::copyPartialMesh(Common::OMMesh& mesh, const Thrust_host_vector_int& randomList)
 {
 	// collect only the information needed to compute all the quadric
 	tbb::parallel_for(0, (int)randomList.size(), [&](const int idx)
@@ -84,10 +84,32 @@ std::vector<QEM_Data>* OpenMesh_GPU::copyPartialMesh(Common::OMMesh& mesh, const
 		auto pointToKeep = mesh.point(collapseInfo.v1);
 		data.vertexToKeepId = uniqueVertex[SortVector3f(pointToKeep[0], pointToKeep[1], pointToKeep[2])];
 	});
-	return &mQEM_Data;
+
+	mQEM_Data_Package.setup(mQEM_Data);
+	
+	return mQEM_Data_Package.getDevicePtr();
 }
 
-std::vector<QEM_Data>* Zephyr::GPU::OpenMesh_GPU::getQEM_Data()
+QEM_Data_Package::QEM_Data_Package(size_t numQEM_Data) : mQEM_Data_GPU(numQEM_Data)
 {
-	return &mQEM_Data;
+
+}
+
+QEM_Data_Package::QEM_Data_Package(QEM_Data_List& QEM_Datas) : mQEM_Data_GPU(QEM_Datas)
+{
+	setup(QEM_Datas);
+}
+
+void QEM_Data_Package::setup(QEM_Data_List& QEM_Datas)
+{
+	mQEM_Data_GPU = QEM_Datas;
+}
+
+QEM_Data* QEM_Data_Package::getDevicePtr()
+{
+	return thrust::raw_pointer_cast(&mQEM_Data_GPU[0]);
+}
+
+QEM_Data_Package::~QEM_Data_Package()
+{
 }

@@ -1,6 +1,6 @@
 #include "Decimate.h"
 #include "Quadric_GPU.cuh"
-#include "OpenMesh_GPU.h"
+#include "QEM_Data.h"
 
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
@@ -239,13 +239,12 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 
 	int randomSequence = 0;
 	thrust::device_vector<int> d_randomEdgesId(oneIterationSelectionSize);
-	thrust::host_vector<int> h_randomEdgesId(oneIterationSelectionSize);
+	thrust::host_vector<int, thrust::system::cuda::experimental::pinned_allocator<int>> h_randomEdgesId(oneIterationSelectionSize);
 	thrust::device_vector<double> d_Errors(oneIterationBlockCount);
 	thrust::device_vector<int> d_bestEdges(oneIterationBlockCount);
-	thrust::host_vector<int> h_BestEdge(oneIterationBlockCount);
+	thrust::host_vector <int, thrust::system::cuda::experimental::pinned_allocator<int>> h_BestEdge(oneIterationBlockCount);
 
-	QEM_Data_Package QEM_package(oneIterationSelectionSize);
-	OpenMesh_GPU OpenMeshGpu(oneIterationSelectionSize);
+	CopyPartialMesh partialMesh(oneIterationSelectionSize);
 
 	int* d_BestEdges_ptr = thrust::raw_pointer_cast(&d_bestEdges[0]);
 	int* d_randomEdgesId_ptr = thrust::raw_pointer_cast(&d_randomEdgesId[0]);
@@ -267,12 +266,10 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 		// Data marshalling and CUDA kernel call
 		{
 			Timer copyPartialTimer;
-			std::vector<QEM_Data>* QEM_Data_ptr = OpenMeshGpu.copyPartialMesh(omesh, h_randomEdgesId);
+			QEM_Data* d_QEM_Datas_ptr = partialMesh.copyPartialMesh(omesh, h_randomEdgesId);
 			//std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
 
 			Timer QEM_Package_Timer;
-			QEM_package.setup(QEM_Data_ptr);
-			QEM_Data* d_QEM_Datas_ptr = QEM_package.mp_QEM_Data_GPU;
 			//std::cout << "QEM_Package time: " << QEM_Package_Timer.getElapsedTime() << std::endl;
 
 			Timer ComputeErrorTimer;

@@ -3,7 +3,6 @@
 
 #include "../stdfx.h"
 #include <GeometryMath.h>
-#include "OpenMesh_GPU.h"
 #include <tbb/parallel_for.h>
 
 namespace Zephyr
@@ -60,38 +59,6 @@ namespace Zephyr
 																    +     mat[9];
 			}
 		};
-
-		struct QEM_Data_Package
-		{
-			QEM_Data_Package(size_t numQEM_Data) 
-			{
-				size_t QEM_size = numQEM_Data * sizeof(QEM_Data);
-				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
-			}
-
-			QEM_Data_Package(std::vector<QEM_Data>* QEM_Datas)
-			{
-				size_t QEM_size = QEM_Datas->size() * sizeof(QEM_Data);
-				cudaMalloc((void**)&mp_QEM_Data_GPU, QEM_size);
-				setup(QEM_Datas);
-			}
-
-			void setup(std::vector<QEM_Data>* QEM_Datas)
-			{
-				size_t QEM_size = QEM_Datas->size() * sizeof(QEM_Data);
-				cudaMemcpy(mp_QEM_Data_GPU, &(*QEM_Datas)[0], QEM_size, cudaMemcpyHostToDevice);
-			}
-
-			~QEM_Data_Package()
-			{
-				//cudaFree(mp_QEM_Data_GPU);
-			}
-
-			// device ptr
-			QEM_Data* mp_QEM_Data_GPU;
-		};
-
-		
 	}
 }
 
