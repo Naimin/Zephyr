@@ -24,7 +24,7 @@ using namespace Zephyr::Common;
 using namespace Zephyr::GPU;
 
 // Define this to turn on error checking
-//#define CUDA_ERROR_CHECK
+#define CUDA_ERROR_CHECK
 
 #define CudaSafeCall( err ) __cudaSafeCall( err, __FILE__, __LINE__ )
 #define CudaCheckError()    __cudaCheckError( __FILE__, __LINE__ )
@@ -69,43 +69,6 @@ inline void __cudaCheckError(const char *file, const int line)
 
 __constant__ double MAX_ERRORS[2]; // quadric error, max flip error
 
-/*
-__device__
-double computeFlipAngle(INDEX_TYPE halfEdgeId, INDEX_TYPE* index, Vector3f* vertices)
-{
-	// Set the maximum angular deviation of the orignal normal and the new normal in degrees.
-	double max_deviation_ = maxAngle / 180.0 * M_PI;
-	double min_cos_ = cos(max_deviation_);
-
-	// check for flipping normals
-	OMMesh::ConstVertexFaceIter vf_it(omesh, collapseInfo.v0);
-	FaceHandle					fh;
-	OMMesh::Scalar              c(1.0);
-
-	// put point to remain in vertex to be removed
-	omesh.set_point(collapseInfo.v0, collapseInfo.p1);
-
-	for (; vf_it.is_valid(); ++vf_it)
-	{
-		fh = *vf_it;
-		if (fh != collapseInfo.fl && fh != collapseInfo.fr)
-		{
-			OMMesh::Normal n1 = omesh.normal(fh);
-			OMMesh::Normal n2 = omesh.calc_face_normal(fh);
-
-			c = dot(n1, n2);
-
-			if (c < min_cos_)
-				break;
-		}
-	}
-
-	// undo simulation changes
-	omesh.set_point(collapseInfo.v0, collapseInfo.p0);
-
-	return float((c < min_cos_) ? INVALID_COLLAPSE : c);
-}
-*/
 __device__
 Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* vertices)
 {
@@ -203,7 +166,42 @@ struct ConstError
 	double maxNormalFlipDeviation;
 };
 
-int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
+int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize, Algorithm::DecimationType type)
+{
+	Common::Timer timer;
+
+	auto& omesh = mesh.getMesh();
+
+	int collapseCount = -1;
+	auto previousFaceCount = omesh.n_faces();
+
+	std::cout << "Using ";
+	if (Algorithm::DecimationType::GPU_RANDOM_DECIMATE == type)
+	{
+		std::cout << "GPU Random Decimation..." << std::endl;
+		collapseCount = GPU::decimateMC(mesh, targetFaceCount, binSize);
+	}
+	else if (Algorithm::DecimationType::GPU_SUPER_VERTEX == type)
+	{
+		std::cout << "GPU Super Vertex..." << std::endl;
+		collapseCount = GPU::decimateSuperVertex(mesh, targetFaceCount, binSize);
+	}
+
+	auto elapseTime = timer.getElapsedTime();
+	auto& omeshDecimated = mesh.getMesh();
+	omesh.garbage_collection();
+
+	std::cout << "Decimation done in " << elapseTime << " sec" << std::endl;
+	std::cout << "Original Face Count: " << previousFaceCount << std::endl;
+	std::cout << "Target Face Count: " << targetFaceCount << std::endl;
+	std::cout << "Removed Face Count: " << collapseCount << std::endl;
+	std::cout << "Decimated Face Count: " << omeshDecimated.n_faces() << std::endl;
+	std::cout << "Percentage decimated: " << ((previousFaceCount - omeshDecimated.n_faces()) / (float)previousFaceCount) * 100.0f << " %" << std::endl;
+
+	return collapseCount;
+}
+
+int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
 	const float maxQuadricError = 0.1f;
 	const float maxNormalFlipDeviation = 45.0;
@@ -341,4 +339,153 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 	omesh.garbage_collection();
 
 	return totalCollapseCount;
+}
+
+// Super Vertex Decimation
+struct SV_Header
+{
+	__device__
+	SV_Header() : size(0) {}
+	unsigned int size;
+};
+
+struct SV_Data
+{
+	int indexStart[MAX_FACE];
+};
+
+__global__
+void setupHeaderAndData(int* indices, SV_Header* headers, SV_Data* datas, unsigned char maxFace)
+{
+	int faceId = blockIdx.x * blockDim.x + threadIdx.x;
+	int index = faceId * 3;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		int vertexId = indices[index + i];
+
+		unsigned size = atomicInc(&headers[vertexId].size, maxFace);
+		datas[vertexId].indexStart[size] = index;
+	}
+}
+
+__device__
+Quadric_GPU computeSVFaceQE(int IdStart, int* index, Vector3f* vertices)
+{
+	Vector3f v0 = vertices[index[IdStart]];
+	Vector3f v1 = vertices[index[IdStart + 1]];
+	Vector3f v2 = vertices[index[IdStart + 2]];
+
+	Vector3f n = (v1 - v0).cross(v2 - v0);
+
+	double area = n.norm();
+
+	if (area > FLT_MIN)
+	{
+		n /= area;
+		area *= 0.5;
+	}
+
+	double a = n[0];
+	double b = n[1];
+	double c = n[2];
+	double d = -(v0.dot(n));
+
+	Quadric_GPU q(a, b, c, d);
+	q *= area;
+
+	return q;
+}
+
+__global__
+void computeSVQuadricAllFace(int* indices, Vector3f* vertices, Quadric_GPU* FaceQuadric)
+{
+	int faceId = blockIdx.x * blockDim.x + threadIdx.x;
+	int index = faceId * 3;
+
+	FaceQuadric[faceId] = computeSVFaceQE(index, indices, vertices);
+}
+
+__global__
+void computeSVVertexQuadric(SV_Header* headers, SV_Data* datas, Quadric_GPU* faceQuadric, Quadric_GPU* vertexQuadric)
+{
+	int vertexId = blockIdx.x * blockDim.x + threadIdx.x;
+	
+	SV_Header header = headers[vertexId];
+	SV_Data data = datas[vertexId];
+
+	Quadric_GPU q;
+	for (int i = 0; i < header.size; ++i)
+	{
+		int indexStart = data.indexStart[i];
+		int faceId = indexStart / 3;
+		q += faceQuadric[faceId];
+	}
+
+	vertexQuadric[vertexId] = q;
+}
+
+int ZEPHYR_GPU_API Zephyr::GPU::decimateSuperVertex(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
+{
+	Timer time("Super Vertex");
+
+	auto& omesh = mesh.getMesh();
+
+	// Setup the vertex list
+	auto points = omesh.points();
+	size_t vertexCount = omesh.n_vertices();
+
+	Vector3f* d_vertices_ptr;
+	size_t verticesSize = vertexCount * sizeof(Vector3f);
+	cudaMalloc((void**)&d_vertices_ptr, verticesSize);
+	cudaMemcpy(d_vertices_ptr, points, verticesSize, cudaMemcpyHostToDevice);
+	
+	// Setup the face index
+	thrust::host_vector<int> indices(omesh.n_faces() * 3);
+
+	tbb::parallel_for((size_t)0, omesh.n_faces(), [&](const size_t faceId)
+	{
+		FaceHandle fh(faceId);
+
+		int index = faceId * 3;
+		for (auto fv : omesh.fv_range(fh))
+		{
+			indices[index++] = fv.idx();
+		}
+	});
+	int* d_indices_ptr;
+	size_t indicesSize = indices.size() * sizeof(int);
+	cudaMalloc((void**)&d_indices_ptr, indicesSize);
+	cudaMemcpy(d_indices_ptr, &indices[0], indicesSize, cudaMemcpyHostToDevice);
+
+	// Setup the SV_Header and SV_Data
+	thrust::device_vector<SV_Header> d_headers(vertexCount);
+	auto d_header_ptr = thrust::raw_pointer_cast(&d_headers[0]);
+	thrust::device_vector<SV_Data> d_datas(vertexCount);
+	auto d_datas_ptr = thrust::raw_pointer_cast(&d_datas[0]);
+
+	int maxThreadPerBlock = QueryDevice::getMaxThreadPerBlock(0) / 2;
+	int blockNeeded = (omesh.n_faces() + (maxThreadPerBlock - 1)) / maxThreadPerBlock;
+
+	std::cout << "Block Needed: " << blockNeeded << std::endl;
+
+	// Setup the header and data
+	setupHeaderAndData <<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_header_ptr, d_datas_ptr, MAX_FACE);
+	
+	// compute the face quadrics
+	thrust::device_vector<Quadric_GPU> FacesQuadric(omesh.n_faces());
+	auto d_FaceQuadric_ptr = thrust::raw_pointer_cast(&FacesQuadric[0]);
+	computeSVQuadricAllFace <<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_vertices_ptr, d_FaceQuadric_ptr);
+
+	thrust::device_vector<Quadric_GPU> vertexQuadric(vertexCount);
+	auto d_vertexQuadric_ptr = thrust::raw_pointer_cast(&vertexQuadric[0]);
+	
+	blockNeeded = (omesh.n_vertices() + (maxThreadPerBlock - 1)) / maxThreadPerBlock;
+	computeSVVertexQuadric <<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_FaceQuadric_ptr, d_vertexQuadric_ptr);
+
+
+
+	time.reportTime();
+
+	return 0;
 }

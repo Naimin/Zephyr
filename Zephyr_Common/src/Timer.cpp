@@ -1,8 +1,9 @@
 #include "Timer.h"
+#include <iostream>
 
 using namespace std::chrono;
 
-Zephyr::Common::Timer::Timer() : mStartTime(high_resolution_clock::now()), mPrevDeltaTime(mStartTime)
+Zephyr::Common::Timer::Timer(const std::string& name) : mName(name), mStartTime(high_resolution_clock::now()), mPrevDeltaTime(mStartTime)
 {
 }
 
@@ -29,4 +30,9 @@ double Zephyr::Common::Timer::getTimeDifference(const high_resolution_clock::tim
 {
 	duration<double> time_span = duration_cast<duration<double>>(endTime - startTime);
 	return time_span.count();
+}
+
+void Zephyr::Common::Timer::reportTime()
+{
+	std::cout << mName << " elapsed time: " << getElapsedTime() << std::endl;
 }

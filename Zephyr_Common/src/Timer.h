@@ -11,7 +11,7 @@ namespace Zephyr
 		class ZEPHYR_COMMON_API Timer
 		{
 			public:
-				Timer();
+				Timer(const std::string& name="");
 				virtual ~Timer();
 
 				double getElapsedTime(); // Time since creation of the Timer
@@ -20,7 +20,10 @@ namespace Zephyr
 				double getTimeDifference(const std::chrono::high_resolution_clock::time_point& startTime,
 										 const std::chrono::high_resolution_clock::time_point& endTime);
 
+				void reportTime();
+
 			private:
+				std::string mName;
 				std::chrono::high_resolution_clock::time_point mStartTime;
 				std::chrono::high_resolution_clock::time_point mPrevDeltaTime;
 		};

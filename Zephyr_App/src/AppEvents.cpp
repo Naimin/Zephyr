@@ -121,7 +121,7 @@ void Zephyr::AppEvents::setupRandomDecimationButtonEvents(std::shared_ptr<nana::
 
 void Zephyr::AppEvents::setupVertexRandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::slider> pBinSlider)
 {
-	setupDecimationButtonEvents(pButton, pSlider, pBinSlider, Algorithm::RANDOM_DECIMATE_VERTEX);
+	setupDecimationButtonEvents(pButton, pSlider, pBinSlider, Algorithm::GPU_SUPER_VERTEX);
 }
 
 void Zephyr::AppEvents::setupGPURandomDecimationButtonEvents(std::shared_ptr<nana::button> pButton, std::shared_ptr<nana::slider> pSlider, std::shared_ptr<nana::slider> pBinSlider)
@@ -191,34 +191,16 @@ void Zephyr::AppEvents::setupDecimationButtonEvents(std::shared_ptr<nana::button
 
 		auto omesh = Common::MeshConverter::ModelToOpenMesh(*pModel);
 		auto numOfFaces = omesh.getMesh().n_faces();
+		unsigned int targetFaceCount = (unsigned int)(numOfFaces * percentage);
 
 		// Decimate
-		if (Algorithm::DecimationType::GPU_RANDOM_DECIMATE == decimationType)
+		if (Algorithm::DecimationType::GPU_RANDOM_DECIMATE == decimationType || Algorithm::DecimationType::GPU_SUPER_VERTEX == decimationType)
 		{
-			Common::Timer timer;
-
-			int collapseCount = -1;
-			auto& omeshDecimated = omesh.getMesh();
-			auto previousFaceCount = omeshDecimated.n_faces();
-			int targetFaceCount = (int)previousFaceCount - (int)(numOfFaces * percentage);
-
-			std::cout << "GPU Random Decimation..." << std::endl;
-			collapseCount = GPU::decimate(omesh, (unsigned int)(numOfFaces * percentage), binSize);
-
-			auto elapseTime = timer.getElapsedTime();
-
-			omeshDecimated.garbage_collection();
-
-			std::cout << "Decimation done in " << elapseTime << " sec" << std::endl;
-			std::cout << "Original Face Count: " << previousFaceCount << std::endl;
-			std::cout << "Target Face Count: " << targetFaceCount << std::endl;
-			std::cout << "Removed Face Count: " << collapseCount << std::endl;
-			std::cout << "Decimated Face Count: " << omeshDecimated.n_faces() << std::endl;
-			std::cout << "Percentage decimated: " << ((previousFaceCount - omeshDecimated.n_faces()) / (float)previousFaceCount) * 100.0f << " %" << std::endl;
+			GPU::decimate(omesh, targetFaceCount, binSize, decimationType);
 		}
 		else
 		{
-			Algorithm::Decimater::decimate(omesh, (unsigned int)(numOfFaces * percentage), binSize, decimationType);
+			Algorithm::Decimater::decimate(omesh, targetFaceCount, binSize, decimationType);
 		}
 
 		std::cout << "Saving decimation output to: " << exportPath << std::endl << std::endl;
