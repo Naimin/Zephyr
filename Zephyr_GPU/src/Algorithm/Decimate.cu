@@ -407,9 +407,11 @@ void computeSVQuadricAllFace(int* indices, Vector3f* vertices, Quadric_GPU* Face
 }
 
 __global__
-void computeSVVertexQuadric(SV_Header* headers, SV_Data* datas, Quadric_GPU* faceQuadric, Quadric_GPU* vertexQuadric)
+void computeSVVertexQuadric(SV_Header* headers, SV_Data* datas, Quadric_GPU* faceQuadric, Quadric_GPU* vertexQuadric, size_t vertexCount)
 {
 	int vertexId = blockIdx.x * blockDim.x + threadIdx.x;
+	if (vertexCount <= vertexId)
+		return;
 	
 	SV_Header header = headers[vertexId];
 	SV_Data data = datas[vertexId];
@@ -423,6 +425,141 @@ void computeSVVertexQuadric(SV_Header* headers, SV_Data* datas, Quadric_GPU* fac
 	}
 
 	vertexQuadric[vertexId] = q;
+}
+
+__global__
+void selectIndependentVertex(SV_Header* headers, SV_Data* datas, int* indices, bool* vertexUsed, bool* selected, size_t vertexCount)
+{
+	int vertexId = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (vertexCount <= vertexId)
+		return;
+	
+	SV_Header header = headers[vertexId];
+	SV_Data data = datas[vertexId];
+
+	bool bIndependent = true;
+	if (false == vertexUsed[vertexId])
+	{
+		for (int i = 0; i < header.size && bIndependent; ++i)
+		{
+			int indexStart = data.indexStart[i];
+			for (int j = 0; j < 3 && bIndependent; ++j)
+			{
+				int checkVertexId = indices[indexStart + j];
+				if (true == vertexUsed[checkVertexId])
+				{
+					bIndependent = false;
+				}
+			}
+		}
+
+		if (bIndependent)
+		{
+			selected[vertexId] = true;
+			vertexUsed[vertexId] = true;
+			for (int i = 0; i < header.size; ++i)
+			{
+				int indexStart = data.indexStart[i];
+				for (int j = 0; j < 3; ++j)
+				{
+					int checkVertexId = indices[indexStart + j];
+					vertexUsed[checkVertexId] = true;
+				}
+			}
+		}
+	}
+}
+
+__global__
+void checkIndependentVertex(SV_Header* headers, SV_Data* datas, int* indices, bool* selected, bool* checked, size_t vertexCount)
+{
+	int vertexId = blockIdx.x * blockDim.x + threadIdx.x;
+	if (vertexCount <= vertexId || false == selected[vertexId])
+		return;
+
+	SV_Header header = headers[vertexId];
+	SV_Data data = datas[vertexId];
+
+	bool bValid = true;
+	for (size_t i = 0; i < vertexCount && bValid; ++i)
+	{
+		if (false == selected[i] && i == vertexId)
+			continue;
+		
+		// check if there is any conflict
+		for (int j = 0; j < header.size && bValid; ++j)
+		{
+			int indexStart = data.indexStart[j];
+			for (int k = 0; k < 3 && bValid; ++k)
+			{
+				int checkVertexId = indices[indexStart + k];
+				if (i == checkVertexId) // conflict detected
+				{
+					bValid = false;
+				}
+			}
+		}
+	}
+	
+	if (bValid)
+	{
+		// remove self as independent vertex
+		checked[vertexId] = true;
+	}
+}
+
+struct BestEdge
+{
+	__device__
+	BestEdge() : error(10000.0), vertexId(-1) {}
+	double error;
+	int vertexId;
+};
+
+__global__
+void getBestEdge(SV_Header* headers, SV_Data* datas, int* indices, Vector3f* vertices, bool* selected, Quadric_GPU* vertexQuadric, BestEdge* BestEdges, size_t vertexCount)
+{
+	int vertexId = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (vertexCount <= vertexId || false == selected[vertexId])
+		return;
+	
+	SV_Header header = headers[vertexId];
+	SV_Data data = datas[vertexId];
+	Quadric_GPU q = vertexQuadric[vertexId];
+	
+	double bestError = 10000.0;
+	int bestVertex = -1;
+	for (int i = 0; i < header.size; ++i)
+	{
+		int indexStart = data.indexStart[i];
+		for (int j = 0; j < 3; ++j)
+		{
+			int checkVertexId = indices[indexStart + j];
+			double error = q.evalute(vertices[checkVertexId]);
+			if (error < bestError)
+			{
+				bestError = error;
+				bestVertex = checkVertexId;
+			}
+		}
+	}
+
+	BestEdges[vertexId].vertexId = bestVertex;
+	BestEdges[vertexId].error = bestError;
+}
+
+__global__
+void sortBestEdge()
+{
+
+}
+
+__global__
+void collapse()
+{
+
 }
 
 int ZEPHYR_GPU_API Zephyr::GPU::decimateSuperVertex(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
@@ -470,20 +607,46 @@ int ZEPHYR_GPU_API Zephyr::GPU::decimateSuperVertex(Common::OpenMeshMesh & mesh,
 	std::cout << "Block Needed: " << blockNeeded << std::endl;
 
 	// Setup the header and data
-	setupHeaderAndData <<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_header_ptr, d_datas_ptr, MAX_FACE);
-	
+	setupHeaderAndData<<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_header_ptr, d_datas_ptr, MAX_FACE);
+	//CudaCheckError();
+
 	// compute the face quadrics
 	thrust::device_vector<Quadric_GPU> FacesQuadric(omesh.n_faces());
 	auto d_FaceQuadric_ptr = thrust::raw_pointer_cast(&FacesQuadric[0]);
-	computeSVQuadricAllFace <<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_vertices_ptr, d_FaceQuadric_ptr);
+	computeSVQuadricAllFace<<<blockNeeded, maxThreadPerBlock>>>(d_indices_ptr, d_vertices_ptr, d_FaceQuadric_ptr);
+	//CudaCheckError();
 
 	thrust::device_vector<Quadric_GPU> vertexQuadric(vertexCount);
 	auto d_vertexQuadric_ptr = thrust::raw_pointer_cast(&vertexQuadric[0]);
 	
 	blockNeeded = (omesh.n_vertices() + (maxThreadPerBlock - 1)) / maxThreadPerBlock;
-	computeSVVertexQuadric <<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_FaceQuadric_ptr, d_vertexQuadric_ptr);
+	computeSVVertexQuadric<<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_FaceQuadric_ptr, d_vertexQuadric_ptr, vertexCount);
+	//CudaCheckError();
+	int currentFaceCount = omesh.n_faces();
+	//while (targetFaceCount < currentFaceCount)
+	{
+		thrust::device_vector<bool> d_vertexUsed(vertexCount);
+		auto d_vertexUsed_ptr = thrust::raw_pointer_cast(&d_vertexUsed[0]);
+		thrust::device_vector<bool> d_independentVertex(vertexCount);
+		auto d_independentVertex_ptr = thrust::raw_pointer_cast(&d_independentVertex[0]);
+
+		//blockNeeded = (binSize + (maxThreadPerBlock - 1)) / maxThreadPerBlock;
+
+		selectIndependentVertex<<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_indices_ptr, d_vertexUsed_ptr, d_independentVertex_ptr, vertexCount);
+		//CudaCheckError();
+
+		thrust::device_vector<bool> d_checkedvertexUsed(vertexCount);
+		auto d_checkedvertexUsed_ptr = thrust::raw_pointer_cast(&d_checkedvertexUsed[0]);
+		checkIndependentVertex<<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_indices_ptr, d_independentVertex_ptr, d_checkedvertexUsed_ptr, vertexCount);
+		//CudaCheckError();
+
+		thrust::device_vector<BestEdge> d_bestedges(vertexCount);
+		auto d_bestEdges_ptr = thrust::raw_pointer_cast(&d_bestedges[0]);
+		getBestEdge<<<blockNeeded, maxThreadPerBlock>>>(d_header_ptr, d_datas_ptr, d_indices_ptr, d_vertices_ptr, d_checkedvertexUsed_ptr, d_vertexQuadric_ptr, d_bestEdges_ptr, vertexCount);
+		//CudaCheckError();
 
 
+	}
 
 	time.reportTime();
 
