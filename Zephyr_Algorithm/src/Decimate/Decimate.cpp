@@ -110,8 +110,8 @@ int Zephyr::Algorithm::Decimater::decimateGreedy(Common::OpenMeshMesh & mesh, un
 
 int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.1f;
-	const float maxNormalFlipDeviation = 45.0;
+	const float maxQuadricError = 0.01f;
+	const float maxNormalFlipDeviation = 15.0;
 	const int maxRetryCount = 250;
 
 	auto& omesh = mesh.getMesh();
@@ -275,6 +275,20 @@ int Zephyr::Algorithm::Decimater::decimateRandom(Common::OpenMeshMesh & mesh, un
 		{
 			++retryCount;
 			//std::cout << "Retrying: " << retryCount << std::endl;
+
+			if ((retryCount % 50) == 0)
+			{
+				omesh.garbage_collection();
+				totalHalfEdgeCount = omesh.n_halfedges();
+
+				// reset up the random generators
+				randomGenerators.clear();
+				// setup the random generator and selectedEdge memory
+				for (int threadId = 0; threadId < numOfThreads; ++threadId)
+				{
+					randomGenerators.push_back(std::shared_ptr<RandomGenerator>(new RandomGenerator(0, (int)totalHalfEdgeCount - 1, threadId)));
+				}
+			}
 		}
 
 		currentFaceCount -= faceCollapsed;

@@ -11,10 +11,10 @@ namespace Zephyr
 	{
 		struct Quadric_GPU
 		{
-			double mat[10];
+			float mat[10];
 
 			__device__
-			Quadric_GPU(const double a=0, const double b=0, const double c=0, const double d=0)
+			Quadric_GPU(const float a=0, const float b=0, const float c=0, const float d=0)
 				: mat{a*a, a*b, a*c, a*d, b*b, b*c, b*d, c*c, c*d, d*d }{}
 
 			__device__
@@ -34,7 +34,7 @@ namespace Zephyr
 			}
 
 			__device__
-			Quadric_GPU operator*=(const double s)
+			Quadric_GPU operator*=(const float s)
 			{
 				mat[0] *= s;
 				mat[1] *= s;
@@ -50,9 +50,9 @@ namespace Zephyr
 			}
 
 			__device__
-			double evalute(Common::Vector3f v) const
+			float evalute(Common::Vector3f v) const
 			{
-				double x(v[0]), y(v[1]), z(v[2]);
+				float x(v[0]), y(v[1]), z(v[2]);
 				return mat[0]*x*x + 2.0*mat[1]*x*y + 2.0*mat[2]*x*z + 2.0*mat[3]*x
 								  +     mat[4]*y*y + 2.0*mat[5]*y*z + 2.0*mat[6]*y
 					   							   +     mat[7]*z*z + 2.0*mat[8]*z

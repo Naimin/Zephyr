@@ -51,7 +51,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseIntelMKL>No</UseIntelMKL>
     <UseILP64Interfaces>false</UseILP64Interfaces>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -132,7 +132,7 @@ copy /Y "..\thirdparty\boost_1_63_0\lib64-msvc-14.0\boost_filesystem-vc140-mt-gd
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;EIGEN_USE_MKL_ALL;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZEPHYR_GRAPHICS_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\thirdparty\tbb\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\boost_1_63_0;..\thirdparty\Eigen;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>

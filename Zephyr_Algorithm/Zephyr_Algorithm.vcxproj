@@ -51,7 +51,7 @@
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseIntelMKL>Parallel</UseIntelMKL>
+    <UseIntelMKL>No</UseIntelMKL>
     <UseILP64Interfaces>false</UseILP64Interfaces>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -126,7 +126,7 @@ copy /Y "..\thirdparty\openmesh\bin\OpenMeshToolsd.dll" "$(SolutionDir)$(Platfor
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\thirdparty\openmesh\include;..\thirdparty\assimp\include;..\thirdparty\freeImage\include;..\thirdparty\tbb\include;..\thirdparty\Eigen;..\thirdparty\suitespare_4_5_1\SuiteSparse\CHOLMOD\include;..\thirdparty\suitespare_4_5_1\SuiteSparse\SuiteSparse_config\;..\thirdparty\boost_1_63_0</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;EIGEN_USE_MKL_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZEPHYR_ALGORITHM_EXPORTS;_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>

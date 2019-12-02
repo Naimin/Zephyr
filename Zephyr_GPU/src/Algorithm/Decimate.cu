@@ -67,7 +67,7 @@ inline void __cudaCheckError(const char *file, const int line)
 	return;
 }
 
-__constant__ double MAX_ERRORS[2]; // quadric error, max flip error
+__constant__ float MAX_ERRORS[2]; // quadric error, max flip error
 
 __device__
 Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* vertices)
@@ -78,7 +78,7 @@ Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* verti
 
 	Vector3f n = (v1 - v0).cross(v2 - v0);
 
-	double area = n.norm();
+	float area = n.norm();
 
 	if (area > FLT_MIN)
 	{
@@ -86,10 +86,10 @@ Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* verti
 		area *= 0.5;
 	}
 
-	double a = n[0];
-	double b = n[1];
-	double c = n[2];
-	double d = -(v0.dot(n));
+	float a = n[0];
+	float b = n[1];
+	float c = n[2];
+	float d = -(v0.dot(n));
 
 	Quadric_GPU q(a, b, c, d);
 	q *= area;
@@ -98,13 +98,13 @@ Quadric_GPU computeFaceQE(INDEX_TYPE IdStart, INDEX_TYPE* index, Vector3f* verti
 }
 
 __device__
-double computeError(int id, QEM_Data* QEM_Datas)
+float computeError(int id, QEM_Data* QEM_Datas)
 {
 	auto data = QEM_Datas[id];
 	
 	// if invalid just return max error
 	if (!data.bValid)
-		return 10000.0;
+		return 10000.0f;
 
 	Quadric_GPU q;
 	for (int i = 0; i < data.indexCount; i += 3)
@@ -112,15 +112,15 @@ double computeError(int id, QEM_Data* QEM_Datas)
 		q += computeFaceQE(i, data.indices, data.vertices);
 	}
 
-	double err = q.evalute(data.vertices[data.vertexToKeepId]);
+	float err = q.evalute(data.vertices[data.vertexToKeepId]);
 
 	//printf("err: %f\n", err);
 
-	return (err < MAX_ERRORS[0]) ? err : 10000.0;
+	return (err < MAX_ERRORS[0]) ? err : 10000.0f;
 }
 
 __global__
-void computeErrors(QEM_Data* QEM_Datas, double* errors)
+void computeErrors(QEM_Data* QEM_Datas, float* errors)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -128,9 +128,9 @@ void computeErrors(QEM_Data* QEM_Datas, double* errors)
 }
 
 __global__
-void selectBestEdge(double* errors, int* random, int* bestEdge)
+void selectBestEdge(float* errors, int* random, int* bestEdge)
 {
-	extern __shared__ double sErrors[];
+	extern __shared__ float sErrors[];
 
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	
@@ -141,12 +141,12 @@ void selectBestEdge(double* errors, int* random, int* bestEdge)
 	// Only one thread per block can search for the best edge
 	if (0 == threadIdx.x)
 	{
-		double bestError = 10000.0f;
+		float bestError = 10000.0f;
 		int bestHalfEdge = -1;
 		for (int i = 0; i < blockDim.x; ++i)
 		{
-			double err = sErrors[i];
-			if (bestError > err)
+			float err = sErrors[i];
+			if (err < MAX_ERRORS[0] && err < bestError)
 			{
 				bestError = err;
 				bestHalfEdge = random[blockIdx.x * blockDim.x + i];
@@ -159,11 +159,11 @@ void selectBestEdge(double* errors, int* random, int* bestEdge)
 
 struct ConstError
 {
-	ConstError(double maxQuadricError_, double maxNormalFlipDeviation_) 
+	ConstError(float maxQuadricError_, float maxNormalFlipDeviation_)
 		: maxQuadricError(maxQuadricError_), maxNormalFlipDeviation(maxNormalFlipDeviation_) {}
 	
-	double maxQuadricError;
-	double maxNormalFlipDeviation;
+	float maxQuadricError;
+	float maxNormalFlipDeviation;
 };
 
 int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize, Algorithm::DecimationType type)
@@ -203,13 +203,15 @@ int GPU::decimate(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, uns
 
 int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, unsigned int binSize)
 {
-	const float maxQuadricError = 0.1f;
-	const float maxNormalFlipDeviation = 45.0;
-	const int maxRetryCount = 50;
+	Timer totalTimer("Total Time");
+
+	const float maxQuadricError = 0.01f;
+	const float maxNormalFlipDeviation = 15.0f;
+	const int maxRetryCount = 250;
 
 	// set the constant memory data
 	ConstError constError(maxQuadricError, maxNormalFlipDeviation);
-	cudaMemcpyToSymbol(MAX_ERRORS, (ConstError*)&constError, sizeof(constError));
+	cudaMemcpyToSymbol(MAX_ERRORS, (ConstError*)&constError, sizeof(constError), 0, cudaMemcpyHostToDevice);
 
 	auto& omesh = mesh.getMesh();
 
@@ -238,7 +240,7 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 	int randomSequence = 0;
 	thrust::device_vector<int> d_randomEdgesId(oneIterationSelectionSize);
 	thrust::host_vector<int, thrust::system::cuda::experimental::pinned_allocator<int>> h_randomEdgesId(oneIterationSelectionSize);
-	thrust::device_vector<double> d_Errors(oneIterationBlockCount);
+	thrust::device_vector<float> d_Errors(oneIterationBlockCount);
 	thrust::device_vector<int> d_bestEdges(oneIterationBlockCount);
 	thrust::host_vector <int, thrust::system::cuda::experimental::pinned_allocator<int>> h_BestEdge(oneIterationBlockCount);
 
@@ -246,7 +248,7 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 
 	int* d_BestEdges_ptr = thrust::raw_pointer_cast(&d_bestEdges[0]);
 	int* d_randomEdgesId_ptr = thrust::raw_pointer_cast(&d_randomEdgesId[0]);
-	double* d_Errors_ptr = thrust::raw_pointer_cast(&d_Errors[0]);
+	float* d_Errors_ptr = thrust::raw_pointer_cast(&d_Errors[0]);
 	
 	// do the first random generation outside of iteration.
 	Random::generateRandomInt(d_randomEdgesId, 0, (int)totalHalfEdgeCount - 1, randomSequence);
@@ -254,6 +256,8 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 
 	int totalCollapseCount = 0;
 	int garbageCollectTrigger = oneIterationBlockCount / 2;
+
+	double substractTime = 0;
 
 	// do the exact collapse
 	int collapseCount = std::numeric_limits<int>::max();
@@ -266,8 +270,9 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 			// Synchronize the async copy of random edge id from device to host.
 			cudaDeviceSynchronize();
 
-			//Timer copyPartialTimer;
+			Timer copyPartialTimer;
 			QEM_Data* d_QEM_Datas_ptr = partialMesh.copyPartialMesh(omesh, h_randomEdgesId);
+			substractTime += copyPartialTimer.getElapsedTime();
 			//std::cout << "Copy partial time: " << copyPartialTimer.getElapsedTime() << std::endl;
 
 			//Timer ComputeErrorTimer;
@@ -308,6 +313,11 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 			if (!omesh.is_collapse_ok(halfEdgeHandle))
 				continue;
 
+			CollapseInfo collapseInfo(omesh, halfEdgeHandle);
+
+			if (Algorithm::INVALID_COLLAPSE == Algorithm::QuadricError::computeTriangleFlipAngle(collapseInfo, omesh, maxNormalFlipDeviation) )
+				continue;
+
 			// if the edge is a boundary edge only 1 face is removed by the collapse, otherwise 2 face is removed
 			faceCollapsed += omesh.is_boundary(halfEdgeHandle) ? 1 : 2;
 
@@ -331,12 +341,17 @@ int GPU::decimateMC(Common::OpenMeshMesh & mesh, unsigned int targetFaceCount, u
 		//std::cout << "Original Collapsed this iteration: " << originalCollapse << std::endl;
 		//std::cout << "Additional Collapsed this iteration: " << additionalCollapse << std::endl;
 		//std::cout << "Total Collapsed : " << totalCollapseCount << std::endl;
-
+		
 		currentFaceCount -= faceCollapsed;
 
 		//std::cout << "Collapse time: " << collapseTimer.getElapsedTime() << std::endl;
 	}
 	omesh.garbage_collection();
+
+	std::cout << "Substract Time: " << substractTime << std::endl;
+
+	totalTimer.reportTime();
+	std::cout << "Substracted Time: " << totalTimer.getElapsedTime() - substractTime << std::endl;
 
 	return totalCollapseCount;
 }

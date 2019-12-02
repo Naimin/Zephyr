@@ -12,6 +12,8 @@ namespace Zephyr
 
 		int ZEPHYR_GPU_API decimateMC(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize);
 		int ZEPHYR_GPU_API decimateSuperVertex(Common::OpenMeshMesh& mesh, unsigned int targetFaceCount, unsigned int binSize);
+
+
 	}
 }
 
